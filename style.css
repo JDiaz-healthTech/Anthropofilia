@@ -1,0 +1,292 @@
+/* ==========================================================================
+   1. ESTILOS GLOBALES Y TIPOGRAFÍA
+   ========================================================================== */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f0f2f5; /* Gris suave de fondo */
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto; /* Centra el contenedor principal */
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+a {
+    color: #1d2d50; /* Azul oscuro para enlaces */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin: 2rem 0;
+}
+
+/* ==========================================================================
+   2. ESTRUCTURA PRINCIPAL (LAYOUT)
+   ========================================================================== */
+.main-header {
+    background: #1d2d50; /* Azul oscuro elegante */
+    color: #fff;
+    padding: 2rem;
+    text-align: center;
+        min-height: 350px; /* Establece una altura mínima */
+
+            /* Añadimos flexbox para centrar el texto verticalmente */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.main-header h1 {
+    margin: 0;
+}
+
+.main-nav {
+    display: flex;
+    justify-content: center;
+    background: #333;
+}
+
+.main-nav a {
+    color: #fff;
+    padding: 1rem;
+    text-decoration: none;
+}
+
+.main-nav a:hover {
+    background-color: #555;
+}
+
+.main-content-area {
+    display: flex;
+    flex-wrap: wrap; /* Permite que la sidebar pase debajo en pantallas pequeñas */
+}
+
+main {
+    flex: 3; /* Ocupa 3/4 del espacio */
+    padding: 20px;
+    order: 1; 
+}
+
+main h2 a {
+    color: #1d2d50;
+}
+
+aside {
+    flex: 1; /* Ocupa 1/4 del espacio */
+    padding: 20px;
+    background: #f4f4f4;
+    border-left: 1px solid #ddd;
+    order: 2;
+}
+
+.main-footer {
+    text-align: center;
+    padding: 1rem;
+    background: #333;
+    color: #fff;
+    margin-top: 20px;
+}
+
+.main-footer a {
+    color: #aaa;
+}
+
+/* ==========================================================================
+   3. ESTILOS DE COMPONENTES (WIDGETS Y FORMULARIOS)
+   ========================================================================== */
+
+/* --- Widgets de la Barra Lateral --- */
+.sidebar-widget {
+    margin-bottom: 25px;
+}
+
+.sidebar-widget h4 {
+    margin-top: 0;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.sidebar-widget ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar-widget ul li {
+    padding: 5px 0;
+}
+
+/* --- Estilo Único y Genérico para Todos los Formularios --- */
+.form-container {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.form-container div {
+    margin-bottom: 15px;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-container input[type="text"],
+.form-container input[type="url"],
+.form-container input[type="password"],
+.form-container input[type="email"],
+.form-container input[type="search"],
+.form-container input[type="file"],
+.form-container select,
+.form-container textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; 
+}
+
+.form-container button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background-color: #1d2d50; /* Azul oscuro del header */
+    color: white;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.form-container button:hover {
+    opacity: 0.9;
+}
+
+/* ==========================================================================
+   4. DISEÑO RESPONSIVE (MÓVILES)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .main-content-area {
+        flex-direction: column; /* Apila el contenido y la sidebar */
+    }
+
+    aside {
+        border-left: none;
+        border-top: 1px solid #ddd;
+    }
+
+    .main-nav {
+        flex-direction: column; /* Apila los enlaces de navegación */
+    }
+
+    .main-nav a {
+        text-align: center;
+        border-bottom: 1px solid #555;
+    }
+
+    .main-header h1 {
+        font-size: 1.8rem; /* Reduce el tamaño del título en móviles */
+    }
+}
+
+/* --- Estilos para Mensajes de Estado --- */
+.status-success {
+    padding: 15px;
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.status-error {
+    padding: 15px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+/* --- Estilos para la Vista de Post Individual --- */
+.single-post-content {
+    line-height: 1.7; /* Aumenta el espacio entre líneas para facilitar la lectura */
+    font-size: 1.1rem; /* Un tamaño de letra ligeramente más grande */
+        text-align: justify; 
+}
+
+.single-post-content h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.post-meta {
+    display: block;
+    font-style: italic;
+    color: #777;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+}
+
+/* Estilos para las etiquetas al final del post */
+.etiquetas-container {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.etiqueta {
+    display: inline-block;
+    background-color: #eef;
+    color: #3366cc;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-right: 5px;
+    font-size: 0.9rem;
+}
+
+/* En style.css */
+
+.main-header {
+    /* Usamos el color de fondo como respaldo por si la imagen no carga */
+    background-color: #1d2d50; 
+    
+    /* La magia está aquí: aplicamos la imagen de fondo con un filtro oscuro encima */
+    background-image: linear-gradient(rgba(29, 45, 80, 0.5), rgba(29, 45, 80, 0.5)), url('images/header-bg.png');
+    
+    /* Hacemos que la imagen cubra todo el espacio sin deformarse */
+    background-size:contain;
+    
+    /* Centramos la imagen para que se vea la parte más importante */
+    background-position:center;
+    
+    color: #fff;
+    padding: 5rem 2rem; /* Aumentamos el padding para que la imagen se aprecie más */
+    text-align: center;
+}
