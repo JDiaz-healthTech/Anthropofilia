@@ -47,10 +47,7 @@ if ($stmt) {
     <?php endif; ?>
 </main>
 
-<aside>
-    <h3>DEPARTAMENTOS</h3>
-    <?php /* ...código para listar categorías... */ ?>
-</aside>
+<?php require_once 'sidebar.php'; ?>
 
 <?php
 if (isset($stmt)) $stmt->close();

@@ -48,9 +48,7 @@ if ($stmt) {
     <?php endif; ?>
 </main>
 
-<aside>
-    <?php /* Pega aquí el código HTML/PHP del <aside> que corregimos */ ?>
-</aside>
+<?php require_once 'sidebar.php'; ?>
 
 <?php
 if (isset($stmt)) $stmt->close();

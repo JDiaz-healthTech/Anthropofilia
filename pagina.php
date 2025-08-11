@@ -35,9 +35,7 @@ require_once 'header.php';
     </article>
 </main>
 
-<aside>
-    <?php /* Pega aquí el código del <aside> de index.php */ ?>
-</aside>
+<?php require_once 'sidebar.php'; ?>
 
 <?php
 $conn->close();

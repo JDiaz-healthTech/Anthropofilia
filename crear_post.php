@@ -1,6 +1,11 @@
 <?php
 // Barrera de seguridad
 session_start();
+
+//VALIDACION DE USUARIO
+//Genera token de aceso y lo guarda en la sesion del usuario
+$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit();
@@ -19,6 +24,10 @@ require_once 'header.php';
 <main>
     <h2>Crear Nuevo Post</h2>
     <form action="guardar_post.php" method="POST" enctype="multipart/form-data" class="form-container">
+        
+        <!-- Inyeccion oculta de token de acceso -->
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+
         <div>
             <label for="titulo">Título:</label>
             <input type="text" id="titulo" name="titulo" required>

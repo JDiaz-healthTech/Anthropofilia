@@ -72,8 +72,7 @@ require_once 'header.php';
     </article>
 </main>
 
-<aside>
-    </aside>
+<?php require_once 'sidebar.php'; ?>
 
 <?php
 $conn->close();

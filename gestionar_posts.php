@@ -1,6 +1,12 @@
 <?php
 // Barrera de seguridad
 session_start();
+
+//VALIDACION CSRF
+//Genera token de acceso. Crea cadena aleatoria y la guarda en la sesion del usuario
+$_SESSION['csrf_token'] = bin2hex(random_bytes(32)); 
+
+
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit();
@@ -34,8 +40,7 @@ require_once 'header.php';
                         <td><?php echo date('d/m/Y', strtotime($post['fecha_publicacion'])); ?></td>
                         <td>
                             <a href="editar_post.php?id=<?php echo $post['id_post']; ?>">Editar</a> |
-                            <a href="eliminar_post.php?id=<?php echo $post['id_post']; ?>" onclick="return confirm('¿Estás seguro de que quieres eliminar este post?');">Eliminar</a>
-                        </td>
+                            <a href="eliminar_post.php?id=<?php echo $post['id_post']; ?>&token=<?php echo $_SESSION['csrf_token']; ?>" onclick="return confirm('¿Estás seguro de que quieres eliminar este post?');">Eliminar</a>                        </td>
                     </tr>
                 <?php endwhile; ?>
             <?php else: ?>

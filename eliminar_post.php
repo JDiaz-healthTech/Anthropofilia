@@ -9,6 +9,24 @@ if (!isset($_SESSION['id_usuario'])) {
     exit();
 }
 
+// ===================================================================
+// !! BLOQUE DE VALIDACIÓN CSRF - INICIO !!
+// ===================================================================
+$token_recibido = $_GET['token'] ?? '';
+
+// Comprobamos tres cosas:
+// 1. Que el token exista en la sesión.
+// 2. Que hayamos recibido un token en la URL.
+// 3. Que ambos tokens sean idénticos.
+if (!isset($_SESSION['csrf_token']) || empty($token_recibido) || !hash_equals($_SESSION['csrf_token'], $token_recibido)) {
+    // Si algo falla, detenemos la ejecución.
+    // hash_equals() es una función segura para comparar cadenas de texto y evitar ataques de temporización.
+    die("Error de seguridad: La acción ha sido cancelada por un posible ataque CSRF.");
+}
+// ===================================================================
+// !! BLOQUE DE VALIDACIÓN CSRF - FIN !!
+// ===================================================================
+
 // 2. Obtener y validar el ID del post desde la URL
 $post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 

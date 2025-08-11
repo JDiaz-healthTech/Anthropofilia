@@ -1,19 +1,16 @@
 <?php
-// 1. Iniciar la sesión. SIEMPRE lo primero.
-session_start();
+// 1. Prepara el entorno (siempre primero)
+require_once 'init.php'; 
 
-// 2. Comprobar si el usuario ha iniciado sesión.
-// Si la variable de sesión 'id_usuario' NO está definida...
+// 2. Ahora, pon al guardia de seguridad en la puerta d e esta página específica.
 if (!isset($_SESSION['id_usuario'])) {
     // 3. ...redirigir al login y terminar el script.
     header("Location: login.php");
     exit();
 }
 
-// Si el script llega hasta aquí, significa que el usuario SÍ ha iniciado sesión.
-// A partir de aquí, ponemos todo el contenido exclusivo para el administrador.
-?>
-<?php
+// Si el script llega hasta aquí, significa que el entorno está listo Y el usuario tiene permiso.
+// A partir de aquí, el resto del código de la página.
 $page_title = 'Panel de Administración';
 require_once 'header.php';
 ?>
