@@ -78,6 +78,17 @@ require_once 'header.php';
     </form>
 </main>
 
+<script>
+  tinymce.init({
+    selector: '#contenido', // Apunta al ID de tu textarea
+    plugins: 'code lists link image table autoresize',
+    toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image | table | code',
+    height: 500,
+    menubar: false,
+    content_css: 'style.css' // Opcional: para que el contenido en el editor se vea similar a tu web
+  });
+</script>
+
 <?php
 $conn->close();
 require_once 'footer.php';

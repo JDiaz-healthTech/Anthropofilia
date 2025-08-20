@@ -47,7 +47,11 @@ require_once 'header.php';
             <?php endif; ?>
 
             <div>
-                <?php echo nl2br($post['contenido']); ?>
+                <?php
+                // Usamos la instancia del SecurityManager que ya fue creada en init.php
+                // para purificar el HTML antes de mostrarlo.
+                echo SecurityManager::instance()->sanitizeHTML($post['contenido']);
+                ?>
             </div>
         </div>
 

@@ -6,6 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title ?? 'Anthropofilia Blog'; ?></title>
     <link rel="stylesheet" href="style.css">
+
+    <?php
+
+    // Obtenemos el nombre del script actual que se está ejecutando
+    $current_page = basename($_SERVER['PHP_SELF']);
+    
+    // Si la página es crear_post.php o editar_post.php, incluyo el script de TinyMCE
+    if (in_array($current_page, ['crear_post.php', 'editar_post.php'])):
+    ?>
+        <script src="https://cdn.tiny.cloud/1/55d1aaf8txhz0grsfs3s9dqm214nb4tk0p06h6ydeby0vta1/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <?php endif; ?>
+    
 </head>
 
 <body>
