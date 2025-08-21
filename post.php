@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once 'init.php';
 $post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($post_id <= 0) {

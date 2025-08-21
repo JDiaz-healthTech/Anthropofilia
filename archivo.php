@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once 'init.php';
 
 // 1. OBTENER Y VALIDAR AÑO Y MES DE LA URL
 $anio = isset($_GET['anio']) ? (int)$_GET['anio'] : 0;

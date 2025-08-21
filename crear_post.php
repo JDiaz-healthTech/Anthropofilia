@@ -11,7 +11,7 @@ if (!isset($_SESSION['id_usuario'])) {
     exit();
 }
 
-require_once 'config.php';
+require_once 'init.php';
 
 // Consulta para obtener las categorías para el menú desplegable
 $sql_categorias = "SELECT id_categoria, nombre_categoria FROM categorias ORDER BY nombre_categoria ASC";

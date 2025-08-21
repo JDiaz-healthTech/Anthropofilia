@@ -5,8 +5,11 @@
 // Esto nos da acceso a las librerías instaladas, como phpdotenv y HTMLPurifier.
 require_once __DIR__ . '/vendor/autoload.php';
 
-// --> NUEVO: Cargamos nuestra clase de seguridad personalizada.
-require_once __DIR__ . '/security_manager.php';
+// Cargo nuestra clase de seguridad personalizada.
+// Esta clase manejará la seguridad de nuestra aplicación, incluyendo sesiones y protección CSRF.
+use App\SecurityManager;
+
+//require_once __DIR__ . '/security_manager.php';
 
 
 // -- 2. CARGAR LAS VARIABLES DE ENTORNO --
@@ -62,12 +65,10 @@ try {
 
 
 // -- 5. ARRANCAR EL GESTOR DE SEGURIDAD --
-// --> NUEVO: Este es el paso final y más importante.
-// Creamos la instancia de nuestro gestor de seguridad, le pasamos la conexión PDO
-// y lo arrancamos con boot().
-$security = SecurityManager::instance(
-    ['env' => $_ENV['APP_ENV'] ?? 'prod'], // Le decimos si estamos en 'dev' o 'prod'
-    $pdo                                  // Le damos acceso a la BBDD
+// AHORA INYECTAMOS LAS DEPENDENCIAS EN EL CONSTRUCTOR
+$security = new SecurityManager(
+    ['env' => $_ENV['APP_ENV'] ?? 'prod'], // Le pasamos la configuración
+    $pdo                                   // Le pasamos la conexión PDO
 );
 
 // boot() se encarga de iniciar la sesión segura, aplicar cabeceras,

@@ -34,9 +34,11 @@
 
 declare(strict_types=1);
 
+namespace App;
+
 final class SecurityManager
 {
-    private static ?self $instance = null;
+   // private static ?self $instance = null;
 
     /** @var PDO|null */
     private ?PDO $pdo = null;
@@ -79,6 +81,18 @@ final class SecurityManager
     /** Rate limit fallback en sesión */
     private array $rateLimitSession = [];
 
+    /**
+     * Constructor para la Inyección de Dependencias
+     *
+     * @param array<string,mixed> $config
+     * @param PDO|null $pdo
+     */
+    public function __construct(array $config = [], ?PDO $pdo = null)
+    {
+        $this->config = array_replace_recursive($this->config, $config);
+        $this->pdo = $pdo;
+    }
+
     /** Versátil: llama una vez al inicio de cada request */
     public function boot(): void
     {
@@ -106,7 +120,8 @@ final class SecurityManager
         return self::$instance;
     }
 
-    private function __construct() {}
+  // ========== CONSTRUCTOR ==========
+  //  private function __construct() {}
 
     // ========== SESIÓN SEGURA ==========
 

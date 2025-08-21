@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once 'init.php';
 
 // 1. CAPTURAR Y LIMPIAR EL TÉRMINO DE BÚSQUEDA
 // Usamos trim() para eliminar espacios en blanco al inicio y al final.

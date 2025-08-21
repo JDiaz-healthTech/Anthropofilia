@@ -1,22 +1,17 @@
 <?php
-// Barrera de seguridad
-session_start();
 
-//VALIDACION CSRF
-//Genera token de acceso. Crea cadena aleatoria y la guarda en la sesion del usuario
-$_SESSION['csrf_token'] = bin2hex(random_bytes(32)); 
+// 1. Centralizamos todo en init.php
+require_once 'init.php';
 
+// Ya no necesitamos generar el token aquí. Lo gestiona el SecurityManager
+// que arrancó en init.php.
 
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: login.php");
-    exit();
-}
-
-require_once 'config.php';
-
-// Consulta para obtener todos los posts
+// 2. Lógica de negocio con PDO
+// Usamos el objeto $pdo, que ya está disponible.
+// PDO::query() es ideal para consultas SELECT simples sin parámetros.
 $sql = "SELECT id_post, titulo, fecha_publicacion FROM posts ORDER BY fecha_publicacion DESC";
-$resultado = $conn->query($sql);
+$stmt = $pdo->query($sql);
+$posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $page_title = 'Gestionar Posts';
 require_once 'header.php';
@@ -33,16 +28,17 @@ require_once 'header.php';
             </tr>
         </thead>
         <tbody>
-            <?php if ($resultado && $resultado->num_rows > 0): ?>
-                <?php while($post = $resultado->fetch_assoc()): ?>
+            <?php if (!empty($posts)): ?>
+                <?php foreach($posts as $post): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($post['titulo']); ?></td>
                         <td><?php echo date('d/m/Y', strtotime($post['fecha_publicacion'])); ?></td>
                         <td>
                             <a href="editar_post.php?id=<?php echo $post['id_post']; ?>">Editar</a> |
-                            <a href="eliminar_post.php?id=<?php echo $post['id_post']; ?>&token=<?php echo $_SESSION['csrf_token']; ?>" onclick="return confirm('¿Estás seguro de que quieres eliminar este post?');">Eliminar</a>                        </td>
+                            <a href="eliminar_post.php?id=<?php echo $post['id_post']; ?>&token=<?php echo $security->csrfToken(); ?>" onclick="return confirm('¿Estás seguro de que quieres eliminar este post?');">Eliminar</a>
+                        </td>
                     </tr>
-                <?php endwhile; ?>
+                <?php endforeach; ?>
             <?php else: ?>
                 <tr>
                     <td colspan="3">No hay posts para mostrar.</td>
@@ -52,7 +48,4 @@ require_once 'header.php';
     </table>
 </main>
 
-<?php
-$conn->close();
-require_once 'footer.php';
-?>
+<?php require_once 'footer.php'; ?>

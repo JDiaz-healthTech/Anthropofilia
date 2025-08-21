@@ -1,12 +1,16 @@
 <?php
-// Barrera de seguridad
-session_start();
+// crear_pagina.php
+
+// 1. INICIALIZACIÓN Y BARRERA DE SEGURIDAD
+// Requerimos init.php, que se encarga de session_start() y de inicializar $security.
+require_once 'init.php';
+
+// Validar que el usuario esté logueado.
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit();
 }
 
-require_once 'config.php';
 $page_title = 'Crear Nueva Página';
 require_once 'header.php';
 ?>
@@ -14,6 +18,9 @@ require_once 'header.php';
 <main>
     <h2>Crear Nueva Página Estática</h2>
     <form action="guardar_pagina.php" method="POST" class="form-container">
+        
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($security->csrfToken()); ?>">
+        
         <div>
             <label for="titulo">Título:</label>
             <input type="text" id="titulo" name="titulo" required>

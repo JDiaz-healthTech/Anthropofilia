@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once 'init.php';
 
 // 1. INICIAR LA SESIÓN
 // session_start() debe ser lo primero en cualquier script que use sesiones.

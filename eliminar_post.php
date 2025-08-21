@@ -1,60 +1,32 @@
 <?php
-// 1. Seguridad e Inicialización
-session_start();
-require_once 'config.php';
 
-// Comprobar si el usuario está logueado
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: login.php");
+// 1. Centralizamos todo en init.php
+require_once 'init.php';
+
+// 2. Lógica de seguridad con la clase SecurityManager
+// Con una sola llamada, validamos el token y terminamos la ejecución si es inválido.
+// ¡Adiós al bloque de validación manual!
+$token_recibido = $_GET['token'] ?? '';
+$security->csrfValidate($token_recibido);
+
+// 3. Obtener y validar el ID del post (no cambia)
+$post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($post_id <= 0) {
+    // Es una buena práctica redirigir en lugar de usar die()
+    header("Location: gestionar_posts.php?error=id_invalido");
     exit();
 }
 
-// ===================================================================
-// !! BLOQUE DE VALIDACIÓN CSRF - INICIO !!
-// ===================================================================
-$token_recibido = $_GET['token'] ?? '';
-
-// Comprobamos tres cosas:
-// 1. Que el token exista en la sesión.
-// 2. Que hayamos recibido un token en la URL.
-// 3. Que ambos tokens sean idénticos.
-if (!isset($_SESSION['csrf_token']) || empty($token_recibido) || !hash_equals($_SESSION['csrf_token'], $token_recibido)) {
-    // Si algo falla, detenemos la ejecución.
-    // hash_equals() es una función segura para comparar cadenas de texto y evitar ataques de temporización.
-    die("Error de seguridad: La acción ha sido cancelada por un posible ataque CSRF.");
-}
-// ===================================================================
-// !! BLOQUE DE VALIDACIÓN CSRF - FIN !!
-// ===================================================================
-
-// 2. Obtener y validar el ID del post desde la URL
-$post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
-if ($post_id <= 0) {
-    die("ID de post no válido.");
-}
-
-// 3. Preparar la sentencia DELETE
-// Es una sentencia simple pero debe ser preparada para seguridad.
+// 4. Preparar la sentencia DELETE con PDO
+// Usamos PDO::prepare() y execute()
 $sql = "DELETE FROM posts WHERE id_post = ?";
 
-$stmt = $conn->prepare($sql);
+// Las excepciones de PDO se encargan del control de errores, por lo que no necesitamos `if ($stmt)`.
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$post_id]); // Pasamos el parámetro en un array a execute().
 
-if ($stmt) {
-    // 4. Vincular el parámetro y ejecutar
-    $stmt->bind_param("i", $post_id);
-    
-    if ($stmt->execute()) {
-        // 5. Redirigir a la gestión de posts tras el éxito
-        header("Location: gestionar_posts.php");
-        exit();
-    } else {
-        echo "Error al eliminar el post: " . $stmt->error;
-    }
-    $stmt->close();
-} else {
-    echo "Error al preparar la consulta: " . $conn->error;
-}
+// 5. Redirigir tras el éxito
+header("Location: gestionar_posts.php");
+exit();
 
-$conn->close();
 ?>

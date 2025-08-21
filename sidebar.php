@@ -1,13 +1,7 @@
 <?php
 // sidebar.php
 
-// Este script asume que ya existe una conexión a la base de datos ($conn).
-// Si en el futuro creamos un archivo 'init.php', no necesitaremos esta comprobación.
-if (!isset($conn) || !$conn) {
-    // Si por alguna razón la conexión no existe, la creamos para que el sidebar no falle.
-    // Esto es una medida de seguridad temporal.
-    require_once 'config.php';
-}
+// Este script asume que la conexión a la base de datos ($pdo) ya existe
 ?>
 <aside>
     <div class="sidebar-widget">
@@ -29,11 +23,12 @@ if (!isset($conn) || !$conn) {
         <h4>Departamentos</h4>
         <?php
         $sql_categorias_sidebar = "SELECT nombre_categoria, slug FROM categorias ORDER BY nombre_categoria ASC";
-        $resultado_categorias_sidebar = $conn->query($sql_categorias_sidebar);
+        $resultado_categorias_sidebar = $pdo->query($sql_categorias_sidebar)->fetchAll();
 
-        if ($resultado_categorias_sidebar && $resultado_categorias_sidebar->num_rows > 0) {
+        // Verifica si hay categorías y las muestra en el sidebar
+        if (!empty($resultado_categorias_sidebar)) {
             echo '<ul>';
-            while ($cat = $resultado_categorias_sidebar->fetch_assoc()) {
+            foreach ($resultado_categorias_sidebar as $cat) {
                 echo '<li><a href="categoria.php?slug=' . htmlspecialchars($cat['slug']) . '">' . htmlspecialchars($cat['nombre_categoria']) . '</a></li>';
             }
             echo '</ul>';
@@ -47,12 +42,13 @@ if (!isset($conn) || !$conn) {
         <h4>Archivo</h4>
         <?php
         $sql_archivo_sidebar = "SELECT YEAR(fecha_publicacion) AS anio, MONTH(fecha_publicacion) AS mes_num, MONTHNAME(fecha_publicacion) AS mes_nombre, COUNT(id_post) AS total_posts FROM posts GROUP BY anio, mes_num, mes_nombre ORDER BY anio DESC, mes_num DESC";
-        $resultado_archivo_sidebar = $conn->query($sql_archivo_sidebar);
+        $resultado_archivo_sidebar = $pdo->query($sql_archivo_sidebar)->fetchAll();
 
-        if ($resultado_archivo_sidebar && $resultado_archivo_sidebar->num_rows > 0) {
+        if (!empty($resultado_archivo_sidebar)) {
             echo '<ul>';
-            while ($fila = $resultado_archivo_sidebar->fetch_assoc()) {
+            foreach ($resultado_archivo_sidebar as $fila) {
                 $enlace = 'archivo.php?anio=' . $fila['anio'] . '&mes=' . $fila['mes_num'];
+                // La función ucfirst() en PHP puede no funcionar bien con tildes, ojo futuro
                 echo '<li><a href="' . $enlace . '">' . ucfirst($fila['mes_nombre']) . ' ' . $fila['anio'] . ' (' . $fila['total_posts'] . ')</a></li>';
             }
             echo '</ul>';

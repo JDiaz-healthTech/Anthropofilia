@@ -1,29 +1,34 @@
 <?php
-// Barrera de seguridad e inicialización
-session_start();
+// editar_pagina.php
+
+// 1. INICIALIZACIÓN: Requerimos el archivo central que maneja todo.
+// Esto nos da acceso a $pdo y $security.
+require_once 'init.php';
+
+// 2. BARRERA DE SEGURIDAD: Validamos si el usuario está logueado.
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit();
 }
-require_once 'config.php';
 
-// Obtener el ID de la página de la URL
+// 3. OBTENER DATOS DE LA PÁGINA (usando PDO)
+// Obtenemos y validamos el ID de la página desde la URL.
 $pagina_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($pagina_id <= 0) {
-    die('ID de página no válido.');
+    // Es una buena práctica redirigir en lugar de usar die()
+    header("Location: gestionar_paginas.php?error=id_invalido");
+    exit();
 }
 
-// Obtener los datos actuales de la página
+// Preparamos y ejecutamos la consulta de forma segura con PDO.
 $sql_pagina = "SELECT * FROM paginas WHERE id_pagina = ?";
-$stmt = $conn->prepare($sql_pagina);
-$stmt->bind_param("i", $pagina_id);
-$stmt->execute();
-$resultado = $stmt->get_result();
-$pagina = $resultado->fetch_assoc();
-$stmt->close();
+$stmt = $pdo->prepare($sql_pagina);
+$stmt->execute([$pagina_id]);
+$pagina = $stmt->fetch();
 
 if (!$pagina) {
-    die('Página no encontrada.');
+    header("Location: gestionar_paginas.php?error=not_found");
+    exit();
 }
 
 $page_title = 'Editar Página';
@@ -33,6 +38,9 @@ require_once 'header.php';
 <main>
     <h2>Editar Página Estática</h2>
     <form action="actualizar_pagina.php" method="POST" class="form-container">
+        
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($security->csrfToken()); ?>">
+        
         <input type="hidden" name="id_pagina" value="<?php echo $pagina['id_pagina']; ?>">
         
         <div>
@@ -52,6 +60,6 @@ require_once 'header.php';
 </main>
 
 <?php
-$conn->close();
+// Ya no es necesario cerrar la conexión de PDO.
 require_once 'footer.php';
 ?>
