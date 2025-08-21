@@ -1,43 +1,45 @@
 <?php
-require_once 'init.php';
+// pagina.php
+declare(strict_types=1);
 
-// 1. OBTENER Y VALIDAR EL SLUG
-$slug = isset($_GET['slug']) ? htmlspecialchars($_GET['slug']) : '';
-if (empty($slug)) {
-    header("Location: index.php");
-    exit();
+require_once __DIR__ . '/init.php';
+
+// 1) Obtener y validar slug (solo a-z, 0-9 y guiones)
+$slug = $_GET['slug'] ?? '';
+if (!preg_match('/^[a-z0-9-]{1,120}$/', $slug)) {
+    $security->abort(404, 'Página no encontrada.');
 }
 
-// 2. CONSULTAR LA TABLA 'paginas'
-$sql = "SELECT titulo, contenido FROM paginas WHERE slug = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $slug);
-$stmt->execute();
-$resultado = $stmt->get_result();
-$pagina = $resultado->fetch_assoc();
-$stmt->close();
-
+// 2) Consultar la tabla `paginas`
+$stmt = $pdo->prepare('SELECT id_pagina, titulo, contenido FROM paginas WHERE slug = ? LIMIT 1');
+$stmt->execute([$slug]);
+$pagina = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$pagina) {
-    die('Página no encontrada.');
+    $security->abort(404, 'Página no encontrada.');
 }
 
-$page_title = $pagina['titulo'];
-require_once 'header.php';
-?>
+// 3) Metas
+$page_title = $pagina['titulo'] ?? 'Página';
+$meta_description = mb_substr(
+    trim(preg_replace('/\s+/', ' ', strip_tags($pagina['contenido'] ?? ''))),
+    0, 160
+);
 
+require_once __DIR__ . '/header.php';
+?>
 <main>
-    <article>
-        <h1><?php echo htmlspecialchars($pagina['titulo']); ?></h1>
-        <hr>
-        <div>
-            <?php echo nl2br($pagina['contenido']); // Usamos nl2br para respetar los saltos de línea ?>
-        </div>
-    </article>
+  <article>
+    <h1><?php echo htmlspecialchars($pagina['titulo'] ?? '(sin título)', ENT_QUOTES, 'UTF-8'); ?></h1>
+    <hr>
+    <div class="page-content">
+      <?php
+      // Si ya saneas al guardar, puedes imprimir tal cual;
+      // como defensa extra, saneamos aquí también.
+      echo $security->sanitizeHTML($pagina['contenido'] ?? '');
+      ?>
+    </div>
+  </article>
 </main>
 
-<?php require_once 'sidebar.php'; ?>
-
-<?php
-$conn->close();
-require_once 'footer.php';
-?>
+<?php require_once __DIR__ . '/sidebar.php'; ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

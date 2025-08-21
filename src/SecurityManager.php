@@ -3,97 +3,68 @@
  * security_manager.php
  * Gestor de seguridad para Anthropofilia
  *
- * Requisitos recomendados:
+ * Requisitos:
  * - PHP 8.0+
  * - PDO configurado (MySQL/MariaDB)
- * - Composer autoload (para HTMLPurifier si lo instalas)
- *
- * Tablas sugeridas:
- *
- * CREATE TABLE IF NOT EXISTS rate_limits (
- *   id INT AUTO_INCREMENT PRIMARY KEY,
- *   action VARCHAR(50) NOT NULL,
- *   ip VARBINARY(16) NOT NULL,
- *   ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
- *   INDEX(action, ip, ts)
- * ) ENGINE=InnoDB;
- *
- * CREATE TABLE IF NOT EXISTS app_logs (
- *   id BIGINT AUTO_INCREMENT PRIMARY KEY,
- *   ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
- *   ip VARBINARY(16) NULL,
- *   user_id INT NULL,
- *   level ENUM('info','warning','error','security') NOT NULL DEFAULT 'info',
- *   event VARCHAR(100) NOT NULL,
- *   details JSON NULL,
- *   user_agent VARCHAR(255) NULL,
- *   INDEX(level, ts),
- *   INDEX(event, ts)
- * ) ENGINE=InnoDB;
+ * - Composer autoload (opcional: HTMLPurifier)
  */
 
 declare(strict_types=1);
 
 namespace App;
 
+use PDO;                // ✅ evitar App\PDO
+use PDOException;
+use RuntimeException;
+
 final class SecurityManager
 {
-   // private static ?self $instance = null;
-
-    /** @var PDO|null */
+    
     private ?PDO $pdo = null;
 
     /** @var array<string,mixed> */
     private array $config = [
-        // 'dev'|'prod'
+        
         'env' => 'prod',
 
-        // Session
-        'session_name' => 'anth_session',
-        'session_idle_timeout' => 1800, // 30 min
-        'session_rotate_every' => 600,  // 10 min
+        // Sesión
+        'session_name'        => 'anth_session',
+        'session_idle_timeout'=> 1800, // 30 min
+        'session_rotate_every'=> 600,  // 10 min
+        'trust_proxy'         => false, // si estás detrás de proxy, ponlo a true
+        // 'cookie_domain'     => null, // puedes fijarlo si lo necesitas
 
-        // Rate limit (general y formularios POST)
+        // Rate limit
         'rate_limit' => [
             'enabled' => true,
-            'general' => ['max' => 120, 'window' => 3600],  // 120 req/hora
-            'post'    => ['max' => 30,  'window' => 3600],  // 30 POST/hora
+            'general' => ['max' => 120, 'window' => 3600], // 120 req/h
+            'post'    => ['max' => 30,  'window' => 3600], // 30 POST/h
         ],
 
-        // CSP y cabeceras; ajustado para TinyMCE CDN
+        // CSP
         'csp' => [
-            // Si usas TinyMCE via CDN
-            'tinymce_cdn' => 'https://cdn.tiny.cloud',
-            // Si usas jsdelivr/otros, puedes añadirlos aquí
-            'extra_script_src' => ['https://cdn.jsdelivr.net'],
-            // Permite inline por practicidad inicial; idealmente usar nonces/hashes
-            'allow_unsafe_inline' => true,
+            'tinymce_cdn'       => 'https://cdn.tiny.cloud',
+            'extra_script_src'  => ['https://cdn.jsdelivr.net'],
+            'allow_unsafe_inline' => true, // si lo pones a false, se usará nonce
         ],
 
         // Uploads
         'uploads' => [
             'max_size_bytes' => 2 * 1024 * 1024, // 2MB
-            'allowed_mime' => ['image/jpeg','image/png','image/gif','image/webp'],
-            'max_pixels' => 1600, // redimensionado recomendado en tu uploader
+            'allowed_mime'   => ['image/jpeg','image/png','image/gif','image/webp'],
+            'max_pixels'     => 1600,
         ],
     ];
 
-    /** Rate limit fallback en sesión */
-    private array $rateLimitSession = [];
+    private ?string $cspNonce = null;
 
-    /**
-     * Constructor para la Inyección de Dependencias
-     *
-     * @param array<string,mixed> $config
-     * @param PDO|null $pdo
-     */
     public function __construct(array $config = [], ?PDO $pdo = null)
     {
         $this->config = array_replace_recursive($this->config, $config);
-        $this->pdo = $pdo;
+        $this->pdo    = $pdo;
     }
 
-    /** Versátil: llama una vez al inicio de cada request */
+    /** Llamar una vez por request */
     public function boot(): void
     {
         $this->startSecureSession();
@@ -101,60 +72,91 @@ final class SecurityManager
         $this->enforceRateLimits();
     }
 
-    /**
-     * Obtén instancia única
-     * @param array<string,mixed> $config
-     */
-    public static function instance(array $config = [], ?PDO $pdo = null): self
+    /* ======================
+       Autenticación / Roles
+       ====================== */
+
+    public function requireLogin(): void
     {
-        if (!self::$instance) {
-            self::$instance = new self();
+        $this->startSecureSession();
+        if (empty($_SESSION['id_usuario'])) {
+            header('Location: login.php');
+            exit();
         }
-        // Permite configurar en caliente (primera llamada)
-        if ($pdo && !self::$instance->pdo) {
-            self::$instance->pdo = $pdo;
-        }
-        if ($config) {
-            self::$instance->config = array_replace_recursive(self::$instance->config, $config);
-        }
-        return self::$instance;
     }
 
-  // ========== CONSTRUCTOR ==========
-  //  private function __construct() {}
+    public function userId(): ?int
+    {
+        $this->startSecureSession();
+        return isset($_SESSION['id_usuario']) ? (int)$_SESSION['id_usuario'] : null;
+    }
 
-    // ========== SESIÓN SEGURA ==========
+    public function roles(): array
+    {
+        $this->startSecureSession();
+        if (isset($_SESSION['roles']) && is_array($_SESSION['roles'])) return $_SESSION['roles'];
+        if (isset($_SESSION['rol'])) return [$_SESSION['rol']];
+        return [];
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->roles(), true);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    /** Permite dueño o roles dados; si no, 403 */
+    public function requireOwnershipOrRole(?int $ownerId, array $allowedRoles = ['admin']): void
+    {
+        $uid = $this->userId();
+        if ($ownerId !== null && $uid === $ownerId) return;
+        foreach ($allowedRoles as $r) if ($this->hasRole($r)) return;
+        $this->abort(403, 'Acceso denegado.');
+    }
+
+    /* ==============
+       Sesión segura
+       ============== */
 
     private function startSecureSession(): void
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            $secure = $this->isHttps();
-            session_name($this->config['session_name']);
-            session_set_cookie_params([
-                'lifetime' => 0,
-                'path' => '/',
-                'domain' => '',
-                'secure' => $secure,
-                'httponly' => true,
-                'samesite' => 'Lax',
-            ]);
-            session_start();
+        if (session_status() !== PHP_SESSION_NONE) return;
 
-            $_SESSION['__created_at'] = $_SESSION['__created_at'] ?? time();
-            $_SESSION['__last_seen']  = $_SESSION['__last_seen']  ?? time();
-
-            // Rotación de ID
-            if (time() - (int)$_SESSION['__created_at'] > (int)$this->config['session_rotate_every']) {
-                session_regenerate_id(true);
-                $_SESSION['__created_at'] = time();
-            }
-            // Expiración por inactividad
-            if (time() - (int)$_SESSION['__last_seen'] > (int)$this->config['session_idle_timeout']) {
-                $this->destroySession();
-                session_start();
-            }
-            $_SESSION['__last_seen'] = time();
+        $secure = $this->isHttps();
+        $params = [
+            'lifetime' => 0,
+            'path'     => '/',
+            'secure'   => $secure,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ];
+        if (!empty($this->config['cookie_domain'])) {
+            $params['domain'] = (string)$this->config['cookie_domain'];
         }
+
+        session_name((string)$this->config['session_name']);
+        session_set_cookie_params($params);
+        session_start();
+
+        $_SESSION['__created_at'] = $_SESSION['__created_at'] ?? time();
+        $_SESSION['__last_seen']  = $_SESSION['__last_seen']  ?? time();
+
+        // Rotación de ID
+        if (time() - (int)$_SESSION['__created_at'] > (int)$this->config['session_rotate_every']) {
+            session_regenerate_id(true);
+            $_SESSION['__created_at'] = time();
+        }
+        // Expiración por inactividad
+        if (time() - (int)$_SESSION['__last_seen'] > (int)$this->config['session_idle_timeout']) {
+            $this->destroySession();
+            session_start();
+            $_SESSION['__created_at'] = time();
+        }
+        $_SESSION['__last_seen'] = time();
     }
 
     private function destroySession(): void
@@ -162,104 +164,141 @@ final class SecurityManager
         $_SESSION = [];
         if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
-            setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'],
-                $params['secure'], $params['httponly']);
+            setcookie(session_name(), '', time() - 42000,
+                $params['path'], $params['domain'] ?? '',
+                (bool)$params['secure'], (bool)$params['httponly']
+            );
         }
         session_destroy();
     }
 
     private function isHttps(): bool
     {
+        if (!empty($this->config['trust_proxy'])) {
+            $proto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
+            if (strtolower($proto) === 'https') return true;
+        }
         return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-            || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] === '443');
+            || (isset($_SERVER['SERVER_PORT']) && (string)$_SERVER['SERVER_PORT'] === '443');
     }
 
-    // ========== CABECERAS / CSP ==========
+    /* =========
+       Cabeceras / CSP
+       ========= */
+
+    public function cspNonce(): string
+    {
+        if ($this->cspNonce === null) {
+            $this->cspNonce = base64_encode(random_bytes(16));
+        }
+        return $this->cspNonce;
+    }
 
     public function applySecurityHeaders(): void
     {
-        // Importante: no tengas salida previa (echo) antes de estas cabeceras.
-
         header('X-Content-Type-Options: nosniff');
         header('Referrer-Policy: strict-origin-when-cross-origin');
-
-        // Enclickjacking (o usa frame-ancestors en CSP)
         header('X-Frame-Options: SAMEORIGIN');
 
-        // HSTS en producción y bajo HTTPS
-        if ($this->config['env'] === 'prod' && $this->isHttps()) {
+        if (($this->config['env'] ?? 'prod') === 'prod' && $this->isHttps()) {
             header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
         }
 
-        // CSP coherente con TinyMCE + imágenes data/blob
-        $scriptSrc = ["'self'"];
-        if (!empty($this->config['csp']['tinymce_cdn'])) {
-            $scriptSrc[] = $this->config['csp']['tinymce_cdn'];
-            // TinyMCE usa XHR/fetch a su CDN
-            $connectSrc[] = $this->config['csp']['tinymce_cdn'];
-        }
-        if (!empty($this->config['csp']['extra_script_src'])) {
-            foreach ($this->config['csp']['extra_script_src'] as $u) { $scriptSrc[] = $u; }
-        }
-        if (!empty($this->config['csp']['allow_unsafe_inline'])) {
-            $scriptSrc[] = "'unsafe-inline'";
-            $styleSrcInline = "'unsafe-inline'";
-        } else {
-            $styleSrcInline = '';
-        }
-
-        $styleSrc   = array_filter(["'self'", $styleSrcInline]);
+        $scriptSrc  = ["'self'"];
+        $styleSrc   = ["'self'"];
         $imgSrc     = ["'self'", "data:", "blob:", "https:"];
         $fontSrc    = ["'self'", "data:", "https:"];
-        $connectSrc = $connectSrc ?? ["'self'"];
+        $connectSrc = ["'self'"];
         $frameAnc   = ["'self'"];
+
+        if (!empty($this->config['csp']['tinymce_cdn'])) {
+            $cdn = (string)$this->config['csp']['tinymce_cdn'];
+            $scriptSrc[]  = $cdn;
+            $connectSrc[] = $cdn;
+        }
+
+        if (!empty($this->config['csp']['extra_script_src'])) {
+            foreach ($this->config['csp']['extra_script_src'] as $u) {
+                $scriptSrc[] = (string)$u;
+            }
+        }
+
+        if (!empty($this->config['csp']['allow_unsafe_inline'])) {
+            $scriptSrc[] = "'unsafe-inline'";
+            $styleSrc[]  = "'unsafe-inline'";
+        } else {
+            // si desactivas inline, añade nonce
+            $scriptSrc[] = "'nonce-".$this->cspNonce()."'";
+        }
 
         $csp = sprintf(
             "default-src 'self'; script-src %s; style-src %s; img-src %s; font-src %s; connect-src %s; frame-ancestors %s;",
-            implode(' ', $scriptSrc),
-            implode(' ', $styleSrc),
-            implode(' ', $imgSrc),
-            implode(' ', $fontSrc),
-            implode(' ', $connectSrc),
-            implode(' ', $frameAnc)
+            implode(' ', array_unique($scriptSrc)),
+            implode(' ', array_unique($styleSrc)),
+            implode(' ', array_unique($imgSrc)),
+            implode(' ', array_unique($fontSrc)),
+            implode(' ', array_unique($connectSrc)),
+            implode(' ', array_unique($frameAnc))
         );
         header("Content-Security-Policy: $csp");
     }
 
-    // ========== CSRF ==========
+    /* =========
+       CSRF
+       ========= */
 
     public function csrfToken(): string
     {
         $this->startSecureSession();
         if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            $_SESSION['csrf_time']  = time();
         }
         return $_SESSION['csrf_token'];
     }
 
-    public function csrfValidate(string $token): void
+    /** Valida y rota token; TTL por defecto 2h */
+    public function csrfValidate(?string $token, int $ttlSeconds = 7200): void
     {
         $this->startSecureSession();
-        if (empty($token) || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $token)) {
-            http_response_code(403);
+        $stored = $_SESSION['csrf_token'] ?? null;
+        $t      = (int)($_SESSION['csrf_time'] ?? 0);
+
+        $ok = $token && $stored && hash_equals((string)$stored, (string)$token)
+            && ($ttlSeconds <= 0 || (time() - $t) <= $ttlSeconds);
+
+        if (!$ok) {
             $this->logEvent('security', 'csrf_invalid', ['uri' => $_SERVER['REQUEST_URI'] ?? '']);
-            exit('CSRF inválido');
+            $this->abort(419, 'CSRF inválido o caducado.');
         }
+
+        unset($_SESSION['csrf_token'], $_SESSION['csrf_time']); // rotación
     }
 
-    // ========== RATE LIMITING ==========
+    /** Helper para vistas */
+    public function csrfField(): string
+    {
+        return '<input type="hidden" name="csrf_token" value="' .
+               htmlspecialchars($this->csrfToken(), ENT_QUOTES, 'UTF-8') . '">';
+    }
+
+    /* =========
+       Rate limiting
+       ========= */
 
     private function enforceRateLimits(): void
     {
         if (empty($this->config['rate_limit']['enabled'])) return;
 
-        $this->checkRateLimit('general',
+        $this->checkRateLimit(
+            'general',
             (int)$this->config['rate_limit']['general']['max'],
             (int)$this->config['rate_limit']['general']['window']
         );
 
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-            $this->checkRateLimit('post_form',
+            $this->checkRateLimit(
+                'post_form',
                 (int)$this->config['rate_limit']['post']['max'],
                 (int)$this->config['rate_limit']['post']['window']
             );
@@ -268,20 +307,26 @@ final class SecurityManager
 
     public function checkRateLimit(string $action, int $maxAttempts, int $windowSeconds): void
     {
-        $ip = $this->clientIPBinary();
+        $ip        = $this->clientIPBinary();
+        $threshold = date('Y-m-d H:i:s', time() - $windowSeconds);
 
         if ($this->pdo) {
-            // Limpieza de ventana
-            $del = $this->pdo->prepare("DELETE FROM rate_limits WHERE ts < (NOW() - INTERVAL :w SECOND)");
-            $del->execute([':w' => $windowSeconds]);
+            // ✅ MySQL no permite parametrizar "INTERVAL :w SECOND"
+            // Usamos timestamp absoluto para borrar/contar
+            $del = $this->pdo->prepare("DELETE FROM rate_limits WHERE ts < :threshold");
+            $del->execute([':threshold' => $threshold]);
 
-            $sel = $this->pdo->prepare("SELECT COUNT(*) FROM rate_limits WHERE action = :a AND ip = :ip");
-            $sel->execute([':a' => $action, ':ip' => $ip]);
+            $sel = $this->pdo->prepare(
+                "SELECT COUNT(*) FROM rate_limits WHERE action = :a AND ip = :ip AND ts >= :threshold"
+            );
+            $sel->execute([':a' => $action, ':ip' => $ip, ':threshold' => $threshold]);
             $count = (int)$sel->fetchColumn();
 
             if ($count >= $maxAttempts) {
                 http_response_code(429);
-                $this->logEvent('security', 'rate_limited', ['action'=>$action, 'max'=>$maxAttempts, 'window'=>$windowSeconds]);
+                $this->logEvent('security', 'rate_limited', [
+                    'action'=>$action, 'max'=>$maxAttempts, 'window'=>$windowSeconds
+                ]);
                 exit('Demasiadas solicitudes. Intenta más tarde.');
             }
 
@@ -289,27 +334,28 @@ final class SecurityManager
             $ins->execute([':a' => $action, ':ip' => $ip]);
         } else {
             // Fallback en sesión
-            $key = sprintf('rl_%s_%s', $action, bin2hex($ip));
+            $key    = sprintf('rl_%s_%s', $action, bin2hex($ip));
             $bucket = $_SESSION[$key] ?? [];
-            $now = time();
+            $now    = time();
             $bucket = array_filter($bucket, fn($ts) => ($now - (int)$ts) < $windowSeconds);
             if (count($bucket) >= $maxAttempts) {
                 http_response_code(429);
                 exit('Demasiadas solicitudes. Intenta más tarde.');
             }
-            $bucket[] = $now;
-            $_SESSION[$key] = $bucket;
+            $bucket[]        = $now;
+            $_SESSION[$key]  = $bucket;
         }
     }
 
-    // ========== SANITIZACIÓN HTML ==========
+    /* =========
+       Sanitización HTML
+       ========= */
 
     public function sanitizeHTML(string $html): string
     {
-        // Preferir HTMLPurifier si está disponible
         if (class_exists(\HTMLPurifier::class)) {
             $config = \HTMLPurifier_Config::createDefault();
-            $config->set('Cache.SerializerPath', __DIR__.'/cache'); // asegúrate de crear /cache con permisos
+            $config->set('Cache.SerializerPath', __DIR__ . '/cache');
             $config->set('URI.AllowedSchemes', ['http'=>true,'https'=>true,'mailto'=>true,'data'=>true]);
             $config->set('HTML.Allowed',
                 'p,br,strong,em,ul,ol,li,blockquote,a[href|title|target|rel],img[src|alt|title|width|height],h2,h3,code,pre,table,thead,tbody,tr,th,td'
@@ -319,12 +365,11 @@ final class SecurityManager
             return $purifier->purify($html);
         }
 
-        // Fallback (más restrictivo): permitir solo un subconjunto mínimo
+        // Fallback sencillo
         $allowed = '<p><br><strong><em><ul><ol><li><blockquote><a><img><h2><h3><code><pre>';
         $clean = strip_tags($html, $allowed);
 
-        // Limpia atributos peligrosos básicos en <a> y <img>
-        $clean = preg_replace_callback('/<(a|img)\s+[^>]*>/i', function ($m) {
+        $clean = (string)preg_replace_callback('/<(a|img)\s+[^>]*>/i', function ($m) {
             $tag = strtolower($m[1]);
             if ($tag === 'a') {
                 if (preg_match('/href\s*=\s*([\'"])(.*?)\1/i', $m[0], $href)) {
@@ -343,38 +388,36 @@ final class SecurityManager
             return $m[0];
         }, $clean);
 
-        return (string)$clean;
+        return $clean;
     }
 
-    // ========== UPLOADS ==========
+    /* =========
+       Uploads
+       ========= */
 
-    /**
-     * @param array $file Uno de $_FILES[...]
-     * @throws RuntimeException
-     */
+    /** @param array $file uno de $_FILES[...] */
     public function validateUpload(array $file): void
     {
         if (!isset($file['error']) || is_array($file['error'])) {
             throw new RuntimeException('Parámetros de subida inválidos.');
         }
         if ($file['error'] !== UPLOAD_ERR_OK) {
-            throw new RuntimeException('Error en la subida: '.$file['error']);
+            throw new RuntimeException('Error en la subida: ' . $file['error']);
         }
 
         $maxSize = (int)$this->config['uploads']['max_size_bytes'];
         if ((int)$file['size'] > $maxSize) {
-            throw new RuntimeException('Archivo demasiado grande (máx '.round($maxSize/1024/1024,2).'MB).');
+            throw new RuntimeException('Archivo demasiado grande (máx ' . round($maxSize/1024/1024,2) . 'MB).');
         }
 
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $mime  = $finfo->file($file['tmp_name']);
         $allowed = $this->config['uploads']['allowed_mime'];
         if (!in_array($mime, $allowed, true)) {
-            throw new RuntimeException('Tipo no permitido: '.$mime);
+            throw new RuntimeException('Tipo no permitido: ' . $mime);
         }
 
-        // Validar imagen real y dimensiones
-        if (str_starts_with($mime, 'image/')) {
+        if (str_starts_with((string)$mime, 'image/')) {
             $info = getimagesize($file['tmp_name']);
             if ($info === false) throw new RuntimeException('Imagen inválida.');
             [$w,$h] = $info;
@@ -382,9 +425,6 @@ final class SecurityManager
         }
     }
 
-    /**
-     * Extensión según MIME
-     */
     public function extensionFromMime(string $mime): string
     {
         return match ($mime) {
@@ -398,21 +438,20 @@ final class SecurityManager
 
     public function secureFilename(string $originalName, string $mime): string
     {
-        return hash('sha256', $originalName.microtime(true).random_bytes(16))
+        return hash('sha256', $originalName . microtime(true) . random_bytes(16))
             . $this->extensionFromMime($mime);
-    }
+        }
 
-    // ========== LOGGING ==========
+    /* =========
+       Logging y helpers
+       ========= */
 
-    /**
-     * @param 'info'|'warning'|'error'|'security' $level
-     * @param array<string,mixed> $details
-     */
+    /** @param 'info'|'warning'|'error'|'security' $level */
     public function logEvent(string $level, string $event, array $details = []): void
     {
         $ip = $this->clientIPBinary();
         $ua = $_SERVER['HTTP_USER_AGENT'] ?? null;
-        $uid = $_SESSION['user_id'] ?? null;
+        $uid = $this->userId();
 
         if ($this->pdo) {
             $stmt = $this->pdo->prepare(
@@ -420,22 +459,27 @@ final class SecurityManager
                  VALUES (:ip,:uid,:lvl,:ev,:det,:ua)"
             );
             $stmt->execute([
-                ':ip' => $ip,
-                ':uid'=> $uid,
-                ':lvl'=> $level,
-                ':ev' => $event,
-                ':det'=> json_encode($details, JSON_UNESCAPED_UNICODE),
-                ':ua' => $ua,
+                ':ip'  => $ip,
+                ':uid' => $uid,
+                ':lvl' => $level,
+                ':ev'  => $event,
+                ':det' => json_encode($details, JSON_UNESCAPED_UNICODE),
+                ':ua'  => $ua,
             ]);
         } else {
-            error_log('APP_LOG '.json_encode([
+            error_log('APP_LOG ' . json_encode([
                 'ts'=>date('c'),'ip'=>bin2hex($ip),'user_id'=>$uid,'level'=>$level,
                 'event'=>$event,'details'=>$details,'ua'=>$ua
             ], JSON_UNESCAPED_UNICODE));
         }
     }
 
-    // ========== HELPERS ==========
+    public function abort(int $statusCode, string $message = 'Error'): void
+    {
+        http_response_code($statusCode);
+        echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+        exit();
+    }
 
     public function cleanInput(mixed $input, string $type = 'string'): string
     {
@@ -451,12 +495,18 @@ final class SecurityManager
 
     public function clientIP(): string
     {
-        // No confiar en X-Forwarded-For salvo que estés detrás de proxy conocido.
+        if (!empty($this->config['trust_proxy'])) {
+            $xff = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
+            if ($xff) {
+                $parts = array_map('trim', explode(',', $xff));
+                if ($parts[0] !== '') return $parts[0];
+            }
+        }
         return $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
     }
 
     private function clientIPBinary(): string
     {
-        return @inet_pton($this->clientIP()) ?: inet_pton('127.0.0.1');
+        return @inet_pton($this->clientIP()) ?: (string)inet_pton('127.0.0.1');
     }
 }

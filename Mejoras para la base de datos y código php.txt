@@ -42,3 +42,10 @@ CREATE INDEX idx_posts_fecha_publicacion ON posts (fecha_publicacion);
 ALTER TABLE categorias ADD UNIQUE KEY uniq_categorias_slug (slug);
 CREATE INDEX idx_posts_cat_fecha ON posts (id_categoria, fecha_publicacion);
 
+ALTER TABLE paginas ADD UNIQUE KEY uq_paginas_slug (slug);
+
+ALTER TABLE etiquetas ADD UNIQUE KEY uq_etiquetas_nombre (nombre_etiqueta);
+ALTER TABLE post_etiquetas ADD UNIQUE KEY uq_post_tag (id_post, id_etiqueta);
+
+
+

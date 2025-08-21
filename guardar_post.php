@@ -1,107 +1,130 @@
 <?php
+// guardar_post.php
+declare(strict_types=1);
 
+require_once __DIR__ . '/init.php';
 
-// 1) INICIALIZACIÓN Y BARRERA DE SEGURIDAD
-require_once 'init.php';
-if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); } // asegura sesión
+$security->requireLogin();
 
-if (!isset($_SESSION['id_usuario'])) {
-    http_response_code(401); //  código HTTP adecuado
-    header("Location: login.php");
+// 1) Forzar POST
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+    header('Location: crear_post.php');
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405); // método no permitido
-    header("Location: crear_post.php");
+// 2) CSRF
+$security->csrfValidate($_POST['csrf_token'] ?? null);
+
+// 3) Recoger datos
+$titulo        = trim((string)($_POST['titulo'] ?? ''));
+$contenido_raw = (string)($_POST['contenido'] ?? '');
+$id_categoria  = filter_var($_POST['id_categoria'] ?? null, FILTER_VALIDATE_INT) ?: 0;
+$etiquetas_raw = trim((string)($_POST['etiquetas'] ?? ''));
+$imagen_url_in = trim((string)($_POST['imagen_url'] ?? ''));   // por si permites URL directa
+$id_usuario    = (int)$security->userId();
+
+// 4) Validaciones básicas
+if ($titulo === '' || $contenido_raw === '' || $id_categoria <= 0) {
+    $_SESSION['form_data'] = $_POST;
+    header('Location: crear_post.php?status=invalid');
     exit();
 }
 
-$security->csrfValidate($_POST['csrf_token'] ?? ''); // CSRF centralizado
-
-// 2) RECOGER DATOS Y VALIDAR
-$titulo          = $security->cleanInput($_POST['titulo']);
-$contenido       = $_POST['contenido']; // sanitizar al mostrar (p. ej. HTML Purifier)
-$id_categoria    = (int)$security->cleanInput($_POST['id_categoria'], 'int');
-$id_usuario      = $_SESSION['id_usuario'];
-$etiquetas_input = $security->cleanInput($_POST['etiquetas'] ?? '');
-
-// valida presencia de datos
-if ($titulo === '' || $contenido === '' || $id_categoria <= 0) {
-    http_response_code(400);
-    die("Error: El título, contenido y categoría son obligatorios.");
-}
-
-// verifica que la categoría exista
-$catStmt = $pdo->prepare("SELECT 1 FROM categorias WHERE id_categoria = ?");
+// 5) Verificar categoría existe
+$catStmt = $pdo->prepare('SELECT 1 FROM categorias WHERE id_categoria = ?');
 $catStmt->execute([$id_categoria]);
 if (!$catStmt->fetchColumn()) {
-    http_response_code(400);
-    die("Error: La categoría seleccionada no existe.");
+    $_SESSION['form_data'] = $_POST;
+    header('Location: crear_post.php?status=invalid_category');
+    exit();
 }
 
-// 3) PROCESAR LA IMAGEN SUBIDA (nombre 100% opaco + extensión por MIME)
+// 6) Sanitizar contenido HTML (defensa en profundidad)
+$contenido = $security->sanitizeHTML($contenido_raw);
+
+// 7) Subida de imagen (archivo o URL)
 $imagen_path = null;
-if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+
+// A) archivo subido
+if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FILE) {
     try {
-        $security->validateUpload($_FILES['imagen']); // tamaños, mimetypes, etc.
+        $security->validateUpload($_FILES['imagen']);
 
-        // extensión por MIME y nombre aleatorio que no revela el original
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $mime  = $finfo->file($_FILES['imagen']['tmp_name']);
-        $ext   = $security->extensionFromMime($mime); // p.ej. ".jpg", ".png", ".gif"
+        $ext   = $security->extensionFromMime((string)$mime);
 
-        // Nombre totalmente opaco (no usa el original)
-        $nombre_archivo_seguro = bin2hex(random_bytes(16)) . $ext;
-
-        // (Opcional) subcarpetas por fecha para evitar miles de ficheros en un dir
-        $base_uploads = 'uploads/' . date('Y/m/') ;
-        if (!is_dir($base_uploads) && !mkdir($base_uploads, 0755, true) && !is_dir($base_uploads)) {
-            throw new Exception("No se pudo crear el directorio de subidas.");
+        $base_dir_fs = __DIR__ . '/uploads/' . date('Y/m/') ;
+        $base_dir_url = 'uploads/' . date('Y/m/') ;
+        if (!is_dir($base_dir_fs) && !mkdir($base_dir_fs, 0755, true) && !is_dir($base_dir_fs)) {
+            throw new \RuntimeException('No se pudo crear el directorio de subidas.');
         }
 
-        $ruta_completa = $base_uploads . $nombre_archivo_seguro;
-
-        if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $ruta_completa)) {
-            throw new Exception("Error al mover el archivo subido.");
+        $nombre = bin2hex(random_bytes(16)) . $ext;
+        $dest_fs  = $base_dir_fs . $nombre;
+        if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $dest_fs)) {
+            throw new \RuntimeException('Error al mover el archivo subido.');
         }
 
-        // (Opcional para futuro TODO): re-encode con GD/Imagick para eliminar metadatos
-        $imagen_path = $ruta_completa;
-    } catch (Exception $e) {
-        http_response_code(400);
-        die("Error en la subida de imagen: " . $e->getMessage());
+        $imagen_path = $base_dir_url . $nombre; // ruta relativa servible
+    } catch (\Throwable $e) {
+        $_SESSION['form_data'] = $_POST;
+        header('Location: crear_post.php?status=upload_error');
+        exit();
     }
 }
-
-// Helpers de normalización para autoetiquetado 
-function norm_ascii_lower(string $s): string {
-    $s = mb_strtolower($s, 'UTF-8');
-    $t = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $s);
-    return $t !== false ? $t : $s;
+// B) URL manual
+elseif ($imagen_url_in !== '' && filter_var($imagen_url_in, FILTER_VALIDATE_URL)) {
+    $imagen_path = $imagen_url_in;
 }
 
-// 4) TRANSACCIÓN Y GUARDADO CON PDO
+// 8) Etiquetas (normalizar a minúsculas, únicas)
+$tags = array_values(array_unique(array_filter(array_map(
+    fn($t) => trim(mb_strtolower($t, 'UTF-8')),
+    preg_split('/,/', $etiquetas_raw) ?: []
+), fn($t) => $t !== '')));
+$tags_for_column = implode(', ', $tags); // compat con columna posts.etiquetas
+
 try {
     $pdo->beginTransaction();
 
-    // Asegura modo excepciones (por si init.php no lo hizo)
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Insert del post
-    $stmt_post = $pdo->prepare(
-        "INSERT INTO posts (titulo, contenido, id_categoria, imagen_destacada_url, id_usuario)
-         VALUES (?, ?, ?, ?, ?)"
-    );
-    $stmt_post->execute([$titulo, $contenido, $id_categoria, $imagen_path, $id_usuario]);
+    // 9) Insertar post principal
+    $sqlPost = 'INSERT INTO posts
+        (titulo, contenido, id_categoria, imagen_destacada_url, id_usuario, etiquetas)
+        VALUES (?, ?, ?, ?, ?, ?)';
+    $stmt = $pdo->prepare($sqlPost);
+    $stmt->execute([$titulo, $contenido, $id_categoria, $imagen_path, $id_usuario, $tags_for_column]);
     $id_post = (int)$pdo->lastInsertId();
 
-    //  preparo índices/contraints (ver SQL al final) y usa upsert atómico para etiquetas
-    $stmt_upsert_tag = $pdo->prepare(
-        "INSERT INTO etiquetas (nombre_etiqueta)
-         VALUES (?)
-         ON DUPLICATE KEY UPDATE id_etiqueta = LAST_INSERT_ID(id_etiqueta)"
-    );
-    $stmt_link = $pdo->prepare(
-        // evita duplicados con índice único (id_post, id_etiqueta) -> INSERT IGNORE
-        "INSERT IGNORE INTO post_etique_
+    // 10) Upsert de etiquetas + vinculación
+    if ($tags) {
+        // upsert: si existe, devuelve su id via LAST_INSERT_ID()
+        $stmtUpsert = $pdo->prepare(
+            "INSERT INTO etiquetas (nombre_etiqueta)
+             VALUES (?)
+             ON DUPLICATE KEY UPDATE id_etiqueta = LAST_INSERT_ID(id_etiqueta)"
+        );
+        $stmtLink = $pdo->prepare(
+            "INSERT IGNORE INTO post_etiquetas (id_post, id_etiqueta) VALUES (?, ?)"
+        );
+
+        foreach ($tags as $tag) {
+            $stmtUpsert->execute([$tag]);
+            $id_tag = (int)$pdo->lastInsertId();
+            if ($id_tag > 0) {
+                $stmtLink->execute([$id_post, $id_tag]);
+            }
+        }
+    }
+
+    $pdo->commit();
+    header('Location: gestionar_posts.php?msg=created');
+    exit();
+
+} catch (\PDOException $e) {
+    $pdo->rollBack();
+    $security->logEvent('error', 'post_create_failed', ['error' => $e->getMessage()]);
+    $_SESSION['form_data'] = $_POST;
+    header('Location: crear_post.php?status=db_error');
+    exit();
+}

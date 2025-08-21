@@ -26,6 +26,21 @@
 
   /* Medida editorial (ancho de línea ideal) */
   --measure: 70ch;
+
+    /* Añadidas para nav/footer/bordes/inputs/aside */
+  --nav-bg: #333;
+  --nav-hover-bg: #555;
+
+  --footer-bg: #333;
+  --footer-link: #cfcfcf;
+  --footer-link-hover: #ffffff;
+
+  --input-border: #ccd0d5;
+  --aside-bg: #f7f7f9;
+
+  /* Bordes coherentes */
+  --border: #ddd;         /* alias a borde claro habitual */
+  --border-subtle: #eee;  /* aún más claro (se usaba en post-meta) */
 }
 
 /* --- Reset y base -------------------------------------------------------- */
@@ -43,7 +58,7 @@ body{
 
 /* Imágenes fluidas y elementos base */
 img{ max-width:100%; height:auto; }
-hr{ border:0; border-top:1px solid #ddd; margin: 2rem 0; }
+hr{ border:0; border-top:1px solid var(--border); margin: 2rem 0; }
 
 /* Enlaces y foco accesible */
 a{ color: var(--primary-color); text-decoration: none; transition: var(--transition); }
@@ -108,13 +123,13 @@ a:hover{ text-decoration: underline; }
 /* Navegación principal */
 .main-nav{
   display: flex; justify-content: center; align-items: center;
-  background: #333; color: #fff;
+  background: var(--nav-bg);  color: var(--footer-link-hover);
   gap: .25rem; flex-wrap: wrap;
 }
 .main-nav a{
-  color:#fff; padding: 1rem; text-decoration: none; border-radius: 6px;
+  color: var(--footer-link-hover); padding: 1rem; text-decoration: none; border-radius: 6px;
 }
-.main-nav a:hover{ background-color: #555; }
+.main-nav a:hover{ background-color: var(--nav-hover-bg); }
 
 /* Área de contenido + sidebar */
 .main-content-area{
@@ -129,18 +144,18 @@ main h2 a{ color: var(--primary-color); }
 /* Columna lateral */
 aside{
   flex:1; padding: 20px;
-  background: #f7f7f9;
-  border-left: 1px solid #ddd;
+  background: var(--aside-bg);
+  border-left: 1px solid var(--border);
   order:2;
 }
 
 /* Footer */
 .main-footer{
   text-align:center; padding: 1rem;
-  background: #333; color:#fff; margin-top: 20px;
+  background: var(--footer-bg);  color: var(--footer-link-hover); margin-top: 20px;
 }
-.main-footer a{ color:#cfcfcf; }
-.main-footer a:hover{ color:#fff; }
+.main-footer a{  color: var(--footer-link); }
+.main-footer a:hover{  color: var(--footer-link-hover); }
 
 /* Contenido editorial (medida ideal) */
 .content, .single-post-content{ max-width: var(--measure); margin-inline: auto; }
@@ -153,7 +168,7 @@ aside{
 .sidebar-widget{ margin-bottom: 25px; }
 .sidebar-widget h4{
   margin: 0 0 10px; padding-bottom: 10px;
-  border-bottom: 2px solid #ccc;
+  border-bottom: 2px solid var(--border);
 }
 .sidebar-widget ul{ list-style: none; padding: 0; margin: 0; }
 .sidebar-widget ul li{ padding: 6px 0; }
@@ -161,7 +176,7 @@ aside{
 /* Formularios */
 .form-container{
   max-width: 700px; margin: 2rem auto; padding: 2rem;
-  background: #fff; border: 1px solid #ddd; border-radius: 8px;
+  background: #fff;  border: 1px solid var(--border); border-radius: 8px;
   box-shadow: var(--shadow-light);
 }
 .form-container div{ margin-bottom: 15px; }
@@ -175,7 +190,7 @@ aside{
 .form-container select,
 .form-container textarea{
   width: 100%; padding: 10px 12px;
-  border: 1px solid #ccc; border-radius: 6px; background: #fff;
+   border: 1px solid var(--input-border); border-radius: 6px; background: #fff;
   transition: var(--transition);
 }
 .form-container input:focus,
@@ -187,7 +202,7 @@ aside{
 }
 .form-container button{
   width: 100%; padding: 12px; border: 0; border-radius: 8px;
-  background: var(--primary-color); color:#fff; font-size: 1rem; cursor: pointer;
+  background: var(--primary-color);  color: var(--footer-link-hover); font-size: 1rem; cursor: pointer;
   transition: var(--transition);
 }
 .form-container button:hover{ filter: brightness(1.05); }
@@ -213,7 +228,7 @@ aside{
 }
 .post-meta{
   display:block; font-style: italic; color:#777;
-  margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 1rem;
+  margin-bottom: 2rem;  border-bottom: 1px solid var(--border-subtle); padding-bottom: 1rem;
 }
 
 /* Etiquetas */
@@ -235,6 +250,58 @@ aside{
   display:block; padding: .6rem .9rem; color:#333; text-decoration: none;
 }
 #suggestions a:hover{ background:#f5f7fb; }
+
+
+/* Botones reutilizables (coinciden con los que usas en paneles) */
+.button{
+  display:inline-block; padding:.55rem .9rem; border-radius:8px; border:0;
+  background: var(--primary-color); color:#fff; text-decoration:none; cursor:pointer;
+  transition: var(--transition);
+}
+.button:hover{ filter:brightness(1.05); text-decoration:none; }
+.button.danger{ background:#c92a2a; }
+.button.secondary{ background: var(--secondary-color); }
+
+/* Tablas (gestionar_* usa tablas) */
+.table, table{
+  width:100%; border-collapse: collapse; background:#fff; border:1px solid var(--border-light);
+  border-radius: 8px; overflow:hidden;
+}
+.table th, .table td, table th, table td{
+  padding:.75rem .9rem; border-bottom:1px solid var(--border-light); text-align:left;
+}
+.table thead th, table thead th{ background: var(--bg-light); font-weight:600; }
+.table tr:nth-child(even), table tr:nth-child(even){ background:#fafbfc; }
+
+/* Alertas genéricas (puedes mapear tus status-* a estas) */
+.alert{ padding: .9rem 1rem; border-radius:8px; border:1px solid transparent; margin:.75rem 0; }
+.alert.success{ background:#d4edda; color:#155724; border-color:#c3e6cb; }
+.alert.error{ background:#f8d7da; color:#721c24; border-color:#f5c6cb; }
+.alert.warning{ background:#fff3cd; color:#856404; border-color:#ffeeba; }
+
+/* Paginación (la usas en index/search/gestion) */
+.pagination{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
+.pagination a{
+  padding:.4rem .7rem; border:1px solid var(--border-light); border-radius:6px; text-decoration:none;
+}
+.pagination a:hover{ background: var(--bg-light); }
+.pagination span{ opacity:.8; }
+
+/* Nav activo (tu header.php ya marca class="active") */
+.main-nav a.active{
+  background: var(--nav-hover-bg);
+}
+
+/* Formularios sueltos (p.ej. el buscador del sidebar) */
+form:not(.form-container) input[type="search"]{
+  width:100%; padding:.6rem .7rem; border:1px solid var(--input-border); border-radius:6px;
+}
+
+/* Utilidades varias que usaste */
+.logout-form{ display:inline; }
+.imagen-destacada img{ border-radius: 8px; display:block; margin: .5rem 0 1rem; }
+.page-content img{ max-width:100%; height:auto; border-radius:6px; }
+
 
 /* ==========================================================================
    RESPONSIVE
@@ -281,6 +348,8 @@ aside{
   #suggestions{ background:#1a1f24; border-color:#2a2f36; }
   #suggestions a{ color:#e7ecf0; }
   #suggestions a:hover{ background:#101418; }
+
+
 }
 
 /* ==========================================================================

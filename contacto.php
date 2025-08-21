@@ -1,21 +1,19 @@
 <?php
 require_once __DIR__ . '/init.php';
 
-// Recuperar datos del formulario si existen en la sesión (PRG)
+// Recuperar datos del formulario si existen (patrón PRG)
 $form_data = $_SESSION['form_data'] ?? [];
-unset($_SESSION['form_data']);
+// No lo borres aún; lo eliminamos tras pintar el form
 
 // Whitelist del status
 $status = $_GET['status'] ?? '';
-$ok  = ($status === 'success');
-$err = ($status === 'error' || $status === 'invalid');
-
-// CSRF para el form
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-$csrf = $_SESSION['csrf_token'];
-
+$messages = [
+    'success'     => '¡Gracias! Tu mensaje ha sido enviado.',
+    'invalid'     => 'Datos inválidos. Revisa los campos e inténtalo de nuevo.',
+    'error'       => 'Hubo un error inesperado. Inténtalo de nuevo.',
+    'error_send'  => 'No se pudo enviar el mensaje. Inténtalo más tarde.',
+    'too_long'    => 'El mensaje es demasiado largo.',
+];
 $page_title = 'Contacto';
 $meta_description = 'Formulario de contacto para consultas y sugerencias.';
 require_once __DIR__ . '/header.php';
@@ -24,20 +22,23 @@ require_once __DIR__ . '/header.php';
   <h1>Contacto</h1>
 
   <div aria-live="polite">
-    <?php if ($ok): ?>
-      <p class="status-success">¡Gracias! Tu mensaje ha sido enviado.</p>
-    <?php elseif ($err): ?>
-      <p class="status-error">Hubo un error. Revisa los datos e inténtalo de nuevo.</p>
+    <?php if (isset($messages[$status])): ?>
+      <p class="status-<?php echo $status === 'success' ? 'success' : 'error'; ?>">
+        <?php echo htmlspecialchars($messages[$status], ENT_QUOTES, 'UTF-8'); ?>
+      </p>
     <?php endif; ?>
   </div>
 
   <p>Si tienes alguna pregunta o sugerencia, no dudes en escribirme.</p>
 
-  <form action="/enviar_contacto.php" method="post" class="form-container" novalidate>
-    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
+  <form action="procesar_contacto.php" method="POST" class="form-container" novalidate>
+    <?php
+      // CSRF (usa el helper del SecurityManager)
+      echo $security->csrfField();
+    ?>
 
     <!-- Honeypot anti-spam (debe quedar vacío) -->
-    <div class="hp" aria-hidden="true">
+    <div class="hp" aria-hidden="true" style="position:absolute; left:-9999px;">
       <label for="website">Deja este campo vacío</label>
       <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
     </div>
@@ -48,7 +49,7 @@ require_once __DIR__ . '/header.php';
         type="text" id="nombre" name="nombre"
         autocomplete="name"
         maxlength="100" required
-        value="<?= htmlspecialchars($form_data['nombre'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+        value="<?php echo htmlspecialchars($form_data['nombre'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
     </div>
 
     <div>
@@ -57,20 +58,23 @@ require_once __DIR__ . '/header.php';
         type="email" id="email" name="email"
         autocomplete="email" inputmode="email" spellcheck="false"
         maxlength="190" required
-        value="<?= htmlspecialchars($form_data['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+        value="<?php echo htmlspecialchars($form_data['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
     </div>
 
     <div>
       <label for="mensaje">Mensaje</label>
       <textarea
         id="mensaje" name="mensaje" rows="8"
-        maxlength="5000" required><?= htmlspecialchars($form_data['mensaje'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+        maxlength="5000" required><?php
+          echo htmlspecialchars($form_data['mensaje'] ?? '', ENT_QUOTES, 'UTF-8');
+        ?></textarea>
     </div>
 
     <button type="submit">Enviar mensaje</button>
   </form>
 </main>
 <?php require_once __DIR__ . '/footer.php'; ?>
+
 <?php
-// Limpiar datos del formulario después de mostrar  
+// Limpiar datos del formulario después de renderizar
 unset($_SESSION['form_data']);

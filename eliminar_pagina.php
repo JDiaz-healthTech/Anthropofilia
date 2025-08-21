@@ -1,42 +1,43 @@
 <?php
-// eliminar_pagina.php
+declare(strict_types=1);
+require_once __DIR__ . '/init.php';
 
-// 1. SEGURIDAD E INICIALIZACIÓN
-// Requerimos init.php para tener acceso a $security y $pdo.
-require_once 'init.php';
+$security->requireLogin();
 
-// Validar que el usuario esté logueado.
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: login.php");
-    exit();
+// Forzar POST
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+    $security->abort(405, 'Método no permitido.');
 }
 
-// 2. VALIDACIÓN CSRF y OBTENER ID
-// El token CSRF viene por la URL (método GET).
-$token_recibido = $_GET['token'] ?? '';
-$security->csrfValidate($token_recibido);
+// CSRF sólo desde POST
+$security->csrfValidate($_POST['csrf_token'] ?? null);
 
-// Obtener y validar el ID de la página desde la URL.
-$pagina_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-if ($pagina_id <= 0) {
-    header("Location: gestionar_paginas.php?error=id_invalido");
-    exit();
+// ID desde POST
+$pagina_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+if (!$pagina_id || $pagina_id <= 0) {
+    $security->abort(400, 'ID de página inválido.');
 }
 
+// Carga + autorización
+$stmt = $pdo->prepare('SELECT id_pagina, id_usuario FROM paginas WHERE id_pagina = ?');
+$stmt->execute([$pagina_id]);
+$pagina = $stmt->fetch(PDO::FETCH_ASSOC);
+if (!$pagina) {
+    $security->abort(404, 'Página no encontrada.');
+}
+$security->requireOwnershipOrRole((int)$pagina['id_usuario'], ['admin']);
+
+// Borrado
 try {
-    // 3. PREPARAR Y EJECUTAR LA SENTENCIA DELETE CON PDO
-    // Usamos un bloque try/catch para manejar cualquier error de la base de datos.
-    $sql = "DELETE FROM paginas WHERE id_pagina = ?";
-    $stmt = $pdo->prepare($sql);
-    
+    $stmt = $pdo->prepare('DELETE FROM paginas WHERE id_pagina = ?');
     $stmt->execute([$pagina_id]);
-    
-    // 4. REDIRIGIR TRAS EL ÉXITO
-    header("Location: gestionar_paginas.php");
+
+    header('Location: gestionar_paginas.php?msg=deleted');
     exit();
-    
-} catch (PDOException $e) {
-    // 5. MANEJO DE ERRORES CON PDO
-    $security->logEvent('error', 'page_delete_failed', ['page_id' => $pagina_id, 'error' => $e->getMessage()]);
-    die("Error al eliminar la página. Por favor, inténtelo de nuevo.");
+} catch (\PDOException $e) {
+    $security->logEvent('error', 'page_delete_failed', [
+        'page_id' => $pagina_id,
+        'error'   => $e->getMessage(),
+    ]);
+    $security->abort(500, 'Error al eliminar la página.');
 }

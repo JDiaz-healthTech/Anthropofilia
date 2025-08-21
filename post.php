@@ -1,33 +1,26 @@
 <?php
-// post.php (refactor con init + SecurityManager + PDO)
+// post.php (PDO + SecurityManager + canónica por slug)
+declare(strict_types=1);
+
 require_once __DIR__ . '/init.php';
 
-// 1) Entrada: id (int) o slug (string). Ambos opcionales, pero debe venir al menos uno.
-$id_raw   = $_GET['id']   ?? null;
-$slug_raw = $_GET['slug'] ?? null;
-
-$id   = $id_raw !== null ? (int)$security->cleanInput($id_raw, 'int') : null;
-$slug = $slug_raw !== null ? trim($security->cleanInput($slug_raw)) : null;
+// 1) Entrada: id (int) o slug (string). Debe llegar al menos uno
+$id   = isset($_GET['id'])   ? filter_var($_GET['id'], FILTER_VALIDATE_INT) : null;
+$slug = isset($_GET['slug']) ? trim((string)$_GET['slug']) : null;
 
 if (($id === null || $id <= 0) && ($slug === null || $slug === '')) {
-    http_response_code(400);
-    die('Solicitud inválida.');
+    $security->abort(400, 'Solicitud inválida.');
 }
 
-// 2) Carga del post + categoría (id o slug, sin duplicar consultas)
 try {
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Usa slug si viene; si no, usa id
-    $useSlug = isset($slug) && $slug !== null && $slug !== '';
-
+    // 2) Cargar post (por slug si viene; si no, por id)
+    $useSlug = ($slug !== null && $slug !== '');
     $sql = "SELECT p.id_post, p.slug, p.titulo, p.contenido, p.imagen_destacada_url, p.fecha_publicacion,
                    p.id_categoria, c.nombre_categoria
             FROM posts p
             LEFT JOIN categorias c ON c.id_categoria = p.id_categoria
             WHERE " . ($useSlug ? "p.slug = ?" : "p.id_post = ?") . "
             LIMIT 1";
-
     $param = $useSlug ? $slug : $id;
 
     $stmt = $pdo->prepare($sql);
@@ -35,26 +28,20 @@ try {
     $post = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$post) {
-        http_response_code(404);
-        include __DIR__ . '/header.php';
-        echo "<main class='container'><h1>Post no encontrado</h1><p>Lo sentimos, no existe ese contenido.</p></main>";
-        include __DIR__ . '/footer.php';
-        exit();
+        $security->abort(404, 'Post no encontrado.');
     }
 
-    // (Opcional) Si te llegan ambos y no coinciden, fuerza URL canónica por slug
-    if ($useSlug && isset($id) && $id && (int)$post['id_post'] !== (int)$id) {
-        header("Location: /post.php?slug=" . urlencode($post['slug']), true, 301);
-        exit();
+    // 3) Canonical por slug (si tenemos ambos y no coinciden, o si vino id sin slug)
+    if (!empty($post['slug'])) {
+        $wantSlug = (string)$post['slug'];
+        $haveSlug = (string)($slug ?? '');
+        if ($haveSlug === '' || $haveSlug !== $wantSlug) {
+            header('Location: /post.php?slug=' . urlencode($wantSlug), true, 301);
+            exit();
+        }
     }
 
-} catch (Throwable $e) {
-    http_response_code(500);
-    // En prod: $security->logEvent('post_view_failed', ['error' => $e->getMessage()]);
-    die('Error del servidor al cargar el post.');
-}
- 
-    // 3) Etiquetas del post
+    // 4) Etiquetas del post
     $stmtTags = $pdo->prepare(
         "SELECT e.nombre_etiqueta
          FROM post_etiquetas pe
@@ -62,23 +49,31 @@ try {
          WHERE pe.id_post = ?
          ORDER BY e.nombre_etiqueta ASC"
     );
-    $stmtTags->execute([$post['id_post']]);
+    $stmtTags->execute([(int)$post['id_post']]);
     $tags = $stmtTags->fetchAll(PDO::FETCH_COLUMN) ?: [];
 
 } catch (Throwable $e) {
-    http_response_code(500);
-    // En prod: $security->logEvent('post_view_failed', ['error' => $e->getMessage()]);
-    die('Error del servidor al cargar el post.');
+    $security->logEvent('error', 'post_view_failed', ['error' => $e->getMessage()]);
+    $security->abort(500, 'Error del servidor.');
 }
 
-// 4) Render (salida segura). Escapa strings. El contenido puede tener HTML rico.
+// 5) Render (salida segura)
+// Meta
+$page_title = $post['titulo'] ?? 'Post';
+$meta_description = mb_substr(
+    trim(preg_replace('/\s+/', ' ', strip_tags($post['contenido'] ?? ''))),
+    0, 160
+);
+
+// Campos saneados
 $titulo_safe    = htmlspecialchars($post['titulo'] ?? '', ENT_QUOTES, 'UTF-8');
 $categoria_safe = htmlspecialchars($post['nombre_categoria'] ?? 'Sin categoría', ENT_QUOTES, 'UTF-8');
 $imagen_url     = $post['imagen_destacada_url'] ?? null;
-// NOTA: Si permites HTML, sanea $post['contenido'] con un sanitizador (p.ej. HTML Purifier) antes de imprimir.
-$contenido_html = $post['contenido'] ?? '';
 
-include __DIR__ . '/header.php';
+// Contenido HTML (defensa en profundidad)
+$contenido_html = $security->sanitizeHTML($post['contenido'] ?? '');
+
+require_once __DIR__ . '/header.php';
 ?>
 <main class="container post">
   <article>
@@ -96,7 +91,7 @@ include __DIR__ . '/header.php';
             </span>
         <?php endif; ?>
       </p>
-      <?php if ($imagen_url): ?>
+      <?php if (!empty($imagen_url)): ?>
         <figure class="imagen-destacada">
           <img src="<?= htmlspecialchars($imagen_url, ENT_QUOTES, 'UTF-8') ?>" alt="Imagen destacada">
         </figure>
@@ -108,6 +103,4 @@ include __DIR__ . '/header.php';
     </section>
   </article>
 </main>
-<?php include __DIR__ . '/footer.php'; ?>
-<?php endif; ?>
-<?php endif;    // post.php
+<?php require_once __DIR__ . '/footer.php'; ?>
