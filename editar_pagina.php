@@ -1,65 +1,107 @@
 <?php
-// editar_pagina.php
+// editar_pagina.php — versión pulida
+require_once __DIR__ . '/init.php';
 
-// 1. INICIALIZACIÓN: Requerimos el archivo central que maneja todo.
-// Esto nos da acceso a $pdo y $security.
-require_once 'init.php';
-
-// 2. BARRERA DE SEGURIDAD: Validamos si el usuario está logueado.
+// 1) Auth
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit();
 }
 
-// 3. OBTENER DATOS DE LA PÁGINA (usando PDO)
-// Obtenemos y validamos el ID de la página desde la URL.
-$pagina_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+// 2) Obtener y validar id
+$pagina_id = (int)$security->cleanInput($_GET['id'] ?? '', 'int');
 if ($pagina_id <= 0) {
-    // Es una buena práctica redirigir en lugar de usar die()
+    http_response_code(400);
     header("Location: gestionar_paginas.php?error=id_invalido");
     exit();
 }
 
-// Preparamos y ejecutamos la consulta de forma segura con PDO.
-$sql_pagina = "SELECT * FROM paginas WHERE id_pagina = ?";
-$stmt = $pdo->prepare($sql_pagina);
-$stmt->execute([$pagina_id]);
-$pagina = $stmt->fetch();
+try {
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-if (!$pagina) {
-    header("Location: gestionar_paginas.php?error=not_found");
-    exit();
+    // 3) Cargar la página (evita SELECT *)
+    $stmt = $pdo->prepare("SELECT id_pagina, titulo, slug, contenido FROM paginas WHERE id_pagina = ? LIMIT 1");
+    $stmt->execute([$pagina_id]);
+    $pagina = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$pagina) {
+        http_response_code(404);
+        header("Location: gestionar_paginas.php?error=not_found");
+        exit();
+    }
+
+} catch (Throwable $e) {
+    http_response_code(500);
+    // En prod: $security->logEvent('error','page_load_failed',['id'=>$pagina_id,'error'=>$e->getMessage()]);
+    die('Error al cargar la página.');
 }
 
 $page_title = 'Editar Página';
-require_once 'header.php';
+require_once __DIR__ . '/header.php';
 ?>
+<main class="container">
+  <h1>Editar página estática</h1>
 
-<main>
-    <h2>Editar Página Estática</h2>
-    <form action="actualizar_pagina.php" method="POST" class="form-container">
-        
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($security->csrfToken()); ?>">
-        
-        <input type="hidden" name="id_pagina" value="<?php echo $pagina['id_pagina']; ?>">
-        
-        <div>
-            <label for="titulo">Título:</label>
-            <input type="text" id="titulo" name="titulo" value="<?php echo htmlspecialchars($pagina['titulo']); ?>" required>
-        </div>
-        <div>
-            <label for="slug">Slug (URL amigable):</label>
-            <input type="text" id="slug" name="slug" value="<?php echo htmlspecialchars($pagina['slug']); ?>" required>
-        </div>
-        <div>
-            <label for="contenido">Contenido:</label>
-            <textarea id="contenido" name="contenido" rows="20" required><?php echo htmlspecialchars($pagina['contenido']); ?></textarea>
-        </div>
-        <button type="submit">Actualizar Página</button>
-    </form>
+  <form action="/actualizar_pagina.php" method="post" class="form-container" accept-charset="UTF-8">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($security->csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+    <input type="hidden" name="id_pagina" value="<?= (int)$pagina['id_pagina'] ?>">
+
+    <div>
+      <label for="titulo">Título</label>
+      <input
+        type="text" id="titulo" name="titulo"
+        required maxlength="150" autocomplete="off"
+        value="<?= htmlspecialchars($pagina['titulo'], ENT_QUOTES, 'UTF-8') ?>">
+    </div>
+
+    <div>
+      <label for="slug">Slug (URL amigable)</label>
+      <input
+        type="text" id="slug" name="slug"
+        required maxlength="191" spellcheck="false" autocapitalize="off" autocomplete="off"
+        pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        title="Solo minúsculas, números y guiones (ej: historia-da-filosofia)"
+        value="<?= htmlspecialchars($pagina['slug'], ENT_QUOTES, 'UTF-8') ?>">
+      <small>Usa minúsculas, sin acentos, separadas por guiones.</small>
+    </div>
+
+    <div>
+      <label for="contenido">Contenido</label>
+      <textarea
+        id="contenido" name="contenido" rows="20" required maxlength="50000"><?= htmlspecialchars($pagina['contenido'], ENT_QUOTES, 'UTF-8') ?></textarea>
+    </div>
+
+    <div style="display:flex; gap:.5rem; align-items:center;">
+      <button type="submit">Actualizar página</button>
+      <a href="/gestionar_paginas.php">Cancelar</a>
+    </div>
+  </form>
 </main>
+<?php require_once __DIR__ . '/footer.php'; ?>
 
-<?php
-// Ya no es necesario cerrar la conexión de PDO.
-require_once 'footer.php';
-?>
+<!-- Auto-slug opcional (no sustituye normalización server-side) -->
+<script>
+(function () {
+  const t = document.getElementById('titulo');
+  const s = document.getElementById('slug');
+  let userEditedSlug = false;
+
+  s.addEventListener('input', () => { userEditedSlug = true; });
+
+  function slugify(str) {
+    return str
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .substring(0, 191);
+  }
+
+  // Solo autogenera si el slug está vacío (en edición normalmente no lo estará)
+  t.addEventListener('input', () => {
+    if (!userEditedSlug && !s.value) {
+      s.value = slugify(t.value);
+    }
+  });
+})();
+</script>

@@ -1,16 +1,45 @@
 <?php 
 $page_title = 'Acerca de mí';
+$meta_description = 'Perfil de Ana Sampedro: filosofía, biología y líneas de investigación en evolución del comportamiento.'; // si tu header lo usa
 require_once 'header.php'; 
 ?>
+<main class="container about">
+  <article aria-labelledby="about-title">
+    <header>
+      <h1 id="about-title">Acerca de mí</h1>
+    </header>
 
-<main>
-    <h2>Acerca de mí</h2>
-    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgtUsMo7JzZqe2x0_oI4kpdla_db0L_uUd37YU5zKKlCyZosWtwZCyWs0EfEa6t9-NooVepFnKOt2yBQP5zlTjQJbKDS6gwc_c-sxGkvYL84axXd8RndyeJerDYolorZAPZGxVVM8rVqYieOL2Smx9bTE3M7ofb5tCmW_PB-Rwe6oafgA/s220/Logo%20divertido.png" alt="Foto de Ana Sampedro" style="float:left; margin-right:20px; width:200px;">
-    <p>Mi nombre es Ana y soy licenciada en Filosofía por la Universidad de Santiago de Compostela y doctora en Biología por la Universidad de Vigo.</p>
-    <p>Mis intereses se centran en la evolución del comportamiento humano, la ecología del comportamiento y la evolución cultural...</p>
-    </main>
+    <figure class="about__photo">
+      <picture>
+        <!-- Sirve formatos modernos si los tienes en /assets/img/ -->
+        <source srcset="/assets/img/ana.avif" type="image/avif">
+        <source srcset="/assets/img/ana.webp" type="image/webp">
+        <img
+          src="/assets/img/ana.png"            <!-- mejor local que hotlink -->
+          alt="Retrato de Ana Sampedro"
+          width="200" height="200"             <!-- evita CLS -->
+          loading="lazy" decoding="async">
+      </picture>
+      <figcaption>Ana Sampedro</figcaption>
+    </figure>
 
-<aside>
-    </aside>
-
+    <section class="about__bio">
+      <p>Mi nombre es Ana y soy licenciada en Filosofía por la Universidad de Santiago de Compostela y doctora en Biología por la Universidad de Vigo.</p>
+      <p>Mis intereses se centran en la evolución del comportamiento humano, la ecología del comportamiento y la evolución cultural...</p>
+    </section>
+  </article>
+</main>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Person",
+  "name":"Ana Sampedro",
+  "image": "https://tudominio.com/assets/img/ana.webp",
+  "jobTitle":"Doctora en Biología",
+  "alumniOf":[{"@type":"CollegeOrUniversity","name":"Universidad de Santiago de Compostela"},
+              {"@type":"CollegeOrUniversity","name":"Universidad de Vigo"}],
+  "description":"Evolución del comportamiento humano, ecología del comportamiento y evolución cultural.",
+  "url":"https://tudominio.com/acerca-de-mi"
+}
+</script>
 <?php require_once 'footer.php'; ?>

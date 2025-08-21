@@ -1,49 +1,79 @@
 <?php
-// 1. Prepara el entorno (siempre primero)
-require_once 'init.php'; 
+// admin.php — versión pulida
+require_once __DIR__ . '/init.php';
 
-// 2. Ahora, pon al guardia de seguridad en la puerta d e esta página específica.
+// 1) Autenticación
 if (!isset($_SESSION['id_usuario'])) {
-    // 3. ...redirigir al login y terminar el script.
     header("Location: login.php");
     exit();
 }
 
-// Si el script llega hasta aquí, significa que el entorno está listo Y el usuario tiene permiso.
-// A partir de aquí, el resto del código de la página.
+// 2) Evita cachear el panel en el navegador
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+
+// (Opcional) roles:
+// if (($_SESSION['rol'] ?? '') !== 'admin') { http_response_code(403); die('Acceso denegado'); }
+
+// 3) CSRF para logout por POST
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf = $_SESSION['csrf_token'];
+
+// 4) (Opcional) contadores rápidos
+$postsCount = $paginasCount = 0;
+try {
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $postsCount   = (int)$pdo->query("SELECT COUNT(*) FROM posts")->fetchColumn();
+    $paginasCount = (int)$pdo->query("SELECT COUNT(*) FROM paginas")->fetchColumn();
+} catch (Throwable $e) {
+    // silencia o loguea si quieres: $security->logEvent('warn','admin_counts_failed',[...] );
+}
+
 $page_title = 'Panel de Administración';
-require_once 'header.php';
+require_once __DIR__ . '/header.php';
 ?>
+<main class="container">
+  <h1>Panel de Administración</h1>
+  <p>¡Bienvenido, <?= htmlspecialchars($_SESSION['nombre_usuario'] ?? 'usuario', ENT_QUOTES, 'UTF-8') ?>!</p>
 
-// En admin.php
+  <div class="admin-sections">
+    <section class="admin-section" aria-labelledby="gestion-entradas">
+      <h2 id="gestion-entradas">Gestionar Entradas</h2>
+      <nav aria-label="Acciones de entradas">
+        <ul>
+          <li><a href="/crear_post.php">Crear nueva entrada</a></li>
+          <li>
+            <a href="/gestionar_posts.php">Gestionar entradas</a>
+            <?php if ($postsCount): ?>
+              <span class="badge" aria-label="Total de entradas"><?= $postsCount ?></span>
+            <?php endif; ?>
+          </li>
+        </ul>
+      </nav>
+    </section>
 
-<main>
-    <h2>Panel de Administración</h2>
-    <p>¡Bienvenido, <?php echo htmlspecialchars($_SESSION['nombre_usuario']); ?>!</p>
+    <section class="admin-section" aria-labelledby="gestion-paginas">
+      <h2 id="gestion-paginas">Gestionar Páginas</h2>
+      <nav aria-label="Acciones de páginas">
+        <ul>
+          <li><a href="/crear_pagina.php">Crear nueva página</a></li>
+          <li>
+            <a href="/gestionar_paginas.php">Gestionar páginas</a>
+            <?php if ($paginasCount): ?>
+              <span class="badge" aria-label="Total de páginas"><?= $paginasCount ?></span>
+            <?php endif; ?>
+          </li>
+        </ul>
+      </nav>
+    </section>
+  </div>
 
-    <div class="admin-sections">
-        <section class="admin-section">
-            <h3>Gestionar Entradas</h3>
-            <nav>
-                <ul>
-                    <li><a href="crear_post.php">Crear Nueva Entrada</a></li>
-                    <li><a href="gestionar_posts.php">Gestionar Entradas Existentes</a></li>
-                </ul>
-            </nav>
-        </section>
-
-        <section class="admin-section">
-            <h3>Gestionar Páginas</h3>
-            <nav>
-                <ul>
-                    <li><a href="crear_pagina.php">Crear Nueva Página</a></li>
-                    <li><a href="gestionar_paginas.php">Gestionar Páginas Existentes</a></li>
-                </ul>
-            </nav>
-        </section>
-    </div>
-
-    <a href="logout.php">Cerrar Sesión</a>
+  <!-- Logout por POST con CSRF -->
+  <form action="/logout.php" method="post" style="margin-top:1rem">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
+    <button type="submit">Cerrar sesión</button>
+  </form>
 </main>
-
-<?php require_once 'footer.php'; ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

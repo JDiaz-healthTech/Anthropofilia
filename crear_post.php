@@ -1,78 +1,98 @@
 <?php
-// Barrera de seguridad
-session_start();
+require_once __DIR__ . '/init.php';
 
-//VALIDACION DE USUARIO
-//Genera token de aceso y lo guarda en la sesion del usuario
-$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-
+// Auth
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit();
 }
 
-require_once 'init.php';
+// PRG: datos previos si hubo error al guardar
+$old = $_SESSION['form_post'] ?? [];
+unset($_SESSION['form_post']); // limpia tras mostrar
 
-// Consulta para obtener las categorías para el menú desplegable
-$sql_categorias = "SELECT id_categoria, nombre_categoria FROM categorias ORDER BY nombre_categoria ASC";
-$resultado_categorias = $conn->query($sql_categorias);
+// CSRF
+$csrf = $security->csrfToken();
+
+// Cargar categorías (PDO)
+$categorias = [];
+try {
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $categorias = $pdo->query("SELECT id_categoria, nombre_categoria FROM categorias ORDER BY nombre_categoria ASC")
+                      ->fetchAll(PDO::FETCH_ASSOC);
+} catch (Throwable $e) {
+    // En prod: $security->logEvent('error','load_categories_failed',['error'=>$e->getMessage()]);
+    $categorias = [];
+}
 
 $page_title = 'Crear Nuevo Post';
-require_once 'header.php';
+require_once __DIR__ . '/header.php';
 ?>
+<main class="container">
+  <h1>Crear nuevo post</h1>
 
-<main>
-    <h2>Crear Nuevo Post</h2>
-    <form action="guardar_post.php" method="POST" enctype="multipart/form-data" class="form-container">
-        
-        <!-- Inyeccion oculta de token de acceso -->
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+  <form action="/guardar_post.php" method="post" enctype="multipart/form-data" class="form-container" accept-charset="UTF-8">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
 
-        <div>
-            <label for="titulo">Título:</label>
-            <input type="text" id="titulo" name="titulo" required>
-        </div>
-        <div>
-            <label for="id_categoria">Categoría:</label>
-            <select id="id_categoria" name="id_categoria" required>
-                <option value="">-- Selecciona una categoría --</option>
-                <?php
-                if ($resultado_categorias->num_rows > 0) {
-                    while ($cat = $resultado_categorias->fetch_assoc()) {
-                        echo '<option value="' . $cat['id_categoria'] . '">' . htmlspecialchars($cat['nombre_categoria']) . '</option>';
-                    }
-                }
-                ?>
-            </select>
-        </div>
-        <div>
-            <label for="etiquetas">Etiquetas:</label>
-            <input type="text" id="etiquetas" name="etiquetas" placeholder="introduce etiquetas para identificar el post, separadas por comas">
-        </div>
-        <div>
-            <label for="contenido">Contenido:</label>
-            <textarea id="contenido" name="contenido" rows="15" required></textarea>
-        </div>
-        <div>
-            <label for="imagen">Subir Imagen Destacada (Opcional):</label>
-            <input type="file" id="imagen" name="imagen" accept="image/jpeg, image/png, image/gif">
-        </div>
-        <button type="submit">Guardar Post</button>
-    </form>
+    <div>
+      <label for="titulo">Título</label>
+      <input
+        type="text" id="titulo" name="titulo"
+        required maxlength="150" autocomplete="off"
+        value="<?= htmlspecialchars($old['titulo'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+    </div>
+
+    <div>
+      <label for="id_categoria">Categoría</label>
+      <select id="id_categoria" name="id_categoria" required>
+        <option value="">— Selecciona una categoría —</option>
+        <?php foreach ($categorias as $cat): ?>
+          <option value="<?= (int)$cat['id_categoria'] ?>"
+            <?= isset($old['id_categoria']) && (int)$old['id_categoria'] === (int)$cat['id_categoria'] ? 'selected' : '' ?>>
+            <?= htmlspecialchars($cat['nombre_categoria'], ENT_QUOTES, 'UTF-8') ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+
+    <div>
+      <label for="etiquetas">Etiquetas</label>
+      <input
+        type="text" id="etiquetas" name="etiquetas"
+        maxlength="500" placeholder="separa con comas: ciencia, evolución"
+        value="<?= htmlspecialchars($old['etiquetas'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+      <small>Se guardan en minúsculas y se desduplican automáticamente.</small>
+    </div>
+
+    <div>
+      <label for="contenido">Contenido</label>
+      <textarea id="contenido" name="contenido" rows="15" required maxlength="100000"><?= htmlspecialchars($old['contenido'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+    </div>
+
+    <div>
+      <label for="imagen">Imagen destacada (opcional)</label>
+      <input
+        type="file" id="imagen" name="imagen"
+        accept="image/jpeg,image/png,image/gif">
+      <!-- (Opcional) <input type="hidden" name="MAX_FILE_SIZE" value="2097152"> -->
+    </div>
+
+    <button type="submit">Guardar post</button>
+  </form>
 </main>
 
 <script>
-  tinymce.init({
-    selector: '#contenido', // Apunta al ID de tu textarea
-    plugins: 'code lists link image table autoresize',
-    toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image | table | code',
-    height: 500,
-    menubar: false,
-    content_css: 'style.css' // Opcional: para que el contenido en el editor se vea similar a tu web
-  });
+  // TinyMCE: asume que incluyes el script de la librería en header.php
+  if (typeof tinymce !== 'undefined') {
+    tinymce.init({
+      selector: '#contenido',
+      plugins: 'code lists link image table autoresize',
+      toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image | table | code',
+      height: 500,
+      menubar: false,
+      content_css: '/assets/css/styles.css' // ajusta a tu hoja
+    });
+  }
 </script>
 
-<?php
-$conn->close();
-require_once 'footer.php';
-?>
+<?php require_once __DIR__ . '/footer.php'; ?>

@@ -24,3 +24,21 @@ ALTER TABLE posts
   ADD UNIQUE KEY uniq_titulo_usuario (titulo, id_usuario);
 
 
+ALTER TABLE paginas 
+  MODIFY slug VARCHAR(191) NOT NULL,
+  ADD UNIQUE KEY uniq_paginas_slug (slug);
+
+-- Si usas timestamp de actualización:
+ALTER TABLE paginas 
+  ADD COLUMN actualizado_en TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;
+
+  ALTER TABLE posts
+  ADD COLUMN actualizado_en TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;
+  SET titulo=?, contenido=?, id_categoria=?, imagen_destacada_url=?, actualizado_en=NOW()
+
+
+CREATE INDEX idx_posts_fecha_publicacion ON posts (fecha_publicacion);
+
+ALTER TABLE categorias ADD UNIQUE KEY uniq_categorias_slug (slug);
+CREATE INDEX idx_posts_cat_fecha ON posts (id_categoria, fecha_publicacion);
+

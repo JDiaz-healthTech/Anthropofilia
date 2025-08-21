@@ -1,84 +1,113 @@
 <?php
-require_once 'init.php';
-$post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+// post.php (refactor con init + SecurityManager + PDO)
+require_once __DIR__ . '/init.php';
 
-if ($post_id <= 0) {
-    die('ID de post no válido.');
+// 1) Entrada: id (int) o slug (string). Ambos opcionales, pero debe venir al menos uno.
+$id_raw   = $_GET['id']   ?? null;
+$slug_raw = $_GET['slug'] ?? null;
+
+$id   = $id_raw !== null ? (int)$security->cleanInput($id_raw, 'int') : null;
+$slug = $slug_raw !== null ? trim($security->cleanInput($slug_raw)) : null;
+
+if (($id === null || $id <= 0) && ($slug === null || $slug === '')) {
+    http_response_code(400);
+    die('Solicitud inválida.');
 }
 
-// ===================================================================
-// !! ESTE ES EL BLOQUE DE CÓDIGO CRÍTICO QUE FALTABA !!
-// ===================================================================
-$sql = "SELECT * FROM posts WHERE id_post = ?";
-$stmt = $conn->prepare($sql);
-if (!$stmt) {
-    die("Error al preparar la consulta: " . $conn->error);
-}
-$stmt->bind_param("i", $post_id);
-$stmt->execute();
-$resultado = $stmt->get_result();
-$post = $resultado->fetch_assoc();
-// La sentencia se puede cerrar aquí, ya no la necesitamos más
-$stmt->close(); 
-// ===================================================================
+// 2) Carga del post + categoría (id o slug, sin duplicar consultas)
+try {
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// Verificación crucial: ¿se encontró el post?
-if (!$post) {
-    // Si no se encuentra, detenemos la ejecución con un mensaje claro.
-    die('Post no encontrado.');
+    // Usa slug si viene; si no, usa id
+    $useSlug = isset($slug) && $slug !== null && $slug !== '';
+
+    $sql = "SELECT p.id_post, p.slug, p.titulo, p.contenido, p.imagen_destacada_url, p.fecha_publicacion,
+                   p.id_categoria, c.nombre_categoria
+            FROM posts p
+            LEFT JOIN categorias c ON c.id_categoria = p.id_categoria
+            WHERE " . ($useSlug ? "p.slug = ?" : "p.id_post = ?") . "
+            LIMIT 1";
+
+    $param = $useSlug ? $slug : $id;
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$param]);
+    $post = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$post) {
+        http_response_code(404);
+        include __DIR__ . '/header.php';
+        echo "<main class='container'><h1>Post no encontrado</h1><p>Lo sentimos, no existe ese contenido.</p></main>";
+        include __DIR__ . '/footer.php';
+        exit();
+    }
+
+    // (Opcional) Si te llegan ambos y no coinciden, fuerza URL canónica por slug
+    if ($useSlug && isset($id) && $id && (int)$post['id_post'] !== (int)$id) {
+        header("Location: /post.php?slug=" . urlencode($post['slug']), true, 301);
+        exit();
+    }
+
+} catch (Throwable $e) {
+    http_response_code(500);
+    // En prod: $security->logEvent('post_view_failed', ['error' => $e->getMessage()]);
+    die('Error del servidor al cargar el post.');
+}
+ 
+    // 3) Etiquetas del post
+    $stmtTags = $pdo->prepare(
+        "SELECT e.nombre_etiqueta
+         FROM post_etiquetas pe
+         INNER JOIN etiquetas e ON e.id_etiqueta = pe.id_etiqueta
+         WHERE pe.id_post = ?
+         ORDER BY e.nombre_etiqueta ASC"
+    );
+    $stmtTags->execute([$post['id_post']]);
+    $tags = $stmtTags->fetchAll(PDO::FETCH_COLUMN) ?: [];
+
+} catch (Throwable $e) {
+    http_response_code(500);
+    // En prod: $security->logEvent('post_view_failed', ['error' => $e->getMessage()]);
+    die('Error del servidor al cargar el post.');
 }
 
-// Ahora que sabemos que $post existe, podemos continuar.
-$page_title = $post['titulo'];
-require_once 'header.php';
+// 4) Render (salida segura). Escapa strings. El contenido puede tener HTML rico.
+$titulo_safe    = htmlspecialchars($post['titulo'] ?? '', ENT_QUOTES, 'UTF-8');
+$categoria_safe = htmlspecialchars($post['nombre_categoria'] ?? 'Sin categoría', ENT_QUOTES, 'UTF-8');
+$imagen_url     = $post['imagen_destacada_url'] ?? null;
+// NOTA: Si permites HTML, sanea $post['contenido'] con un sanitizador (p.ej. HTML Purifier) antes de imprimir.
+$contenido_html = $post['contenido'] ?? '';
+
+include __DIR__ . '/header.php';
 ?>
-
-<main>
-    <article>
-        <div class="single-post-content">
-            <h1><?php echo htmlspecialchars($post['titulo']); ?></h1>
-            
-            <span class="post-meta">
-                Publicado el: <?php echo date('d/m/Y', strtotime($post['fecha_publicacion'])); ?>
+<main class="container post">
+  <article>
+    <header>
+      <h1><?= $titulo_safe ?></h1>
+      <p class="meta">
+        <span class="categoria"><?= $categoria_safe ?></span>
+        <?php if (!empty($tags)): ?>
+          · <span class="tags">
+              <?php foreach ($tags as $t): ?>
+                <a href="/search.php?q=<?= urlencode($t) ?>" rel="tag">
+                  <?= htmlspecialchars($t, ENT_QUOTES, 'UTF-8') ?>
+                </a>
+              <?php endforeach; ?>
             </span>
-            
-            <?php if (!empty($post['imagen_destacada_url'])): ?>
-                <img src="<?php echo htmlspecialchars($post['imagen_destacada_url']); ?>" alt="<?php echo htmlspecialchars($post['titulo']); ?>" style="margin-bottom: 2rem;">
-            <?php endif; ?>
+        <?php endif; ?>
+      </p>
+      <?php if ($imagen_url): ?>
+        <figure class="imagen-destacada">
+          <img src="<?= htmlspecialchars($imagen_url, ENT_QUOTES, 'UTF-8') ?>" alt="Imagen destacada">
+        </figure>
+      <?php endif; ?>
+    </header>
 
-            <div>
-                <?php
-                // Usamos la instancia del SecurityManager que ya fue creada en init.php
-                // para purificar el HTML antes de mostrarlo.
-                echo SecurityManager::instance()->sanitizeHTML($post['contenido']);
-                ?>
-            </div>
-        </div>
-
-        <?php
-        // --- Mostrar etiquetas ---
-        $sql_tags = "SELECT e.nombre_etiqueta FROM etiquetas e INNER JOIN post_etiquetas pe ON e.id_etiqueta = pe.id_etiqueta WHERE pe.id_post = ?";
-        $stmt_tags = $conn->prepare($sql_tags);
-        $stmt_tags->bind_param("i", $post_id);
-        $stmt_tags->execute();
-        $resultado_tags = $stmt_tags->get_result();
-
-        if ($resultado_tags->num_rows > 0) {
-            echo '<div class="etiquetas-container">';
-            echo '<strong>Etiquetas:</strong> ';
-            while ($tag = $resultado_tags->fetch_assoc()) {
-                echo '<span class="etiqueta">' . htmlspecialchars($tag['nombre_etiqueta']) . '</span>';
-            }
-            echo '</div>';
-        }
-        $stmt_tags->close();
-        ?>
-    </article>
+    <section class="contenido">
+      <?= $contenido_html ?>
+    </section>
+  </article>
 </main>
-
-<?php require_once 'sidebar.php'; ?>
-
-<?php
-$conn->close();
-require_once 'footer.php';
-?>
+<?php include __DIR__ . '/footer.php'; ?>
+<?php endif; ?>
+<?php endif;    // post.php
