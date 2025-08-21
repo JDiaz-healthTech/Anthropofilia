@@ -180,7 +180,6 @@ final class SecurityManager
     {
         // Importante: no tengas salida previa (echo) antes de estas cabeceras.
 
-        // Tipos y XSS legacy: X-XSS-Protection está obsoleto, no lo usamos.
         header('X-Content-Type-Options: nosniff');
         header('Referrer-Policy: strict-origin-when-cross-origin');
 
