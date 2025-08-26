@@ -25,7 +25,9 @@ $security->requireOwnershipOrRole((int)$post['id_usuario'], ['admin']);
 
 // 5) Categorías
 $sql_categorias = "SELECT id_categoria, nombre_categoria FROM categorias ORDER BY nombre_categoria ASC";
-$resultado_categorias = $pdo->query($sql_categorias)->fetchAll(PDO::FETCH_ASSOC);
+$stmt_categorias = $pdo->prepare($sql_categorias);
+$stmt_categorias->execute();
+$resultado_categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
 
 $page_title = 'Editar Post';
 require_once __DIR__ . '/header.php';

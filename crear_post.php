@@ -17,9 +17,10 @@ $csrf = $security->csrfToken();
 // Cargar categorías (PDO)
 $categorias = [];
 try {
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $categorias = $pdo->query("SELECT id_categoria, nombre_categoria FROM categorias ORDER BY nombre_categoria ASC")
-                      ->fetchAll(PDO::FETCH_ASSOC);
+    $sql = "SELECT id_categoria, nombre_categoria FROM categorias ORDER BY nombre_categoria ASC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Throwable $e) {
     // En prod: $security->logEvent('error','load_categories_failed',['error'=>$e->getMessage()]);
     $categorias = [];

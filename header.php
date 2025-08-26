@@ -52,7 +52,7 @@ function nav_active(string $file, ?string $slug = null): string {
       <meta name="robots" content="noindex, nofollow">
     <?php endif; ?>
 
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="./style.css">
 
     <?php if ($needsTinymce): ?>
       <!-- Performance hint para TinyMCE -->
@@ -72,20 +72,36 @@ function nav_active(string $file, ?string $slug = null): string {
     </header>
 
     <nav class="main-nav" role="navigation" aria-label="Principal">
-      <a href="/index.php"<?php echo nav_active('index.php'); ?>>Inicio</a>
-      <a href="/pagina.php?slug=historia-da-filosofia"<?php echo nav_active('pagina.php','historia-da-filosofia'); ?>>Historia da Filosofía</a>
-      <a href="/categoria.php?slug=lecturas-e-peliculas"<?php echo nav_active('categoria.php'); ?>>Lecturas e Películas</a>
-      <a href="/pagina.php?slug=etica"<?php echo nav_active('pagina.php','etica'); ?>>Ética</a>
-      <a href="/acerca_de_mi.php"<?php echo nav_active('acerca_de_mi.php'); ?>>Acerca de mí</a>
-      <a href="/contacto.php"<?php echo nav_active('contacto.php'); ?>>Contacto</a>
+      <button class="mobile-nav-toggle" aria-controls="main-nav-links" aria-expanded="false">
+        <span class="visually-hidden">Menú</span>
+        <span class="hamburger-icon"></span>
+      </button>
+      <div class="main-nav-links" id="main-nav-links">
+        <a href="/Proyecto_Anthropofilia/index.php"<?php echo nav_active('index.php'); ?>>Inicio</a>
+        <a href="/Proyecto_Anthropofilia/pagina.php?slug=historia-da-filosofia"<?php echo nav_active('pagina.php','historia-da-filosofia'); ?>>Historia da Filosofía</a>
+        <a href="/Proyecto_Anthropofilia/categoria.php?slug=lecturas-e-peliculas"<?php echo nav_active('categoria.php'); ?>>Lecturas e Películas</a>
+        <a href="/Proyecto_Anthropofilia/pagina.php?slug=etica"<?php echo nav_active('pagina.php','etica'); ?>>Ética</a>
+        <a href="/Proyecto_Anthropofilia/acerca_de_mi.php"<?php echo nav_active('acerca_de_mi.php'); ?>>Acerca de mí</a>
+        <a href="/Proyecto_Anthropofilia/contacto.php"<?php echo nav_active('contacto.php'); ?>>Contacto</a>
 
-      <!-- Opcional: enlaces admin mínimos -->
-      <span class="spacer"></span>
-      <?php if ($isLogged): ?>
-        <a href="/gestionar_posts.php"<?php echo nav_active('gestionar_posts.php'); ?>>Panel</a>
-      <?php else: ?>
-        <a href="/login.php"<?php echo nav_active('login.php'); ?> rel="nofollow">Admin</a>
-      <?php endif; ?>
+        <!-- Opcional: enlaces admin mínimos -->
+        <span class="spacer"></span>
+        <?php if ($isLogged): ?>
+          <a href="/gestionar_posts.php"<?php echo nav_active('gestionar_posts.php'); ?>>Panel</a>
+        <?php else: ?>
+          <a href="/login.php"<?php echo nav_active('login.php'); ?> rel="nofollow">Admin</a>
+        <?php endif; ?>
+      </div>
+      <div class="theme-switcher">
+        <label for="theme-toggle" class="visually-hidden">Modo oscuro</label>
+        <input type="checkbox" id="theme-toggle" class="theme-toggle-checkbox">
+        <label for="theme-toggle" class="theme-toggle-label"></label>
+      </div>
+      <div class="accessibility-controls">
+        <button id="toggle-high-contrast" title="Alternar alto contraste" class="accessibility-button">HC</button>
+        <button id="decrease-font-size" title="Disminuir tamaño de fuente" class="accessibility-button">A-</button>
+        <button id="increase-font-size" title="Aumentar tamaño de fuente" class="accessibility-button">A+</button>
+      </div>
     </nav>
 
     <div class="main-content-area">

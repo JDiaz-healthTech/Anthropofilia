@@ -31,7 +31,9 @@ declare(strict_types=1);
         $sql = "SELECT nombre_categoria, slug
                 FROM categorias
                 ORDER BY nombre_categoria ASC";
-        $cats = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $cats = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if ($cats) {
             echo '<ul>';
             foreach ($cats as $cat) {
