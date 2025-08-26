@@ -48,4 +48,84 @@ ALTER TABLE etiquetas ADD UNIQUE KEY uq_etiquetas_nombre (nombre_etiqueta);
 ALTER TABLE post_etiquetas ADD UNIQUE KEY uq_post_tag (id_post, id_etiqueta);
 
 
+--------------------------------------------
+--------------------------------------------
+cargo esto: 
 
+-- ============================================
+-- Script de mejoras para la base de datos BlogDB
+-- ============================================
+
+-- 1) Asegurar collation consistente (utf8mb4_unicode_ci)
+ALTER TABLE categorias 
+  MODIFY nombre_categoria VARCHAR(191)
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci NOT NULL,
+  MODIFY slug VARCHAR(191) 
+  CHARACTER SET utf8mb4 
+  COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE etiquetas 
+  MODIFY nombre_etiqueta VARCHAR(191)
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE paginas 
+  MODIFY slug VARCHAR(191) 
+  CHARACTER SET utf8mb4 
+  COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE posts 
+  MODIFY titulo VARCHAR(255)
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci NOT NULL;
+
+-- 2) Evitar duplicados con claves únicas
+ALTER TABLE categorias 
+  ADD UNIQUE KEY uq_categorias_nombre (nombre_categoria),
+  ADD UNIQUE KEY uq_categorias_slug (slug);
+
+ALTER TABLE etiquetas 
+  ADD UNIQUE KEY uq_etiquetas_nombre (nombre_etiqueta);
+
+ALTER TABLE paginas 
+  ADD UNIQUE KEY uq_paginas_slug (slug);
+
+ALTER TABLE posts 
+  ADD UNIQUE KEY uq_posts_titulo_usuario (titulo, id_usuario);
+
+ALTER TABLE post_etiquetas 
+  ADD UNIQUE KEY uq_post_tag (id_post, id_etiqueta);
+
+-- 3) Añadir timestamps de actualización automática
+ALTER TABLE paginas 
+  ADD COLUMN actualizado_en TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;
+
+ALTER TABLE posts 
+  ADD COLUMN actualizado_en TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;
+
+-- 4) Índices de rendimiento
+CREATE INDEX idx_posts_fecha_publicacion ON posts (fecha_publicacion);
+CREATE INDEX idx_posts_cat_fecha ON posts (id_categoria, fecha_publicacion);
+
+-- 5) Integridad referencial ya existente (no tocar si ya está)
+-- FOREIGN KEYS: posts.id_categoria -> categorias.id_categoria
+--               posts.id_usuario -> usuarios.id_usuario
+--               post_etiquetas.id_post -> posts.id_post
+--               post_etiquetas.id_etiqueta -> etiquetas.id_etiqueta
+
+
+-- --------------------------------------------------------
+-- Tabla para rate limits (requerida por SecurityManager)
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS rate_limits;
+
+CREATE TABLE `rate_limits` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `action` VARCHAR(50) NOT NULL,
+    `ip` VARBINARY(16) NOT NULL,
+    `ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `hits` INT(11) NOT NULL DEFAULT 1,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_action_ip_ts` (`action`, `ip`, `ts`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

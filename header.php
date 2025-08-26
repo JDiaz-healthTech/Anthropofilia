@@ -52,7 +52,7 @@ function nav_active(string $file, ?string $slug = null): string {
       <meta name="robots" content="noindex, nofollow">
     <?php endif; ?>
 
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="./style.css">
 
     <?php if ($needsTinymce): ?>
       <!-- Performance hint para TinyMCE -->
@@ -77,12 +77,12 @@ function nav_active(string $file, ?string $slug = null): string {
         <span class="hamburger-icon"></span>
       </button>
       <div class="main-nav-links" id="main-nav-links">
-        <a href="/index.php"<?php echo nav_active('index.php'); ?>>Inicio</a>
-        <a href="/pagina.php?slug=historia-da-filosofia"<?php echo nav_active('pagina.php','historia-da-filosofia'); ?>>Historia da Filosofía</a>
-        <a href="/categoria.php?slug=lecturas-e-peliculas"<?php echo nav_active('categoria.php'); ?>>Lecturas e Películas</a>
-        <a href="/pagina.php?slug=etica"<?php echo nav_active('pagina.php','etica'); ?>>Ética</a>
-        <a href="/acerca_de_mi.php"<?php echo nav_active('acerca_de_mi.php'); ?>>Acerca de mí</a>
-        <a href="/contacto.php"<?php echo nav_active('contacto.php'); ?>>Contacto</a>
+        <a href="/Proyecto_Anthropofilia/index.php"<?php echo nav_active('index.php'); ?>>Inicio</a>
+        <a href="/Proyecto_Anthropofilia/pagina.php?slug=historia-da-filosofia"<?php echo nav_active('pagina.php','historia-da-filosofia'); ?>>Historia da Filosofía</a>
+        <a href="/Proyecto_Anthropofilia/categoria.php?slug=lecturas-e-peliculas"<?php echo nav_active('categoria.php'); ?>>Lecturas e Películas</a>
+        <a href="/Proyecto_Anthropofilia/pagina.php?slug=etica"<?php echo nav_active('pagina.php','etica'); ?>>Ética</a>
+        <a href="/Proyecto_Anthropofilia/acerca_de_mi.php"<?php echo nav_active('acerca_de_mi.php'); ?>>Acerca de mí</a>
+        <a href="/Proyecto_Anthropofilia/contacto.php"<?php echo nav_active('contacto.php'); ?>>Contacto</a>
 
         <!-- Opcional: enlaces admin mínimos -->
         <span class="spacer"></span>

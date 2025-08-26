@@ -1,6 +1,38 @@
 <?php
-// init.php
 declare(strict_types=1);
+
+// 🔹 Mostrar todos los errores y warnings
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+
+// 🔹 Forzar salida inmediata si hay error fatal
+register_shutdown_function(function () {
+    $error = error_get_last();
+    if ($error !== null) {
+        http_response_code(500);
+        echo "<h1 style='color:red'>Error fatal en PHP</h1>";
+        echo "<pre>" . print_r($error, true) . "</pre>";
+    }
+});
+
+// 🔹 Captura de excepciones no controladas
+set_exception_handler(function (Throwable $e) {
+    http_response_code(500);
+    echo "<h1 style='color:red'>Excepción no capturada</h1>";
+    echo "<p><strong>" . get_class($e) . ":</strong> " . $e->getMessage() . "</p>";
+    echo "<pre>" . $e->getTraceAsString() . "</pre>";
+});
+
+// 🔹 Captura de errores normales convertidos a excepciones
+set_error_handler(function ($severity, $message, $file, $line) {
+    if (!(error_reporting() & $severity)) {
+        return false; // Permite que PHP lo maneje si está silenciado
+    }
+    throw new ErrorException($message, 0, $severity, $file, $line);
+});
+
+// init.php
 
 // 1) Autoload (Composer)
 require_once __DIR__ . '/vendor/autoload.php';
