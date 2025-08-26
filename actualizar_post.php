@@ -50,10 +50,7 @@ try {
     }
 
     // (Opcional) si no es admin, verifica autoría:
-    // if (!$isAdmin && (int)$postRow['id_usuario'] !== (int)$_SESSION['id_usuario']) {
-    //     http_response_code(403);
-    //     die("No tienes permiso para editar este post.");
-    // }
+    $security->requireOwnershipOrRole((int)$postRow['id_usuario'], ['admin']);
 
     // 6) Verificar que la categoría exista (mensaje amable; además usa FK en BD)
     $stmt = $pdo->prepare("SELECT 1 FROM categorias WHERE id_categoria = ? LIMIT 1");
