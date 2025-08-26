@@ -42,7 +42,7 @@ require_once __DIR__ . '/header.php';
 <main class="container">
   <h1>Editar página estática</h1>
 
-  <form action="/actualizar_pagina.php" method="post" class="form-container" accept-charset="UTF-8">
+  <form action="actualizar_pagina.php" method="post" class="form-container" accept-charset="UTF-8">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($security->csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
     <input type="hidden" name="id_pagina" value="<?= (int)$pagina['id_pagina'] ?>">
 
@@ -73,7 +73,7 @@ require_once __DIR__ . '/header.php';
 
     <div style="display:flex; gap:.5rem; align-items:center;">
       <button type="submit">Actualizar página</button>
-      <a href="/gestionar_paginas.php">Cancelar</a>
+      <a href="gestionar_paginas.php">Cancelar</a>
     </div>
   </form>
 </main>
