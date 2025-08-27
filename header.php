@@ -39,7 +39,11 @@ function nav_active(string $file, ?string $slug = null): string {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="color-scheme" content="light dark">
+    <meta name="format-detection" content="telephone=no">
     <title><?php echo htmlspecialchars($page_title ?? 'Anthropofilia Blog', ENT_QUOTES, 'UTF-8'); ?></title>
 
     <?php if (!empty($meta_description)): ?>
@@ -75,7 +79,7 @@ function nav_active(string $file, ?string $slug = null): string {
     <nav class="main-nav" role="navigation" aria-label="Principal">
       <button class="mobile-nav-toggle" aria-controls="main-nav-links" aria-expanded="false">
         <span class="visually-hidden">Menú</span>
-        <span class="hamburger-icon"></span>
+        <span class="hamburger-icon"><span></span></span>
       </button>
         <div class="main-nav-links" id="main-nav-links">
           <a href="<?= url('index.php') ?>"             <?= nav_active('index.php'); ?>>Inicio</a>

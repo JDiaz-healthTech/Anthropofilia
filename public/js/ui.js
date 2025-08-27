@@ -107,3 +107,5 @@ document.addEventListener('DOMContentLoaded', () => {
   applyPrefs(readPrefs());
   bindControls();
 });
+
+

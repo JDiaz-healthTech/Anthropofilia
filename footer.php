@@ -60,10 +60,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const mainNavLinks = document.getElementById('main-nav-links');
 
     if (mobileNavToggle && mainNavLinks) {
-        mobileNavToggle.addEventListener('click', function () {
-            mainNavLinks.classList.toggle('active');
-            this.setAttribute('aria-expanded', mainNavLinks.classList.contains('active'));
-        });
+      mobileNavToggle.addEventListener('click', function () {
+        const isOpen = mainNavLinks.classList.toggle('active');
+        this.classList.toggle('is-open', isOpen);
+        this.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        this.setAttribute('aria-label', isOpen ? 'Cerrar menú' : 'Abrir menú');
+      });
     }
 });
 </script>

@@ -384,3 +384,137 @@ blockquote { border-left: 4px solid var(--theme-primary); padding: .75rem 1rem; 
   .link-with-thumb img { width: 20px; height: 20px; }
   .post-card { padding: 1rem; }
 }
+
+/* Navegación responsive */
+.nav-toggle {
+  display: none;
+  border: 1px solid var(--theme-border);
+  background: var(--theme-surface);
+  padding: .45rem .6rem;
+  border-radius: 6px;
+  line-height: 1;
+}
+@media (max-width: 880px) {
+  .nav-toggle { display: inline-block; }
+  .main-nav-links { display: none; }
+  .main-nav-links.is-open { display: block; }
+  .main-nav-links a { display: block; padding: .5rem 0; }
+}
+
+/* Tipografía fluida y legible */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+:root {
+  --step--1: clamp(0.88rem, 0.85rem + 0.2vw, 0.95rem);
+  --step-0:  clamp(1.00rem, 0.95rem + 0.4vw, 1.10rem);
+  --step-1:  clamp(1.25rem, 1.10rem + 0.8vw, 1.40rem);
+  --step-2:  clamp(1.56rem, 1.30rem + 1.2vw, 1.80rem);
+}
+body { font-size: var(--step-0); line-height: 1.65; }
+h1 { font-size: var(--step-2); line-height: 1.2; }
+h2 { font-size: var(--step-1); line-height: 1.25; }
+small, .help-text { font-size: var(--step--1); }
+
+/* Contenedor fluido con máximos */
+.container { width: min(100% - 2rem, 1080px); margin-inline: auto; }
+
+/* Tablas y iframes responsivos */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.embed-responsive { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+.embed-responsive iframe,
+.embed-responsive video { position:absolute; top:0; left:0; width:100%; height:100%; }
+
+/* Tamaños táctiles mínimos */
+button, .button, a.button-like { min-height: 44px; padding: .6rem .9rem; }
+
+/* Preferencias del usuario */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* iOS notch */
+@supports (padding: max(0px)) {
+  body { padding-left: max(0px, env(safe-area-inset-left)); padding-right: max(0px, env(safe-area-inset-right)); }
+}
+
+input, textarea, select, button {
+  font: inherit;
+  width: 100%;
+  max-width: 100%;
+}
+input, textarea, select {
+  padding: .6rem .7rem;
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+}
+@media (min-width: 720px) {
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+}
+
+/* ===== Hamburguesa animada ===== */
+.mobile-nav-toggle{
+  --size: 40px;
+  --bar-h: 2px;
+  --gap: 6px;
+  --anim: .22s ease-in-out;
+
+  display:inline-flex; align-items:center; justify-content:center;
+  width:var(--size); height:var(--size);
+  border:1px solid var(--theme-border);
+  background:var(--theme-surface);
+  border-radius:8px; padding:0; cursor:pointer; line-height:1;
+}
+
+.mobile-nav-toggle:focus{ outline:2px solid var(--theme-primary); outline-offset:2px; }
+
+/* icono */
+.hamburger-icon{
+  position:relative; width:22px; height:calc(var(--bar-h) * 3 + var(--gap) * 2);
+  display:inline-block;
+}
+.hamburger-icon::before,
+.hamburger-icon::after,
+.hamburger-icon span{
+  content:""; position:absolute; left:0; right:0; height:var(--bar-h);
+  background: currentColor; border-radius:2px; transition: transform var(--anim), opacity var(--anim), top var(--anim), bottom var(--anim);
+}
+.hamburger-icon span{ top: calc(var(--bar-h) + var(--gap)); } /* barra central */
+.hamburger-icon::before{ top:0; }
+.hamburger-icon::after{ bottom:0; }
+
+/* estado abierto → “X” */
+.mobile-nav-toggle.is-open .hamburger-icon::before{
+  top: calc(var(--bar-h) + var(--gap));
+  transform: rotate(45deg);
+}
+.mobile-nav-toggle.is-open .hamburger-icon::after{
+  bottom: auto; top: calc(var(--bar-h) + var(--gap));
+  transform: rotate(-45deg);
+}
+.mobile-nav-toggle.is-open .hamburger-icon span{
+  opacity:0;
+}
+
+/* Mostrar/ocultar nav en mobile */
+@media (max-width:880px){
+  .main-nav-links{ display:none; }
+  .main-nav-links.active{ display:block; }
+  .main-nav-links a{ display:block; padding:.6rem 0; }
+  .mobile-nav-toggle{ display:inline-flex; }
+}
+
+/* En desktop ocultamos el botón si no lo usas como “compacto” */
+@media (min-width:881px){
+  .mobile-nav-toggle{ display:none; }
+}
+
+/* Modo oscuro (si lo tienes con .dark-mode en <body>) */
+.dark-mode .mobile-nav-toggle{
+  background:#1a1a1a; border-color:#333; color:#eee
+  
+
+  /* el botón de accesibilidad también */
+  .visually-hidden{
+  position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+};
+}
