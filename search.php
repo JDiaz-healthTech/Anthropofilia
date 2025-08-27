@@ -68,7 +68,8 @@ $pages = max(1, (int)ceil($total / $perPage));
     <?php foreach ($results as $post): ?>
       <article>
         <h3>
-          <a href="/post.php?id=<?= (int)$post['id_post']; ?>">
+<a href="post.php?id=<?= (int)$post['id_post'] ?>">
+
             <?= htmlspecialchars($post['titulo'] ?? '(sin título)', ENT_QUOTES, 'UTF-8'); ?>
           </a>
         </h3>

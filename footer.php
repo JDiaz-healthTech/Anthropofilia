@@ -10,11 +10,11 @@ $isLogged  = isset($security) ? (bool)$security->userId() : false;
   <p>&copy; <?= $year ?> Ana López Sampedro. Todos los derechos reservados.</p>
 
   <nav class="footer-nav" aria-label="Enlaces legales">
-    <a href="<?php echo $baseUrl; ?>/aviso-legal.php">Aviso legal</a>
+    <a href="<?= url('aviso-legal.php') ?>">Aviso legal</a>
     <span aria-hidden="true">·</span>
-    <a href="<?php echo $baseUrl; ?>/privacidad.php">Privacidad</a>
+    <a href="<?= url('privacidad.php') ?>">Privacidad</a>
     <span aria-hidden="true">·</span>
-    <a href="<?php echo $baseUrl; ?>/cookies.php">Cookies</a>
+    <a href="<?= url('cookies.php') ?>">Cookies</a>
   </nav>
 
   <nav class="admin-nav" aria-label="Área de administración">
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 <!-- el primero no tenia defer y daba problemas de carga -->
-<script defer src="/accessibility.js"></script>
-<script defer src="/public/js/ui.js"></script>
-<script defer src="/public/js/lightbox.js"></script>
+<script defer src="<?= url('accessibility.js') ?>"></script>
+<script defer src="<?= url('public/js/ui.js') ?>"></script>
+<script defer src="<?= url('public/js/lightbox.js') ?>"></script>
 

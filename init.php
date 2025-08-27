@@ -34,12 +34,19 @@ set_error_handler(function ($severity, $message, $file, $line) {
 
 // init.php
 // Configuración inicial común a todas las páginas
-$baseUrl = $baseUrl ?? ''; // por si viene de config
-function url(string $path = ''): string {
-  global $baseUrl;
-  return rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
-}
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$script = $_SERVER['SCRIPT_NAME'] ?? '/';
+$basePath = rtrim(str_replace('\\','/', dirname($script)), '/');
+$basePath = ($basePath === '/' ? '' : $basePath); // si estás en raíz, queda vacío
 
+// Permite APP_URL opcional en .env; si no existe, calcula automáticamente
+$baseUrl = $_ENV['APP_URL'] ?? ($scheme . '://' . $host . $basePath);
+
+function url(string $path): string {
+    global $baseUrl;
+    return rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
+}
 
 // 1) Autoload (Composer)
 require_once __DIR__ . '/vendor/autoload.php';

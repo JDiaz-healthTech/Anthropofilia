@@ -56,7 +56,7 @@ try {
     <?php foreach ($posts as $post): ?>
       <article>
         <h2>
-          <a href="/post.php?id=<?= (int)$post['id_post'] ?>">
+<a href="post.php?id=<?= (int)$post['id_post'] ?>">
             <?= htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8') ?>
           </a>
         </h2>

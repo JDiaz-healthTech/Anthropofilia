@@ -13,8 +13,12 @@ $isLogged     = isset($security) && method_exists($security, 'userId') ? (bool)$
 $scheme   = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $host     = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $path     = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
-$baseUrl  = $_ENV['APP_URL'] ?? ($scheme . '://' . $host);
-$canonical= rtrim($baseUrl, '/') . $path;
+
+
+//propuesta de cambio
+//$baseUrl  = $_ENV['APP_URL'] ?? ($scheme . '://' . $host);
+$canonical = url(ltrim($path, '/'));
+
 
 // Páginas que no deben indexarse
 $noindexPages = [
@@ -50,7 +54,7 @@ function nav_active(string $file, ?string $slug = null): string {
       <meta name="description" content="<?php echo htmlspecialchars($meta_description, ENT_QUOTES, 'UTF-8'); ?>">
     <?php endif; ?>
 
-    <link rel="canonical" href="<?php echo htmlspecialchars($canonical, ENT_QUOTES, 'UTF-8'); ?>">
+    <!-- <link rel="canonical" href="<?php echo htmlspecialchars($canonical, ENT_QUOTES, 'UTF-8'); ?>"> -->
 
     <?php if (in_array($current_page, $noindexPages, true)): ?>
       <meta name="robots" content="noindex, nofollow">

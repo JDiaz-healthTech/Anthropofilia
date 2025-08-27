@@ -307,7 +307,7 @@ final class SecurityManager
 
     public function checkRateLimit(string $action, int $maxAttempts, int $windowSeconds): void
     {
-        $ip        = $this->clientIPBinary();
+        $ip        = $this->clientIP();
         $threshold = date('Y-m-d H:i:s', time() - $windowSeconds);
 
         if ($this->pdo) {
@@ -330,8 +330,12 @@ final class SecurityManager
                 exit('Demasiadas solicitudes. Intenta más tarde.');
             }
 
-            $ins = $this->pdo->prepare("INSERT INTO rate_limits(action, ip) VALUES (:a, :ip)");
-            $ins->execute([':a' => $action, ':ip' => $ip]);
+$ins = $this->pdo->prepare("
+    INSERT INTO rate_limits (action, ip, ts, hits)
+    VALUES (:a, :ip, NOW(), 1)
+    ON DUPLICATE KEY UPDATE hits = hits + 1
+");
+$ins->execute([':a' => $action, ':ip' => $ip]);
         } else {
             // Fallback en sesión
             $key    = sprintf('rl_%s_%s', $action, bin2hex($ip));
@@ -449,7 +453,7 @@ final class SecurityManager
     /** @param 'info'|'warning'|'error'|'security' $level */
     public function logEvent(string $level, string $event, array $details = []): void
     {
-        $ip = $this->clientIPBinary();
+        $ip = $this->clientIP();
         $ua = $_SERVER['HTTP_USER_AGENT'] ?? null;
         $uid = $this->userId();
 
@@ -505,8 +509,5 @@ final class SecurityManager
         return $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
     }
 
-    private function clientIPBinary(): string
-    {
-        return @inet_pton($this->clientIP()) ?: (string)inet_pton('127.0.0.1');
-    }
+
 }

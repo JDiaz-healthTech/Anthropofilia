@@ -32,7 +32,7 @@ require_once __DIR__ . '/header.php';
     </p>
   <?php endif; ?>
 
-  <form action="/procesar_login.php" method="POST" class="form-container" novalidate autocomplete="on">
+  <form action="<?= url('procesar_login.php') ?>" method="POST" class="form-container" novalidate autocomplete="on">
     <?php echo $security->csrfField(); ?>
 
     <div>

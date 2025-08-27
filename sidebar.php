@@ -9,7 +9,7 @@ declare(strict_types=1);
 <aside>
   <div class="sidebar-widget">
     <h4>Buscar</h4>
-    <form action="/search.php" method="GET" class="form-container" style="padding:0;border:none;margin:0;">
+    <<form action="<?= url('search.php') ?>" method="GET" class="form-container" style="padding:0;border:none;margin:0;">
       <input type="search" name="q" placeholder="Escribe aquí..." required
              value="<?php echo htmlspecialchars((string)($_GET['q'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
       <button type="submit">Buscar</button>
@@ -21,7 +21,7 @@ declare(strict_types=1);
     <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgtUsMo7JzZqe2x0_oI4kpdla_db0L_uUd37YU5zKKlCyZosWtwZCyWs0EfEa6t9-NooVepFnKOt2yBQP5zlTjQJbKDS6gwc_c-sxGkvYL84axXd8RndyeJerDYolorZAPZGxVVM8rVqYieOL2Smx9bTE3M7ofb5tCmW_PB-Rwe6oafgA/s220/Logo%20divertido.png"
          alt="Foto de Ana López Sampedro" style="width:100%;">
     <p>Mi nombre es Ana y soy licenciada en Filosofía por la Universidad de Santiago de Compostela...</p>
-    <a href="/acerca_de_mi.php">Leer más</a>
+    <a href="<?= url('acerca_de_mi.php') ?>">Leer más</a>
   </div>
 
   <div class="sidebar-widget">
@@ -39,7 +39,7 @@ declare(strict_types=1);
             foreach ($cats as $cat) {
                 $slug = htmlspecialchars($cat['slug'] ?? '', ENT_QUOTES, 'UTF-8');
                 $name = htmlspecialchars($cat['nombre_categoria'] ?? '', ENT_QUOTES, 'UTF-8');
-                echo '<li><a href="/categoria.php?slug=' . $slug . '">' . $name . '</a></li>';
+                echo '<li><a href="' . url('categoria.php?slug=' . $slug) . '">' . $name . '</a></li>';
             }
             echo '</ul>';
         } else {
@@ -75,7 +75,7 @@ declare(strict_types=1);
                 $mes  = (int)$fila['mes_num'];
                 $total = (int)$fila['total_posts'];
                 $mesNombre = $mesesES[$mes] ?? (string)$mes;
-                $href = '/archivo.php?anio=' . $anio . '&mes=' . $mes;
+                $href = url('archivo.php?anio=' . $anio . '&mes=' . $mes);
                 echo '<li><a href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '">'
                    . ucfirst($mesNombre) . ' ' . $anio . ' (' . $total . ')</a></li>';
             }

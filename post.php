@@ -32,14 +32,14 @@ try {
     }
 
     // 3) Canonical por slug (si tenemos ambos y no coinciden, o si vino id sin slug)
-    if (!empty($post['slug'])) {
-        $wantSlug = (string)$post['slug'];
-        $haveSlug = (string)($slug ?? '');
-        if ($haveSlug === '' || $haveSlug !== $wantSlug) {
-            header('Location: /post.php?slug=' . urlencode($wantSlug), true, 301);
-            exit();
-        }
+if (!empty($post['slug'])) {
+    $wantSlug = (string)$post['slug'];
+    $haveSlug = (string)($slug ?? '');
+    if ($haveSlug === '' || $haveSlug !== $wantSlug) {
+        header('Location: ' . url('post.php?slug=' . urlencode($wantSlug)), true, 301);
+        exit();
     }
+}
 
     // 4) Etiquetas del post
     $stmtTags = $pdo->prepare(
@@ -84,7 +84,7 @@ require_once __DIR__ . '/header.php';
         <?php if (!empty($tags)): ?>
           · <span class="tags">
               <?php foreach ($tags as $t): ?>
-                <a href="/search.php?q=<?= urlencode($t) ?>" rel="tag">
+                <a href="<?= url('search.php?q=' . urlencode($t)) ?>=<?= urlencode($t) ?>" rel="tag">
                   <?= htmlspecialchars($t, ENT_QUOTES, 'UTF-8') ?>
                 </a>
               <?php endforeach; ?>

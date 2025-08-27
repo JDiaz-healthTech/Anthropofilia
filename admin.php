@@ -43,7 +43,7 @@ require_once __DIR__ . '/header.php';
       <h2 id="gestion-entradas">Gestionar Entradas</h2>
       <nav aria-label="Acciones de entradas">
         <ul>
-          <li><a href="/crear_post.php">Crear nueva entrada</a></li>
+          <li><a href="<?= url('crear_post.php') ?>">Crear nueva entrada</a></li>
           <li>
             <a href="/gestionar_posts.php">Gestionar entradas</a>
             <?php if ($postsCount): ?>
