@@ -10,19 +10,19 @@ $isLogged  = isset($security) ? (bool)$security->userId() : false;
   <p>&copy; <?= $year ?> Ana López Sampedro. Todos los derechos reservados.</p>
 
   <nav class="footer-nav" aria-label="Enlaces legales">
-    <a href="/aviso-legal.php">Aviso legal</a>
+    <a href="<?php echo $baseUrl; ?>/aviso-legal.php">Aviso legal</a>
     <span aria-hidden="true">·</span>
-    <a href="/privacidad.php">Privacidad</a>
+    <a href="<?php echo $baseUrl; ?>/privacidad.php">Privacidad</a>
     <span aria-hidden="true">·</span>
-    <a href="/cookies.php">Cookies</a>
+    <a href="<?php echo $baseUrl; ?>/cookies.php">Cookies</a>
   </nav>
 
   <nav class="admin-nav" aria-label="Área de administración">
     <?php if (!$isLogged): ?>
-      <a href="/login.php" class="admin-link" rel="nofollow">Admin Login</a>
+      <a href="<?php echo $baseUrl; ?>/login.php" class="admin-link" rel="nofollow">Admin Login</a>
     <?php else: ?>
-      <a href="/admin.php" class="admin-link">Panel</a>
-      <form action="/logout.php" method="POST" class="logout-form" style="display:inline">
+      <a href="<?php echo $baseUrl; ?>/admin.php" class="admin-link">Panel</a>
+      <form action="<?php echo $baseUrl; ?>/logout.php" method="POST" class="logout-form" style="display:inline">
         <?= $security->csrfField(); ?>
         <button type="submit">Salir</button>
       </form>
@@ -67,4 +67,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-<script src="/accessibility.js"></script>
+<!-- el primero no tenia defer y daba problemas de carga -->
+<script defer src="/accessibility.js"></script>
+<script defer src="/public/js/ui.js"></script>
+<script defer src="/public/js/lightbox.js"></script>
+

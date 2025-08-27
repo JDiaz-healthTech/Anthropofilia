@@ -93,7 +93,14 @@ require_once __DIR__ . '/header.php';
       </p>
       <?php if (!empty($imagen_url)): ?>
         <figure class="imagen-destacada">
+          <!-- Alt vacío intencionadamente; la imagen es decorativa 
           <img src="<?= htmlspecialchars($imagen_url, ENT_QUOTES, 'UTF-8') ?>" alt="Imagen destacada">
+          a continuacion propuesta para mejorar la presetacion de la imagen -->
+          <img src="<?= htmlspecialchars($imagen_url, ENT_QUOTES, 'UTF-8') ?>"
+              alt="Imagen destacada"
+              loading="lazy" decoding="async"
+              sizes="(min-width: 800px) 720px, 100vw">
+
         </figure>
       <?php endif; ?>
     </header>

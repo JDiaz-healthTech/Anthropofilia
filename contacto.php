@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/init.php';
-
+//enviar_contacto.php
 // Recuperar datos del formulario si existen (patrón PRG)
 $form_data = $_SESSION['form_data'] ?? [];
 // No lo borres aún; lo eliminamos tras pintar el form
@@ -31,7 +31,7 @@ require_once __DIR__ . '/header.php';
 
   <p>Si tienes alguna pregunta o sugerencia, no dudes en escribirme.</p>
 
-  <form action="procesar_contacto.php" method="POST" class="form-container" novalidate>
+  <form action="<?= url('enviar_contacto.php') ?>" method="POST" class="form-container" novalidate>
     <?php
       // CSRF (usa el helper del SecurityManager)
       echo $security->csrfField();

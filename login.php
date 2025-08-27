@@ -23,6 +23,8 @@ require_once __DIR__ . '/header.php';
 ?>
 <main class="container" id="content">
   <h2>Acceso al Panel</h2>
+  <!-- Mensaje adicional mientras el registro no es global -->
+    <p class="help-text">Acceso restringido. Si necesitas una cuenta, contacta con la editora.</p>
 
   <?php if (isset($messages[$status])): ?>
     <p class="status-<?php echo $status === 'logged_out' ? 'success' : 'error'; ?>">

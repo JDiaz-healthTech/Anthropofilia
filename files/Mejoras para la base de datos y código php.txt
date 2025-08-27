@@ -129,3 +129,27 @@ CREATE TABLE `rate_limits` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `uq_action_ip_ts` (`action`, `ip`, `ts`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+--------------------------------------
+**************************************
+--------------------------------------
+
+para hacer "enumeraciones" o "restricciones de valores" en una columna de una tabla puede y debe seguirse el siguiente metodo, usando una tabla auxiliar referenciada desde la principal
+
+CREATE TABLE TipoEstados (
+    Codigo CHAR(1) PRIMARY KEY,
+    Descripcion VARCHAR(50) NOT NULL
+);
+
+INSERT INTO TipoEstados (Codigo, Descripcion) VALUES
+('C','Completado'),
+('N','Nuevo'),
+('P','Pendiente');
+
+ALTER TABLE MiTabla
+ADD CONSTRAINT FK_MiTabla_Tipo
+FOREIGN KEY (Tipo) REFERENCES TipoEstados(Codigo);
+
+

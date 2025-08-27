@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-
+// Manejo avanzado de errores y excepciones en PHP Durante desarrollo
 // 🔹 Mostrar todos los errores y warnings
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
@@ -33,6 +33,13 @@ set_error_handler(function ($severity, $message, $file, $line) {
 });
 
 // init.php
+// Configuración inicial común a todas las páginas
+$baseUrl = $baseUrl ?? ''; // por si viene de config
+function url(string $path = ''): string {
+  global $baseUrl;
+  return rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
+}
+
 
 // 1) Autoload (Composer)
 require_once __DIR__ . '/vendor/autoload.php';

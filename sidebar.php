@@ -90,6 +90,7 @@ declare(strict_types=1);
     ?>
   </div>
 
+ <!-- Codigo anterior a introducir mini-fotos en los enlaces
   <div class="sidebar-widget">
     <h4>Sitios de interés</h4>
     <ul>
@@ -98,4 +99,49 @@ declare(strict_types=1);
       <li><a href="https://www.iphes.cat/" target="_blank" rel="noopener noreferrer">IPHES</a></li>
     </ul>
   </div>
+  A continuacion propuesta -->
+    <div class="sidebar-widget">
+    <h4>Sitios de interés</h4>
+    <?php
+      // Define aquí tus sitios, con opción a mini-foto local si existe
+      $sites = [
+        ['url' => 'https://www.atapuerca.org/', 'label' => 'Fundación Atapuerca', 'thumb' => '/images/links/atapuerca.jpg'],
+        ['url' => 'https://www.cenieh.es/',      'label' => 'CENIEH',              'thumb' => '/images/links/cenieh.jpg'],
+        ['url' => 'https://www.iphes.cat/',      'label' => 'IPHES',               'thumb' => '/images/links/iphes.jpg'],
+      ];
+
+      echo '<ul class="link-thumbs">';
+      foreach ($sites as $s) {
+        $u = $s['url'];
+        $label = htmlspecialchars($s['label'], ENT_QUOTES, 'UTF-8');
+        $domain = parse_url($u, PHP_URL_HOST) ?? '';
+        $local = $s['thumb'] ?? null;
+        $imgSrc = '';
+
+        // Prefiere mini-foto local si existe
+        if ($local) {
+          $fs = $_SERVER['DOCUMENT_ROOT'] . $local;
+          if (@is_file($fs)) {
+            $imgSrc = $local;
+          }
+        }
+        // Si no hay local, usa el favicon como placeholder
+        if (!$imgSrc && $domain) {
+          $imgSrc = 'https://www.google.com/s2/favicons?domain=' . urlencode($domain) . '&sz=64';
+        }
+
+        $safeUrl = htmlspecialchars($u, ENT_QUOTES, 'UTF-8');
+        $safeImg = htmlspecialchars($imgSrc, ENT_QUOTES, 'UTF-8');
+        echo '<li>
+                <a class="link-with-thumb" href="'.$safeUrl.'" target="_blank" rel="noopener noreferrer">
+                  <img src="'.$safeImg.'" alt="" aria-hidden="true" loading="lazy" width="22" height="22">
+                  <span>'.$label.'</span>
+                </a>
+              </li>';
+      }
+      echo '</ul>';
+    ?>
+  </div>
+
+
 </aside>
