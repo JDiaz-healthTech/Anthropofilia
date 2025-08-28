@@ -106,6 +106,7 @@ function nav_active(string $file, ?string $slug = null): string {
         <label for="theme-toggle" class="theme-toggle-label"></label>
       </div>
       <div class="accessibility-controls">
+        <button id="toggle-dark-mode" title="Alternar alto contraste" class="accessibility-button">HC</button>
         <button id="toggle-high-contrast" title="Alternar alto contraste" class="accessibility-button">HC</button>
         <button id="decrease-font-size" title="Disminuir tamaño de fuente" class="accessibility-button">A-</button>
         <button id="increase-font-size" title="Aumentar tamaño de fuente" class="accessibility-button">A+</button>
