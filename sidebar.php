@@ -55,38 +55,69 @@ declare(strict_types=1);
   <div class="sidebar-widget">
     <h4>Archivo</h4>
     <?php
+    //Primera version sin desplegable
     // Mapeo de meses en español (evita depender de lc_time_names/MONTHNAME)
-    $mesesES = [
-        1=>'enero',2=>'febrero',3=>'marzo',4=>'abril',5=>'mayo',6=>'junio',
-        7=>'julio',8=>'agosto',9=>'septiembre',10=>'octubre',11=>'noviembre',12=>'diciembre'
-    ];
-    try {
-        $sql = "SELECT YEAR(fecha_publicacion) AS anio,
-                       MONTH(fecha_publicacion) AS mes_num,
-                       COUNT(id_post) AS total_posts
-                FROM posts
-                GROUP BY anio, mes_num
-                ORDER BY anio DESC, mes_num DESC";
-        $archivo = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-        if ($archivo) {
-            echo '<ul>';
-            foreach ($archivo as $fila) {
-                $anio = (int)$fila['anio'];
-                $mes  = (int)$fila['mes_num'];
-                $total = (int)$fila['total_posts'];
-                $mesNombre = $mesesES[$mes] ?? (string)$mes;
-                $href = url('archivo.php?anio=' . $anio . '&mes=' . $mes);
-                echo '<li><a href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '">'
-                   . ucfirst($mesNombre) . ' ' . $anio . ' (' . $total . ')</a></li>';
-            }
-            echo '</ul>';
-        } else {
-            echo '<p>Sin archivos disponibles.</p>';
-        }
-    } catch (Throwable $e) {
-        // Opcional: $security->logEvent('error','sidebar_archive_failed',['error'=>$e->getMessage()]);
-        echo '<p>No se pudo cargar el archivo.</p>';
+    // $mesesES = [
+    //     1=>'enero',2=>'febrero',3=>'marzo',4=>'abril',5=>'mayo',6=>'junio',
+    //     7=>'julio',8=>'agosto',9=>'septiembre',10=>'octubre',11=>'noviembre',12=>'diciembre'
+    // ];
+    // try {
+    //     $sql = "SELECT YEAR(fecha_publicacion) AS anio,
+    //                    MONTH(fecha_publicacion) AS mes_num,
+    //                    COUNT(id_post) AS total_posts
+    //             FROM posts
+    //             GROUP BY anio, mes_num
+    //             ORDER BY anio DESC, mes_num DESC";
+    //     $archivo = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    //     if ($archivo) {
+    //         echo '<ul>';
+    //         foreach ($archivo as $fila) {
+    //             $anio = (int)$fila['anio'];
+    //             $mes  = (int)$fila['mes_num'];
+    //             $total = (int)$fila['total_posts'];
+    //             $mesNombre = $mesesES[$mes] ?? (string)$mes;
+    //             $href = url('archivo.php?anio=' . $anio . '&mes=' . $mes);
+    //             echo '<li><a href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '">'
+    //                . ucfirst($mesNombre) . ' ' . $anio . ' (' . $total . ')</a></li>';
+    //         }
+    //         echo '</ul>';
+    //     } else {
+    //         echo '<p>Sin archivos disponibles.</p>';
+    //     }
+    // } catch (Throwable $e) {
+    //     // Opcional: $security->logEvent('error','sidebar_archive_failed',['error'=>$e->getMessage()]);
+    //     echo '<p>No se pudo cargar el archivo.</p>';
+    // }
+    
+$mesesES = [1=>'enero',2=>'febrero',3=>'marzo',4=>'abril',5=>'mayo',6=>'junio',7=>'julio',8=>'agosto',9=>'septiembre',10=>'octubre',11=>'noviembre',12=>'diciembre'];
+try {
+  $sql = "SELECT YEAR(fecha_publicacion) anio, MONTH(fecha_publicacion) mes, COUNT(*) total
+          FROM posts GROUP BY anio, mes ORDER BY anio DESC, mes DESC";
+  $rows = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+  // Agrupar por año
+  $byYear = [];
+  foreach ($rows as $r) { $byYear[(int)$r['anio']][] = $r; }
+
+  echo '<ul class="archive-tree">';
+  foreach ($byYear as $anio => $meses) {
+    $countYear = array_sum(array_map(fn($r)=> (int)$r['total'], $meses));
+    echo '<li><details'.($anio===date('Y')?' open':'').'><summary>'
+        . $anio . ' <span class="count">(' . $countYear . ')</span></summary><ul>';
+    // meses con enlace
+    foreach ($meses as $r) {
+      $mesNum = (int)$r['mes'];
+      $href = url('archivo.php?anio='.$anio.'&mes='.$mesNum);
+      $label = ucfirst($mesesES[$mesNum]).' ('.$r['total'].')';
+      echo '<li><a href="'.htmlspecialchars($href,ENT_QUOTES,'UTF-8').'">'.$label.'</a></li>';
     }
+    echo '</ul></details></li>';
+  }
+  echo '</ul>';
+} catch (Throwable $e) {
+  echo '<p>No se pudo cargar el archivo.</p>';
+}
+
     ?>
   </div>
 

@@ -392,6 +392,13 @@ blockquote { border-left: 4px solid var(--theme-primary); padding: .75rem 1rem; 
   .post-card { padding: 1rem; }
 }
 
+/*  Ajustes para el árbol de archivos */
+.archive-tree { list-style: none; padding: 0; margin: 0; }
+.archive-tree > li { margin-bottom: .25rem; }
+.archive-tree summary { cursor: pointer; font-weight: 600; }
+.archive-tree .count { opacity: .7; font-weight: 400; }
+.archive-tree ul { list-style: none; padding-left: 1rem; margin: .25rem 0 .5rem; }
+
 
 /* Tipografía fluida y legible */
 :root {
