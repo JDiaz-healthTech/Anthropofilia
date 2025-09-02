@@ -40,6 +40,17 @@ $page_title = 'Editar Página';
 require_once __DIR__ . '/header.php';
 ?>
 <main class="container">
+
+    <nav class="breadcrumbs" aria-label="Breadcrumbs">
+    <a href="<?= url('index.php') ?>">Inicio</a> <span aria-hidden="true">›</span>
+    <?php if (!empty($categoria)): ?>
+      <a href="<?= url('categoria.php?slug=' . urlencode($categoria['slug'])) ?>">
+        <?= htmlspecialchars($categoria['nombre_categoria'], ENT_QUOTES, 'UTF-8') ?>
+      </a> <span aria-hidden="true">›</span>
+    <?php endif; ?>
+    <span aria-current="page"><?= htmlspecialchars($page_title ?? 'Actual', ENT_QUOTES, 'UTF-8') ?></span>
+  </nav>
+ 
   <h1>Editar página estática</h1>
 
   <form action="actualizar_pagina.php" method="post" class="form-container" accept-charset="UTF-8">

@@ -31,14 +31,14 @@ try {
         $security->abort(404, 'Post no encontrado.');
     }
 
-    // 3) Canonical por slug (si tenemos ambos y no coinciden, o si vino id sin slug)
+// Si llega id o el slug no coincide exactamente, redirige a la canónica por slug
 if (!empty($post['slug'])) {
-    $wantSlug = (string)$post['slug'];
-    $haveSlug = (string)($slug ?? '');
-    if ($haveSlug === '' || $haveSlug !== $wantSlug) {
-        header('Location: ' . url('post.php?slug=' . urlencode($wantSlug)), true, 301);
-        exit();
-    }
+  $canonical = url('post.php?slug=' . urlencode($post['slug']));
+  $isSlugRequest = isset($_GET['slug']) && $_GET['slug'] === $post['slug'];
+  if (!$isSlugRequest) {
+    header('Location: ' . $canonical, true, 301);
+    exit();
+  }
 }
 
     // 4) Etiquetas del post
@@ -76,6 +76,15 @@ $contenido_html = $security->sanitizeHTML($post['contenido'] ?? '');
 require_once __DIR__ . '/header.php';
 ?>
 <main class="container post">
+  <nav class="breadcrumbs" aria-label="Breadcrumbs">
+    <a href="<?= url('index.php') ?>">Inicio</a> <span aria-hidden="true">›</span>
+    <?php if (!empty($categoria)): ?>
+      <a href="<?= url('categoria.php?slug=' . urlencode($categoria['slug'])) ?>">
+        <?= htmlspecialchars($categoria['nombre_categoria'], ENT_QUOTES, 'UTF-8') ?>
+      </a> <span aria-hidden="true">›</span>
+    <?php endif; ?>
+    <span aria-current="page"><?= htmlspecialchars($page_title ?? 'Actual', ENT_QUOTES, 'UTF-8') ?></span>
+  </nav>
   <article>
     <header>
       <h1><?= $titulo_safe ?></h1>

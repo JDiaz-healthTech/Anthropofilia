@@ -62,6 +62,25 @@ function nav_active(string $file, ?string $slug = null): string {
 
     <link rel="stylesheet" href="./style.css">
 
+
+<?php
+// Puedes traerte aquí $settings o leer las 3 claves: color_site_bg, color_content_bg, bg_current
+$bgSite    = $settings['color_site_bg']    ?? '#ffffff';
+$bgContent = $settings['color_content_bg'] ?? '#ffffff';
+$bgImage   = $settings['bg_current']       ?? null;
+?>
+<style>
+  :root {
+    --bg: <?= htmlspecialchars($bgSite, ENT_QUOTES, 'UTF-8') ?>;
+    --bg-content: <?= htmlspecialchars($bgContent, ENT_QUOTES, 'UTF-8') ?>;
+  }
+  body {
+    background: var(--bg) <?= $bgImage ? 'url(/uploads/backgrounds/'.htmlspecialchars($bgImage, ENT_QUOTES, 'UTF-8').') center/cover no-repeat fixed' : '' ?>;
+  }
+  .main, .content, article { background: var(--bg-content); }
+</style>
+
+
     <?php if ($needsTinymce): ?>
       <!-- Performance hint para TinyMCE -->
       <link rel="preconnect" href="https://cdn.tiny.cloud" crossorigin>
@@ -100,17 +119,12 @@ function nav_active(string $file, ?string $slug = null): string {
             <a href="<?= url('login.php') ?>"           <?= nav_active('login.php'); ?> rel="nofollow">Admin</a>
           <?php endif; ?>
         </div>
-      <div class="theme-switcher">
-        <label for="theme-toggle" class="visually-hidden">Modo oscuro</label>
-        <input type="checkbox" id="theme-toggle" class="theme-toggle-checkbox">
-        <label for="theme-toggle" class="theme-toggle-label"></label>
-      </div>
-      <div class="accessibility-controls">
-        <button id="toggle-dark-mode" title="Alternar alto contraste" class="accessibility-button">HC</button>
-        <button id="toggle-high-contrast" title="Alternar alto contraste" class="accessibility-button">HC</button>
-        <button id="decrease-font-size" title="Disminuir tamaño de fuente" class="accessibility-button">A-</button>
-        <button id="increase-font-size" title="Aumentar tamaño de fuente" class="accessibility-button">A+</button>
-      </div>
+<div class="accessibility-controls">
+  <button id="toggle-dark"           title="Alternar claro/oscuro"       class="accessibility-button" aria-pressed="false">🌗</button>
+  <button id="toggle-high-contrast"  title="Alternar alto contraste"     class="accessibility-button" aria-pressed="false">HC</button>
+  <button id="increase-font-size"    title="Aumentar tamaño de fuente"   class="accessibility-button">A+</button>
+  <button id="decrease-font-size"    title="Disminuir tamaño de fuente"  class="accessibility-button">A−</button>
+</div>
     </nav>
 
     <div class="main-content-area">

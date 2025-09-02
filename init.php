@@ -33,19 +33,19 @@ set_error_handler(function ($severity, $message, $file, $line) {
 });
 
 // init.php
-// Configuración inicial común a todas las páginas
-$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$script = $_SERVER['SCRIPT_NAME'] ?? '/';
-$basePath = rtrim(str_replace('\\','/', dirname($script)), '/');
-$basePath = ($basePath === '/' ? '' : $basePath); // si estás en raíz, queda vacío
+$scheme   = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host     = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$script   = $_SERVER['SCRIPT_NAME'] ?? '/';
+$basePath = rtrim(str_replace('\\', '/', dirname($script)), '/');
+$basePath = ($basePath === '/' ? '' : $basePath);
 
-// Permite APP_URL opcional en .env; si no existe, calcula automáticamente
-$baseUrl = $_ENV['APP_URL'] ?? ($scheme . '://' . $host . $basePath);
+// Acepta APP_URL o APP_BASE_URL en .env
+$baseUrl = $_ENV['APP_URL'] ?? $_ENV['APP_BASE_URL'] ?? ($scheme . '://' . $host . $basePath);
 
 function url(string $path): string {
-    global $baseUrl;
-    return rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
+  global $baseUrl;
+  $path = ltrim($path, '/');
+  return rtrim($baseUrl, '/') . '/' . $path;
 }
 
 // 1) Autoload (Composer)
@@ -122,3 +122,19 @@ $security->boot();
 
 // (opcional) URL base para canónicas/links absolutos
 $_APP_BASE_URL = $_ENV['APP_URL'] ?? null;
+
+// Calcula $baseUrl de forma robusta si no viene del .env
+$scheme   = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host     = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$script   = $_SERVER['SCRIPT_NAME'] ?? '/';
+$basePath = rtrim(str_replace('\\', '/', dirname($script)), '/');
+$basePath = ($basePath === '/' ? '' : $basePath);
+
+$baseUrl = $_APP_BASE_URL ?: ($scheme . '://' . $host . $basePath);
+
+function canonical_url(): string {
+  global $baseUrl;
+  $requestPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+  return rtrim($baseUrl, '/') . $requestPath;
+}
+// fin init.php

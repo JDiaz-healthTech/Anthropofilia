@@ -347,6 +347,11 @@ aside { border-left: 1px solid var(--theme-border); padding-left: 1.5rem; }
   color: #000;
 }
 
+/* Tema oscuro por clase en <html> */
+html.theme-dark {
+  color-scheme: dark;
+}
+
 
 /* ===============================================================
    MEJORAS: mini-fotos en aside + proyección de imágenes + pulido
@@ -502,3 +507,34 @@ input, textarea, select {
 .dark-mode .mobile-nav-toggle{
   background:#1a1a1a; border-color:#333; color:#eee;
 }
+
+/* Asegura que los floats no invadan el footer */
+.main::after, .container::after, .content::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+/* El footer nunca es columna: */
+footer, .site-footer {
+  float: none !important;
+  clear: both !important;
+  display: block;
+  width: 100%;
+}
+
+/* Si usas flex o grid en el wrapper del sitio, asegura el pie a ancho completo */
+.site {
+  min-height: 100dvh;
+  display: block; /* respeta si ya tienes grid/flex; no lo cambies si existe */
+}
+
+
+.cards { display:grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap:1rem; }
+.card { border:1px solid rgba(0,0,0,.08); border-radius:.5rem; padding:1rem; background:var(--bg-content, #fff); }
+.card h3 { margin:.25rem 0 .5rem; font-size:1.1rem; }
+.card .btn { display:inline-block; padding:.4rem .75rem; border:1px solid currentColor; border-radius:.35rem; text-decoration:none; }
+
+
+.breadcrumbs { font-size:.9rem; opacity:.85; display:flex; gap:.35rem; align-items:center; flex-wrap:wrap; }
+.breadcrumbs a { text-decoration:none; }
