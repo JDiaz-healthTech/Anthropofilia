@@ -18,7 +18,8 @@ $meses = [1=>'enero','febrero','marzo','abril','mayo','junio','julio','agosto','
 $mesNombre = $meses[$mes];
 $page_title = "Archivo: {$mesNombre} {$anio}";
 $meta_description = "Entradas publicadas en {$mesNombre} de {$anio}."; // si tu header lo usa
-require_once __DIR__ . '/header.php';
+  $categoria = null; // para migas condicionales
+  require_once __DIR__.'/header.php';
 
 // 3) Paginación básica
 $perPage = 10;
@@ -52,26 +53,29 @@ try {
 <main class="container">
   <h1>Archivo de posts de: <?= htmlspecialchars($mesNombre . ' ' . $anio, ENT_QUOTES, 'UTF-8') ?></h1>
   <hr>
-  <?php if (!empty($posts)): ?>
-    <?php foreach ($posts as $post): ?>
-      <article>
-        <h2>
-<a href="post.php?id=<?= (int)$post['id_post'] ?>">
+<?php if (!empty($posts)): ?>
+  <?php foreach ($posts as $post): ?>
+    <article>
+      <h2>
+        <?php if (!empty($post['slug'])): ?>
+          <a href="post.php?slug=<?= urlencode($post['slug']) ?>">
             <?= htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8') ?>
           </a>
-        </h2>
-        <p>
-          Publicado el:
-          <?php
-            $ts = strtotime($post['fecha_publicacion']);
-          ?>
-          <time datetime="<?= htmlspecialchars(date('c', $ts), ENT_QUOTES, 'UTF-8') ?>">
-            <?= htmlspecialchars(date('d/m/Y', $ts), ENT_QUOTES, 'UTF-8') ?>
-          </time>
-        </p>
-      </article>
-    <?php endforeach; ?>
-
+        <?php else: ?>
+          <a href="post.php?id=<?= (int)$post['id_post'] ?>">
+            <?= htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8') ?>
+          </a>
+        <?php endif; ?>
+      </h2>
+      <?php $ts = strtotime($post['fecha_publicacion'] ?? '') ?: time(); ?>
+      <p>
+        Publicado el:
+        <time datetime="<?= htmlspecialchars(date('c', $ts), ENT_QUOTES, 'UTF-8') ?>">
+          <?= htmlspecialchars(date('d/m/Y', $ts), ENT_QUOTES, 'UTF-8') ?>
+        </time>
+      </p>
+    </article>
+  <?php endforeach; ?>
     <!-- Navegación simple de páginas -->
     <nav class="pager" aria-label="Paginación">
       <ul>

@@ -51,6 +51,8 @@ function url(string $path): string {
 // 1) Autoload (Composer)
 require_once __DIR__ . '/vendor/autoload.php';
 
+
+
 use App\SecurityManager;
 
 // 2) Entorno (.env)
@@ -82,7 +84,7 @@ $port    = (int)($_ENV['DB_PORT'] ?? 3306);
 $db      = $_ENV['DB_NAME'] ?? '';
 $user    = $_ENV['DB_USER'] ?? '';
 $pass    = $_ENV['DB_PASS'] ?? '';
-$charset = $_ENV['DB_CHARSET'] ?? 'utf8mb4';
+$charset = $_ENV['DB_CHARSET'] ?? 'utf8mb4_unicode_ci';
 
 $dsn = "mysql:host={$host};port={$port};dbname={$db};charset={$charset}";
 
@@ -137,4 +139,8 @@ function canonical_url(): string {
   $requestPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
   return rtrim($baseUrl, '/') . $requestPath;
 }
+
+require_once __DIR__.'/lib/settings.php';
+
+
 // fin init.php

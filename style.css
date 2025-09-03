@@ -38,7 +38,6 @@ html {
 body {
   font-family: var(--font-body);
   line-height: 1.7;
-  background-color: var(--theme-bg);
   color: var(--theme-text);
   margin: 0;
   text-rendering: optimizeLegibility;
@@ -255,60 +254,12 @@ aside { border-left: 1px solid var(--theme-border); padding-left: 1.5rem; }
   * { animation: none !important; transition: none !important; }
 }
 
-/* Modo Oscuro "Vintage" */
-@media (prefers-color-scheme: dark) {
-  body:not(.light-mode) {
-    --theme-bg: #1a1a1a;
-    --theme-surface: #252525;
-    --theme-text: #cccccc;
-    --theme-text-light: #999999;
-    --theme-primary: #5ea6e0;
-    --theme-primary-hover: #ff8c42;
-    --theme-border: #444444;
-    --theme-header-bg: #1f1f1f;
-  }
-  body:not(.light-mode) .button:hover,
-  body:not(.light-mode) .form-container button:hover {
-    color: #fff;
-  }
-}
 
 .visually-hidden {
   position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
   overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
 
-/* --- Tema de Alto Contraste (Accesibilidad) ----------------------------- */
-.high-contrast {
-  --theme-bg: #000000;
-  --theme-surface: #000000;
-  --theme-text: #ffffff;
-  --theme-text-light: #dddddd;
-  --theme-primary: #ffff00; /* Amarillo brillante para máxima visibilidad */
-  --theme-primary-hover: #ffffff;
-  --theme-border: #ffffff;
-  --theme-header-bg: #000000;
-}
-
-.high-contrast a:hover {
-  text-decoration: none;
-  background-color: var(--theme-primary);
-  color: #000000;
-}
-
-.high-contrast .button,
-.high-contrast .form-container button {
-  background: #000000;
-  color: var(--theme-primary);
-  border: 2px solid var(--theme-primary);
-}
-
-.high-contrast .button:hover,
-.high-contrast .form-container button:hover {
-  background: var(--theme-primary);
-  color: #000000;
-  border-color: var(--theme-primary);
-}
 
 /* --- Controles de Accesibilidad ----------------------------------------- */
 .accessibility-controls {
@@ -347,10 +298,73 @@ aside { border-left: 1px solid var(--theme-border); padding-left: 1.5rem; }
   color: #000;
 }
 
+/* === BRIDGE: alinea --theme-* con el sistema --bg/--fg/... === */
+:root {
+  /* Mapea el sistema nuevo (bg/fg/...) al viejo (theme-*) */
+  --theme-bg: var(--bg);
+  --theme-surface: var(--card-bg);
+  --theme-text: var(--fg);
+  --theme-text-light: var(--muted);
+  --theme-primary: var(--link);
+  --theme-primary-hover: var(--link); /* si quieres otro hover, lo afinamos luego */
+  --theme-border: var(--card-border);
+  --theme-header-bg: var(--card-bg);
+}
+
+/* En oscuro, el bridge se actualiza automáticamente porque --bg/--fg/... cambian en html.theme-dark */
+
+
+
 /* Tema oscuro por clase en <html> */
 html.theme-dark {
   color-scheme: dark;
 }
+
+/* === Alto contraste consistente con el sistema base (bg/fg/...) === */
+.high-contrast {
+  --bg: #000000;
+  --card-bg: #000000;
+  --fg: #ffffff;
+  --muted: #dddddd;
+  --link: #ffff00;
+  --link-visited: #ffff00;
+  --card-border: #ffffff;
+  --input-bg: #000000;
+  --input-fg: #ffffff;
+}
+
+/* Interacciones en alto contraste */
+.high-contrast a:hover {
+  text-decoration: none;
+  background-color: var(--link);
+  color: #000000;
+}
+
+.high-contrast .button,
+.high-contrast .form-container button {
+  background: #000000;
+  color: var(--link);
+  border: 2px solid var(--link);
+}
+
+.high-contrast .button:hover,
+.high-contrast .form-container button:hover {
+  background: var(--link);
+  color: #000000;
+  border-color: var(--link);
+}
+
+.high-contrast .accessibility-button {
+  border-color: var(--link);
+  color: var(--link);
+}
+
+.high-contrast .accessibility-button:hover {
+  background: var(--link);
+  color: #000;
+}
+
+
 
 
 /* ===============================================================
@@ -504,7 +518,7 @@ input, textarea, select {
 }
 
 /* Modo oscuro (si lo tienes con .dark-mode en <body>) */
-.dark-mode .mobile-nav-toggle{
+html.theme-dark .mobile-nav-toggle{
   background:#1a1a1a; border-color:#333; color:#eee;
 }
 
@@ -538,3 +552,61 @@ footer, .site-footer {
 
 .breadcrumbs { font-size:.9rem; opacity:.85; display:flex; gap:.35rem; align-items:center; flex-wrap:wrap; }
 .breadcrumbs a { text-decoration:none; }
+
+
+
+/* Paleta base (claro) */
+:root {
+  --bg: #ffffff;
+  --fg: #111111;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --link: var(--brand);
+  --link-visited: var(--brand); 
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --input-bg: #ffffff;
+  --input-fg: #111111;
+}
+
+
+
+/* Oscuro */
+html.theme-dark {
+  color-scheme: dark;
+  --bg: #0f1115;
+  --fg: #e6e6e6;
+  --muted: #a1a1aa;
+  --border: #262b36;
+  --link: #9ecbff;
+  --link-visited: #d0a6ff;
+  --card-bg: #11141a;
+  --card-border: #262b36;
+  --input-bg: #121621;
+  --input-fg: #e6e6e6;
+}
+
+/* Aplicación de variables */
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+a { color: var(--link); }
+button, .btn, input[type=submit] {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.header, .main-footer, .breadcrumbs, .pager, .card, .post, .sidebar,
+.navbar, .admin-nav, .footer-nav {
+  background: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+input, textarea, select, button {
+  background: var(--input-bg);
+  color: var(--input-fg);
+  border-color: var(--border);
+}
+

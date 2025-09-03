@@ -16,7 +16,7 @@ fi
 
 TMP_DB="blogdb_restore_$(date +'%Y%m%d%H%M%S')"
 
-mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "CREATE DATABASE \`$TMP_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "CREATE DATABASE \`$TMP_DB\` CHARACTER SET utf8mb4_unicode_ci COLLATE utf8mb4_unicode_ci;"
 echo "Importando a DB temporal: $TMP_DB ..."
 gunzip -c "$INPUT" | mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" "$TMP_DB"
 echo "Ensayo OK en $TMP_DB."

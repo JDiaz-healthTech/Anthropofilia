@@ -15,7 +15,7 @@ ALTER TABLE post_etiquetas
   ALTER TABLE categorias
   MODIFY nombre_categoria VARCHAR(191)
   CHARACTER SET utf8mb4
-  COLLATE utf8mb4_0900_ai_ci
+  COLLATE utf8mb4_0900_ci
   NOT NULL;
 
 
@@ -128,7 +128,7 @@ CREATE TABLE `rate_limits` (
     `hits` INT(11) NOT NULL DEFAULT 1,
     PRIMARY KEY (`id`),
     UNIQUE KEY `uq_action_ip_ts` (`action`, `ip`, `ts`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4_unicode_ci COLLATE=utf8mb4_unicode_ci;
 
 
 
@@ -192,3 +192,181 @@ CREATE TABLE IF NOT EXISTS settings (
   v TEXT NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+
+---------------------------
+****************************
+----------------------------
+ultimas de base de datos:  Collation estable
+ALTER TABLE categorias
+  MODIFY nombre_categoria VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  MODIFY slug VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE paginas
+  MODIFY slug VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+-- Comprueba duplicados antes de UNIQUE
+SELECT nombre_categoria, COUNT(*) c FROM categorias GROUP BY 1 HAVING c>1;
+SELECT slug, COUNT(*) c FROM categorias GROUP BY 1 HAVING c>1;
+
+-- Si no hay duplicados, imponemos los UNIQUE (con nombres canónicos y sin duplicar índices)
+ALTER TABLE categorias
+  ADD UNIQUE KEY uq_categorias_nombre (nombre_categoria),
+  ADD UNIQUE KEY uq_categorias_slug (slug);
+
+-- (Opcional) borra índices viejos duplicados si existen (ajusta si no están)
+-- ALTER TABLE categorias DROP INDEX uniq_nombre_categoria;
+-- ALTER TABLE categorias DROP INDEX uniq_categorias_slug;
+
+
+CREATE TABLE IF NOT EXISTS rate_limits (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  action        VARCHAR(50) NOT NULL,
+  ip            VARCHAR(45) NOT NULL,
+  ts            TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  bucket_start  DATETIME NOT NULL,
+  hits          INT NOT NULL DEFAULT 1,
+  UNIQUE KEY uq_action_ip_bucket (action, ip, bucket_start),
+  KEY idx_ts (ts)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;  
+
+
+SELECT id_post, slug, titulo, fecha_publicacion
+FROM posts
+WHERE id_categoria = :cat
+ORDER BY fecha_publicacion DESC
+LIMIT :limit OFFSET :offset
+
+
+CREATE TABLE IF NOT EXISTS settings (
+  k VARCHAR(100) PRIMARY KEY,
+  v TEXT NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO settings (k, v) VALUES
+  ('theme_primary_color', '#0645ad'),
+  ('theme_bg_color', '#ffffff'),
+  ('header_bg_url', '')
+ON DUPLICATE KEY UPDATE v=VALUES(v); 
+
+
+CREATE TABLE IF NOT EXISTS settings (
+  k VARCHAR(100) PRIMARY KEY,
+  v TEXT NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO settings (k, v) VALUES
+  ('theme_primary_color', '#0645ad'),
+  ('theme_bg_color', '#ffffff'),
+  ('header_bg_url', '')
+ON DUPLICATE KEY UPDATE v=VALUES(v); 
+
+
+//////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
+
+version definitiva retocada
+
+
+
+-- ============================================
+-- BlogDB - Hardening y rendimiento (consolidado)
+-- Compatible: MariaDB / MySQL 5.7 / MySQL 8.0
+-- ============================================
+
+-- 0) Collation consistente en columnas clave (utf8mb4_unicode_ci)
+ALTER TABLE categorias 
+  MODIFY nombre_categoria VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  MODIFY slug VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE etiquetas 
+  MODIFY nombre_etiqueta VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE paginas 
+  MODIFY slug VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE posts 
+  MODIFY titulo VARCHAR(255)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+-- 1) Verificar duplicados ANTES de imponer UNIQUE (revisa resultados)
+-- (ejecuta estas SELECTs manualmente; si devuelven filas, limpia primero)
+-- SELECT nombre_categoria, COUNT(*) c FROM categorias GROUP BY 1 HAVING c>1;
+-- SELECT slug, COUNT(*) c FROM categorias GROUP BY 1 HAVING c>1;
+-- SELECT nombre_etiqueta, COUNT(*) c FROM etiquetas GROUP BY 1 HAVING c>1;
+-- SELECT slug, COUNT(*) c FROM paginas GROUP BY 1 HAVING c>1;
+-- SELECT titulo, id_usuario, COUNT(*) c FROM posts GROUP BY 1,2 HAVING c>1;
+
+-- 2) Uniques (usa nombres canónicos uq_*)
+ALTER TABLE categorias 
+  ADD UNIQUE KEY uq_categorias_nombre (nombre_categoria),
+  ADD UNIQUE KEY uq_categorias_slug   (slug);
+
+ALTER TABLE etiquetas 
+  ADD UNIQUE KEY uq_etiquetas_nombre (nombre_etiqueta);
+
+ALTER TABLE paginas 
+  ADD UNIQUE KEY uq_paginas_slug (slug);
+
+-- Si tu modelo lo permite (mismo título por usuario no repetido):
+ALTER TABLE posts 
+  ADD UNIQUE KEY uq_posts_titulo_usuario (titulo, id_usuario);
+
+ALTER TABLE post_etiquetas 
+  ADD UNIQUE KEY uq_post_tag (id_post, id_etiqueta);
+
+-- 3) Timestamps de actualización automática
+ALTER TABLE paginas 
+  ADD COLUMN IF NOT EXISTS actualizado_en TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;
+
+ALTER TABLE posts 
+  ADD COLUMN IF NOT EXISTS actualizado_en TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;
+
+-- 4) Índices de rendimiento
+CREATE INDEX idx_posts_fecha_publicacion ON posts (fecha_publicacion);
+CREATE INDEX idx_posts_cat_fecha         ON posts (id_categoria, fecha_publicacion);
+
+-- 5) Rate limiting (con bucket por minuto)
+DROP TABLE IF EXISTS rate_limits;
+CREATE TABLE rate_limits (
+  id           INT AUTO_INCREMENT PRIMARY KEY,
+  action       VARCHAR(50) NOT NULL,
+  ip           VARCHAR(45) NOT NULL,           -- IPv4/IPv6 textual; simple y portable
+  ts           TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  bucket_start DATETIME   NOT NULL,            -- redondeado al minuto desde PHP
+  hits         INT        NOT NULL DEFAULT 1,
+  UNIQUE KEY uq_action_ip_bucket (action, ip, bucket_start),
+  KEY idx_ts (ts)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- En PHP (SecurityManager), usa algo así:
+-- $bucket = (new DateTimeImmutable('now'))
+--              ->setTime((int)date('H'), (int)date('i'), 0)
+--              ->format('Y-m-d H:i:s');
+-- INSERT INTO rate_limits (action, ip, ts, bucket_start, hits)
+-- VALUES (:a, :ip, NOW(), :bucket, 1)
+-- ON DUPLICATE KEY UPDATE hits = hits + 1;
+
+-- 6) Settings (k/v) y semillas del tema UI
+CREATE TABLE IF NOT EXISTS settings (
+  k VARCHAR(100) PRIMARY KEY,
+  v TEXT NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO settings (k, v) VALUES
+  ('theme_primary_color', '#0645ad'),
+  ('theme_bg_color',      '#ffffff'),
+  ('header_bg_url',       '')
+ON DUPLICATE KEY UPDATE v = VALUES(v);
+

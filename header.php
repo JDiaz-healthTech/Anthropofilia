@@ -64,20 +64,29 @@ function nav_active(string $file, ?string $slug = null): string {
 
 
 <?php
-// Puedes traerte aquí $settings o leer las 3 claves: color_site_bg, color_content_bg, bg_current
-$bgSite    = $settings['color_site_bg']    ?? '#ffffff';
-$bgContent = $settings['color_content_bg'] ?? '#ffffff';
-$bgImage   = $settings['bg_current']       ?? null;
+$primary = get_setting($pdo, 'theme_primary_color', '#0645ad');
+$bgcolor = get_setting($pdo,'theme_bg_color',$settings['color_site_bg'] ?? '#ffffff');
+$headerBg= get_setting($pdo, 'header_bg_url', '');
 ?>
 <style>
-  :root {
-    --bg: <?= htmlspecialchars($bgSite, ENT_QUOTES, 'UTF-8') ?>;
-    --bg-content: <?= htmlspecialchars($bgContent, ENT_QUOTES, 'UTF-8') ?>;
-  }
-  body {
-    background: var(--bg) <?= $bgImage ? 'url(/uploads/backgrounds/'.htmlspecialchars($bgImage, ENT_QUOTES, 'UTF-8').') center/cover no-repeat fixed' : '' ?>;
-  }
-  .main, .content, article { background: var(--bg-content); }
+:root{
+  --brand: <?= htmlspecialchars($primary, ENT_QUOTES, 'UTF-8') ?>;
+  --page-bg: <?= htmlspecialchars($bgcolor, ENT_QUOTES, 'UTF-8') ?>;
+}
+html, body { background: var(--page-bg); }
+a { color: var(--brand); }
+button, .btn, input[type=submit] { background: var(--brand); border-color: var(--brand); }
+
+/* Aplica imagen de header (ajusta selector a tu layout real: .main-header/.site-header/.hero) */
+.main-header {
+  <?php if ($headerBg): ?>
+  background-image: url('<?= htmlspecialchars(url($headerBg), ENT_QUOTES, 'UTF-8') ?>');
+  background-size: cover;
+  background-position: center;
+  <?php else: ?>
+  background-image: none;
+  <?php endif; ?>
+}
 </style>
 
 

@@ -39,7 +39,7 @@ fi
 mysqldump \
   --user="$DB_USER" --password="$DB_PASS" --host="$DB_HOST" \
   --single-transaction --routines --triggers --events --hex-blob \
-  --default-character-set=utf8mb4 \
+  --default-character-set=utf8mb4_unicode_ci \
   "$DB_NAME" | gzip -9 > "$OUT"
 
 # Test de integridad del gzip

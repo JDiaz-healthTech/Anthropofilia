@@ -19,7 +19,8 @@ $messages = [
     'logged_out'      => 'Has cerrado sesión correctamente.',
     'blocked'         => 'Demasiados intentos. Inténtalo más tarde.',
 ];
-require_once __DIR__ . '/header.php';
+  $categoria = null; // para migas condicionales
+  require_once __DIR__.'/header.php';
 ?>
 <main class="container" id="content">
   <h2>Acceso al Panel</h2>

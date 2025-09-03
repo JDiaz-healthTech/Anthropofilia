@@ -33,27 +33,6 @@ $isLogged  = isset($security) ? (bool)$security->userId() : false;
 </footer>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Theme switcher
-    const themeToggle = document.getElementById('theme-toggle');
-    const body = document.body;
-
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        body.classList.add(savedTheme);
-        if (savedTheme === 'dark-mode') {
-            themeToggle.checked = true;
-        }
-    }
-
-    themeToggle.addEventListener('change', function () {
-        if (this.checked) {
-            body.classList.add('dark-mode');
-            localStorage.setItem('theme', 'dark-mode');
-        } else {
-            body.classList.remove('dark-mode');
-            localStorage.setItem('theme', 'light-mode');
-        }
-    });
 
     // Mobile navigation
     const mobileNavToggle = document.querySelector('.mobile-nav-toggle');

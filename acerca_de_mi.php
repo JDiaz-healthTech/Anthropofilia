@@ -2,7 +2,10 @@
 $page_title = 'Acerca de mí';
 $meta_description = 'Perfil de Ana Sampedro: filosofía, biología y líneas de investigación en evolución del comportamiento.'; // si tu header lo usa
 require_once __DIR__ . '/init.php';   // define $baseUrl y url()
-require_once __DIR__ . '/header.php'; // ya puede usar $baseUrl
+  $categoria = null; // para migas condicionales
+  require_once __DIR__.'/header.php';
+?>
+
 
 ?>
 <main class="container about">

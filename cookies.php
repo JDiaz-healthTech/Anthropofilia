@@ -2,7 +2,8 @@
 declare(strict_types=1);
 require_once __DIR__ . '/init.php';
 $page_title = 'Política de Cookies';
-require_once __DIR__ . '/header.php';
+  $categoria = null; // para migas condicionales
+  require_once __DIR__.'/header.php';
 ?>
 <main class="container">
 

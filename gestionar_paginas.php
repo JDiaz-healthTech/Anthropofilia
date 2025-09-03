@@ -67,7 +67,8 @@ if (isset($_GET['msg'])) {
 }
 
 $page_title = 'Gestionar páginas';
-require_once __DIR__ . '/header.php';
+  $categoria = null; // para migas condicionales
+  require_once __DIR__.'/header.php';
 ?>
 <main>
 

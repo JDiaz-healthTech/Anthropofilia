@@ -16,7 +16,8 @@ $messages = [
 ];
 $page_title = 'Contacto';
 $meta_description = 'Formulario de contacto para consultas y sugerencias.';
-require_once __DIR__ . '/header.php';
+  $categoria = null; // para migas condicionales
+  require_once __DIR__.'/header.php';
 ?>
 <main class="container">
 

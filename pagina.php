@@ -24,8 +24,8 @@ $meta_description = mb_substr(
     trim(preg_replace('/\s+/', ' ', strip_tags($pagina['contenido'] ?? ''))),
     0, 160
 );
-
-require_once __DIR__ . '/header.php';
+  $categoria = null; // para migas condicionales
+  require_once __DIR__.'/header.php';
 ?>
 <main>
     <nav class="breadcrumbs" aria-label="Breadcrumbs">

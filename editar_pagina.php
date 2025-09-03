@@ -37,7 +37,8 @@ try {
 }
 
 $page_title = 'Editar Página';
-require_once __DIR__ . '/header.php';
+  $categoria = null; // para migas condicionales
+  require_once __DIR__.'/header.php';
 ?>
 <main class="container">
 

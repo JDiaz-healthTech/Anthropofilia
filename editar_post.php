@@ -30,7 +30,8 @@ $stmt_categorias->execute();
 $resultado_categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
 
 $page_title = 'Editar Post';
-require_once __DIR__ . '/header.php';
+  $categoria = null; // para migas condicionales
+  require_once __DIR__.'/header.php';
 ?>
 
 <main>
