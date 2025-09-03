@@ -139,9 +139,9 @@ $page_title = 'Panel de Administración';
   </div>
 
   <!-- Logout por POST con CSRF -->
-  <form action="/logout.php" method="post" style="margin-top:1rem">
-    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
-    <button type="submit">Cerrar sesión</button>
-  </form>
+<form action="<?= url('logout.php') ?>" method="post" style="margin-top:1rem">
+  <?= $security->csrfField(); ?>
+  <button type="submit">Cerrar sesión</button>
+</form>
 </main>
 <?php require_once __DIR__ . '/footer.php'; ?>

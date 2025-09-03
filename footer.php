@@ -22,10 +22,10 @@ $isLogged  = isset($security) ? (bool)$security->userId() : false;
       <a href="<?php echo $baseUrl; ?>/login.php" class="admin-link" rel="nofollow">Admin Login</a>
     <?php else: ?>
       <a href="<?php echo $baseUrl; ?>/admin.php" class="admin-link">Panel</a>
-      <form action="<?php echo $baseUrl; ?>/logout.php" method="POST" class="logout-form" style="display:inline">
-        <?= $security->csrfField(); ?>
-        <button type="submit">Salir</button>
-      </form>
+<form action="<?= url('logout.php') ?>" method="POST" class="logout-form" style="display:inline">
+  <?= isset($security) && method_exists($security,'csrfField') ? $security->csrfField() : '<input type="hidden" name="csrf_token" value="'.htmlspecialchars($_SESSION['csrf_token'] ?? '',ENT_QUOTES,'UTF-8').'">' ?>
+  <button type="submit">Salir</button>
+</form>
     <?php endif; ?>
   </nav>
 
