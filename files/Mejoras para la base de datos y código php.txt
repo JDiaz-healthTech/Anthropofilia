@@ -370,3 +370,171 @@ INSERT INTO settings (k, v) VALUES
   ('header_bg_url',       '')
 ON DUPLICATE KEY UPDATE v = VALUES(v);
 
+*-*--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+frag final CSS
+
+/* ==========================================================================
+   CORRECCIÓN GLOBAL DE COLORES Y ALTO CONTRASTE (PEGAR AL FINAL DEL CSS)
+   ========================================================================== */
+
+/* --- 1. AJUSTES A LOS MODOS NORMALES --- */
+
+/* MODO CLARO NORMAL: Aseguramos que el texto base sea negro puro */
+:root {
+  --fg: #000000;
+  --muted: #555555;
+}
+
+/* MODO OSCURO NORMAL: Aseguramos que el texto base sea blanco puro */
+html.theme-dark {
+  --fg: #ffffff;
+  --muted: #cccccc;
+  --link: #9ecbff; /* Mantenemos un color para enlaces por usabilidad */
+}
+/* Forzamos el color blanco en elementos comunes del modo oscuro */
+html.theme-dark h1,
+html.theme-dark h2,
+html.theme-dark h3,
+html.theme-dark h4,
+html.theme-dark p,
+html.theme-dark li,
+html.theme-dark span,
+html.theme-dark div {
+    color: var(--fg);
+}
+
+
+/* --- 2. REGLAS POTENCIADAS PARA ALTO CONTRASTE --- */
+
+/* ALTO CONTRASTE EN MODO CLARO (TEXTO GRANATE) */
+/* Primero, definimos las variables */
+.high-contrast {
+  --bg: #ffffff;
+  --card-bg: #ffffff;
+  --page-bg: #ffffff;
+  --fg: #9a0000; /* Granate / Rojo oscuro */
+  --muted: #9a0000;
+  --link: #0000b3; /* Azul oscuro para diferenciar enlaces */
+  --border: #000000;
+  --card-border: #000000;
+  --brand: #000000;
+}
+/* Y ahora, la regla "enforcer" que obliga a TODO a cambiar */
+body.high-contrast *,
+body.high-contrast {
+  color: #9a0000 !important; /* Forza el color granate a todo */
+  -webkit-text-fill-color: #9a0000 !important; /* Para casos difíciles */
+}
+/* Devolvemos un color distinto a los enlaces para que se diferencien */
+body.high-contrast a {
+  color: #0000b3 !important;
+  -webkit-text-fill-color: #0000b3 !important;
+}
+
+
+/* ALTO CONTRASTE EN MODO OSCURO (TEXTO AMARILLO) */
+/* Primero, definimos las variables */
+html.theme-dark .high-contrast {
+  --bg: #000000;
+  --card-bg: #000000;
+  --page-bg: #000000;
+  --fg: #ffff00; /* Amarillo */
+  --muted: #ffff00;
+  --link: #ffff00;
+  --border: #ffffff;
+  --card-border: #ffffff;
+  --brand: #ffff00;
+}
+/* Y ahora, la regla "enforcer" que obliga a TODO a cambiar */
+html.theme-dark.high-contrast *,
+html.theme-dark.high-contrast {
+  color: #ffff00 !important; /* Forza el color amarillo a todo */
+  -webkit-text-fill-color: #ffff00 !important; /* Para casos difíciles */
+}
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+/* --- Alto Contraste (Versión Adaptativa) ---------------------------------- */
+
+/* 1. Alto Contraste para TEMA CLARO (Fondo blanco, texto rojo oscuro) */
+/* Se activa cuando solo está la clase .high-contrast en el body/html */
+.high-contrast {
+  --bg: #ffffff;
+  --card-bg: #ffffff;
+  --page-bg: #ffffff; /* Importante para el fondo general */
+  --fg: #9a0000; /* Un rojo oscuro de alto contraste */
+  --muted: #9a0000;
+  --link: #0000b3; /* Un azul muy oscuro para diferenciar enlaces */
+  --link-visited: #0000b3;
+  --border: #000000; /* Bordes negros para máxima visibilidad */
+  --card-border: #000000;
+  --input-bg: #ffffff;
+  --input-fg: #9a0000;
+
+  /* Hacemos los botones más visibles */
+  --brand: #000000;
+  --theme-primary-hover: #9a0000;
+}
+
+/* 2. Alto Contraste para TEMA OSCURO (Fondo negro, texto amarillo) */
+/* Se activa solo cuando .theme-dark y .high-contrast están JUNTAS */
+html.theme-dark .high-contrast {
+  --bg: #000000;
+  --card-bg: #000000;
+  --page-bg: #000000; /* Importante para el fondo general */
+  --fg: #ffff00; /* Amarillo brillante */
+  --muted: #ffff00;
+  --link: #ffff00;
+  --link-visited: #ffff00;
+  --border: #ffffff; /* Bordes blancos para máxima visibilidad */
+  --card-border: #ffffff;
+  --input-bg: #000000;
+  --input-fg: #ffff00;
+
+  /* Hacemos los botones más visibles en este modo */
+  --brand: #ffff00;
+  --brand-text: #000000; /* Texto negro para los botones amarillos */
+  --theme-primary-hover: #000000;
+}
+
+/* --- Ajustes finos para Interacciones en Alto Contraste --- */
+
+.high-contrast a:hover {
+  text-decoration: underline;
+  background-color: transparent; /* Quitamos fondos raros en hover */
+}
+
+/* Botones en modo claro de alto contraste */
+.high-contrast .button,
+.high-contrast button {
+  background: var(--bg);
+  color: var(--fg);
+  border: 2px solid var(--fg);
+}
+.high-contrast .button:hover,
+.high-contrast button:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* Botones en modo oscuro de alto contraste */
+html.theme-dark .high-contrast .button,
+html.theme-dark .high-contrast button {
+  background: var(--brand);
+  color: var(--brand-text, #000000);
+  border: 2px solid var(--brand);
+}
+html.theme-dark .high-contrast .button:hover,
+html.theme-dark .high-contrast button:hover {
+  background: var(--bg);
+  color: var(--brand);
+  border: 2px solid var(--brand);
+}
+/* --- Tema Oscuro Específico --------------------------------------------- */
+html.theme-dark .mobile-nav-toggle {
+  background: #1a1a1a;
+  border-color: #333;
+  color: #eee;
+}

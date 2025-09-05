@@ -1,58 +1,60 @@
 /* ==========================================================================
-   ANTHROPOFILIA BLOG – TEMA VINTAGE MODERNO (VERSIÓN UNIFICADA Y MEJORADA)
+                              ANTHROPOFILIA BLOG 
    ========================================================================== */
-
-/* --- Variables de Tema Base ----------------------------------------------- */
+/* ========================================================================== */
+/* 🌞 TEMA CLARO (DEFAULT) – Variables Globales                               */
+/* ========================================================================== */
 :root {
-  /* === VARIABLES DINÁMICAS (Controladas por theme-init.js) === */
-  --brand: #0645ad; /* Sobrescrito por JS desde BD. El azul de Archivo 2 era #005999 */
-  --page-bg: #ffffff; /* Sobrescrito por JS desde BD. El fondo de Archivo 2 era #f5f5f5 */
+  /* === 🎯 Variables dinámicas (pueden venir de JS o data-attributes) === */
+  --brand: #0066cc;            /* Azul accesible como color de marca */
+  --page-bg: #ffffff;          /* Fondo general */
 
-  /* === PALETA BASE (Sistema claro/oscuro) === */
-  --bg: #ffffff;
-  --fg: #111111;
-  --muted: #6b7280;
-  --border: #e5e7eb;
-  --link: var(--brand);
+  /* === 🌞 Paleta base === */
+  --bg: #ffffff;               /* Fondo principal */
+  --fg: #111111;               /* Texto principal */
+  --muted: #555555;            /* Texto secundario */
+  --border: #e5e7eb;           /* Bordes suaves */
+  --link: var(--brand);        /* Enlaces */
   --link-visited: var(--brand);
-  --card-bg: #ffffff;
-  --card-border: #e5e7eb;
-  --input-bg: #ffffff;
-  --input-fg: #111111;
+  --card-bg: #ffffff;          /* Fondo de tarjetas */
+  --card-border: #e5e7eb;      /* Bordes de tarjetas */
+  --input-bg: #ffffff;         /* Fondo de inputs */
+  --input-fg: #111111;         /* Texto de inputs */
 
-  /* === PALETA VINTAGE (Alias para compatibilidad con Archivo 2) === */
+  /* === 🎨 Aliases (compatibilidad con versiones anteriores) === */
   --theme-bg: var(--bg);
   --theme-surface: var(--card-bg);
   --theme-text: var(--fg);
   --theme-text-light: var(--muted);
   --theme-primary: var(--brand);
-  --theme-primary-hover: #d9480f; /* Naranja quemado para hover, consistente en ambos */
+  --theme-primary-hover: #d9480f;  /* Hover naranja accesible */
   --theme-border: var(--card-border);
   --theme-header-bg: var(--card-bg);
 
-  /* === TIPOGRAFÍA === */
-  --font-body: Georgia, 'Times New Roman', Times, serif;
-  --font-header: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* === 🔤 Tipografía === */
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-header: -apple-system, BlinkMacSystemFont, "Segoe UI Semibold", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  /* === TIPOGRAFÍA FLUIDA === */
+  /* === 🔤 Escala tipográfica fluida === */
   --step--1: clamp(0.88rem, 0.85rem + 0.2vw, 0.95rem);
   --step-0:  clamp(1.00rem, 0.95rem + 0.4vw, 1.10rem);
   --step-1:  clamp(1.25rem, 1.10rem + 0.8vw, 1.40rem);
   --step-2:  clamp(1.56rem, 1.30rem + 1.2vw, 1.80rem);
 
-  /* === OTROS === */
-  --radius: 4px; /* Archivo 2 usaba 8px en algunos inputs, puedes ajustar este valor a 8px si prefieres ese estilo */
-  --transition: all 0.2s ease-in-out;
-  --measure: 65ch;
-  --shadow: 0 1px 3px rgba(0,0,0,0.1);
-  --shadow-soft: 0 1px 2px rgba(0,0,0,.06);
+  /* === 🛠️ Extras === */
+  --radius: 6px;                      /* Bordes redondeados */
+  --transition: all 0.25s ease-in-out; /* Transiciones suaves */
+  --measure: 65ch;                    /* Ancho de línea ideal */
+  --shadow: 0 2px 6px rgba(0,0,0,0.08);
+  --shadow-soft: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-/* === TEMA OSCURO === */
+/* ========================================================================== */
+/* 🌙 TEMA OSCURO – Variables redefinidas                                     */
+/* ========================================================================== */
 html.theme-dark {
-  color-scheme: dark;
   --bg: #0f1115;
-  --fg: #e6e6e6;
+  --fg: #e0e0e0;
   --muted: #a1a1aa;
   --border: #262b36;
   --link: #9ecbff;
@@ -60,47 +62,115 @@ html.theme-dark {
   --card-bg: #11141a;
   --card-border: #262b36;
   --input-bg: #121621;
-  --input-fg: #e6e6e6;
+  --input-fg: #e0e0e0;
+
+  --theme-bg: var(--bg);
+  --theme-surface: var(--card-bg);
+  --theme-text: var(--fg);
+  --theme-text-light: var(--muted);
+  --theme-primary: var(--brand);
+  --theme-primary-hover: #ffb74d;
+  --theme-border: var(--card-border);
+  --theme-header-bg: var(--card-bg);
 }
 
-/* === ALTO CONTRASTE === */
+/* ========================================================================== */
+/* ♿ ALTO CONTRASTE – Tema Claro                                              */
+/* ========================================================================== */
 .high-contrast {
+  --bg: #ffffff;
+  --page-bg: #ffffff;
+  --fg: #ffff00;         /* Amarillo brillante */
+  --muted: #ffff00;
+  --link: #ffff00;       /* Azul fuerte */
+  --link-visited: #ffff00;
+  --border: #000000;
+  --card-bg: #ffffff;
+  --card-border: #000000;
+  --input-bg: #ffffff;
+  --input-fg: #ffff00;
+
+  --theme-bg: var(--bg);
+  --theme-surface: var(--card-bg);
+  --theme-text: var(--fg);
+  --theme-text-light: var(--muted);
+  --theme-primary: #000000;
+  --theme-primary-hover: #ffff00;
+  --theme-border: var(--card-border);
+  --theme-header-bg: var(--card-bg);
+}
+
+/* ========================================================================== */
+/* ♿ ALTO CONTRASTE – Tema Oscuro                                             */
+/* ========================================================================== */
+html.theme-dark.high-contrast {
   --bg: #000000;
-  --card-bg: #000000;
-  --fg: #ffffff;
-  --muted: #dddddd;
+  --page-bg: #000000;
+  --fg: #ffff00;         /* Amarillo brillante */
+  --muted: #ffff00;
   --link: #ffff00;
   --link-visited: #ffff00;
+  --border: #ffffff;
+  --card-bg: #000000;
   --card-border: #ffffff;
   --input-bg: #000000;
-  --input-fg: #ffffff;
+  --input-fg: #ffff00;
+
+  --theme-bg: var(--bg);
+  --theme-surface: var(--card-bg);
+  --theme-text: var(--fg);
+  --theme-text-light: var(--muted);
+  --theme-primary: #ffff00;
+  --theme-primary-hover: #000000;
+  --theme-border: var(--card-border);
+  --theme-header-bg: var(--card-bg);
 }
 
-/* --- Reset y Base -------------------------------------------------------- */
-* { box-sizing: border-box; }
+
+/* ========================================================================== */
+/* 🔄 RESET Y BASE                                                           */
+/* ========================================================================== */
+/* Se asegura de que todos los navegadores partan de un estilo uniforme.     */
+
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+}
+
 html {
   scroll-behavior: smooth;
   font-size: 16px;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%; /* Evita zoom automático en móviles iOS */
+  text-size-adjust: 100%;         /* Equivalente en Android */
 }
+
 body {
   font-family: var(--font-body);
   font-size: var(--step-0);
-  line-height: 1.65; /* Archivo 2 usaba 1.7, puedes ajustarlo si la diferencia es notable */
+  line-height: 1.65;               /* Espaciado entre líneas legible */
   color: var(--theme-text);
-  background: var(--page-bg); /* Variable dinámica */
-  margin: 0;
+  background: var(--page-bg);      /* Fondo dinámico (claro por defecto) */
   text-rendering: optimizeLegibility;
-}
-/* iOS notch support */
-@supports (padding: max(0px)) {
-  body {
-     padding-left: max(0px, env(safe-area-inset-left));
-     padding-right: max(0px, env(safe-area-inset-right));
-   }
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
 }
 
+/* ========================================================================== */
+/* 📱 NOTCH SUPPORT (iOS + Android)                                          */
+/* ========================================================================== */
+/* Asegura que en dispositivos con "notch" (iPhone, Android modernos),
+   el contenido no quede pegado al borde y respete áreas seguras.            */
+
+@supports (padding: max(0px)) {
+  body {
+     padding-left:  max(0px, env(safe-area-inset-left));
+     padding-right: max(0px, env(safe-area-inset-right));
+     padding-top:   max(0px, env(safe-area-inset-top));
+     padding-bottom:max(0px, env(safe-area-inset-bottom));
+  }
+}
 /* --- Elementos Base ------------------------------------------------------ */
 img { max-width: 100%; height: auto; }
 hr { border: 0; border-top: 1px solid var(--theme-border); margin: 2rem 0; }
@@ -165,7 +235,7 @@ blockquote {
   z-index: 2;
 }
 .main-header h1 a {
-  color: inherit;
+  color: var(--fg);
   text-decoration: none;
 }
 .main-header p {
@@ -195,7 +265,7 @@ blockquote {
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
-/* <-- FUSIÓN: Añadido fallback por si no tiene la clase has-bg-image. Esto estaba implícito en Archivo 2 */
+/* <-- FUSIÓN: Añadido fallback por si no tiene la clase has-bg-image. */
 .main-header:not(.has-bg-image) {
   background: var(--theme-header-bg);
   color: var(--theme-text);
@@ -714,88 +784,7 @@ input:focus, textarea:focus, select:focus { /* <-- FUSIÓN: Aplicamos el :focus 
   }
 }
 
-/* --- Alto Contraste (Versión Adaptativa) ---------------------------------- */
 
-/* 1. Alto Contraste para TEMA CLARO (Fondo blanco, texto rojo oscuro) */
-/* Se activa cuando solo está la clase .high-contrast en el body/html */
-.high-contrast {
-  --bg: #ffffff;
-  --card-bg: #ffffff;
-  --page-bg: #ffffff; /* Importante para el fondo general */
-  --fg: #9a0000; /* Un rojo oscuro de alto contraste */
-  --muted: #9a0000;
-  --link: #0000b3; /* Un azul muy oscuro para diferenciar enlaces */
-  --link-visited: #0000b3;
-  --border: #000000; /* Bordes negros para máxima visibilidad */
-  --card-border: #000000;
-  --input-bg: #ffffff;
-  --input-fg: #9a0000;
-
-  /* Hacemos los botones más visibles */
-  --brand: #000000;
-  --theme-primary-hover: #9a0000;
-}
-
-/* 2. Alto Contraste para TEMA OSCURO (Fondo negro, texto amarillo) */
-/* Se activa solo cuando .theme-dark y .high-contrast están JUNTAS */
-html.theme-dark .high-contrast {
-  --bg: #000000;
-  --card-bg: #000000;
-  --page-bg: #000000; /* Importante para el fondo general */
-  --fg: #ffff00; /* Amarillo brillante */
-  --muted: #ffff00;
-  --link: #ffff00;
-  --link-visited: #ffff00;
-  --border: #ffffff; /* Bordes blancos para máxima visibilidad */
-  --card-border: #ffffff;
-  --input-bg: #000000;
-  --input-fg: #ffff00;
-
-  /* Hacemos los botones más visibles en este modo */
-  --brand: #ffff00;
-  --brand-text: #000000; /* Texto negro para los botones amarillos */
-  --theme-primary-hover: #000000;
-}
-
-/* --- Ajustes finos para Interacciones en Alto Contraste --- */
-
-.high-contrast a:hover {
-  text-decoration: underline;
-  background-color: transparent; /* Quitamos fondos raros en hover */
-}
-
-/* Botones en modo claro de alto contraste */
-.high-contrast .button,
-.high-contrast button {
-  background: var(--bg);
-  color: var(--fg);
-  border: 2px solid var(--fg);
-}
-.high-contrast .button:hover,
-.high-contrast button:hover {
-  background: var(--fg);
-  color: var(--bg);
-}
-
-/* Botones en modo oscuro de alto contraste */
-html.theme-dark .high-contrast .button,
-html.theme-dark .high-contrast button {
-  background: var(--brand);
-  color: var(--brand-text, #000000);
-  border: 2px solid var(--brand);
-}
-html.theme-dark .high-contrast .button:hover,
-html.theme-dark .high-contrast button:hover {
-  background: var(--bg);
-  color: var(--brand);
-  border: 2px solid var(--brand);
-}
-/* --- Tema Oscuro Específico --------------------------------------------- */
-html.theme-dark .mobile-nav-toggle {
-  background: #1a1a1a;
-  border-color: #333;
-  color: #eee;
-}
 
 /* --- Clearfix y Layout Fixes -------------------------------------------- */
 .main::after, .container::after, .content::after {
@@ -817,83 +806,3 @@ footer, .site-footer {
 .main-footer { grid-column: 1 / -1; }
 
 
-
-/* ==========================================================================
-   CORRECCIÓN GLOBAL DE COLORES Y ALTO CONTRASTE (PEGAR AL FINAL DEL CSS)
-   ========================================================================== */
-
-/* --- 1. AJUSTES A LOS MODOS NORMALES --- */
-
-/* MODO CLARO NORMAL: Aseguramos que el texto base sea negro puro */
-:root {
-  --fg: #000000;
-  --muted: #555555;
-}
-
-/* MODO OSCURO NORMAL: Aseguramos que el texto base sea blanco puro */
-html.theme-dark {
-  --fg: #ffffff;
-  --muted: #cccccc;
-  --link: #9ecbff; /* Mantenemos un color para enlaces por usabilidad */
-}
-/* Forzamos el color blanco en elementos comunes del modo oscuro */
-html.theme-dark h1,
-html.theme-dark h2,
-html.theme-dark h3,
-html.theme-dark h4,
-html.theme-dark p,
-html.theme-dark li,
-html.theme-dark span,
-html.theme-dark div {
-    color: var(--fg);
-}
-
-
-/* --- 2. REGLAS POTENCIADAS PARA ALTO CONTRASTE --- */
-
-/* ALTO CONTRASTE EN MODO CLARO (TEXTO GRANATE) */
-/* Primero, definimos las variables */
-.high-contrast {
-  --bg: #ffffff;
-  --card-bg: #ffffff;
-  --page-bg: #ffffff;
-  --fg: #9a0000; /* Granate / Rojo oscuro */
-  --muted: #9a0000;
-  --link: #0000b3; /* Azul oscuro para diferenciar enlaces */
-  --border: #000000;
-  --card-border: #000000;
-  --brand: #000000;
-}
-/* Y ahora, la regla "enforcer" que obliga a TODO a cambiar */
-body.high-contrast *,
-body.high-contrast {
-  color: #9a0000 !important; /* Forza el color granate a todo */
-  -webkit-text-fill-color: #9a0000 !important; /* Para casos difíciles */
-}
-/* Devolvemos un color distinto a los enlaces para que se diferencien */
-body.high-contrast a {
-  color: #0000b3 !important;
-  -webkit-text-fill-color: #0000b3 !important;
-}
-
-
-/* ALTO CONTRASTE EN MODO OSCURO (TEXTO AMARILLO) */
-/* Primero, definimos las variables */
-html.theme-dark .high-contrast {
-  --bg: #000000;
-  --card-bg: #000000;
-  --page-bg: #000000;
-  --fg: #ffff00; /* Amarillo */
-  --muted: #ffff00;
-  --link: #ffff00;
-  --border: #ffffff;
-  --card-border: #ffffff;
-  --brand: #ffff00;
-}
-/* Y ahora, la regla "enforcer" que obliga a TODO a cambiar */
-html.theme-dark.high-contrast *,
-html.theme-dark.high-contrast {
-  color: #ffff00 !important; /* Forza el color amarillo a todo */
-  -webkit-text-fill-color: #ffff00 !important; /* Para casos difíciles */
-}
-/* En este modo, como pediste, los enlaces también serán amarillos, por lo que no necesitan una regla aparte. */
