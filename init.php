@@ -32,24 +32,42 @@ set_error_handler(function ($severity, $message, $file, $line) {
     throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
-// init.php
-// Configuración inicial común a todas las páginas
+// ========================
+// Base URL y funciones de URL 
+// ========================
+
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$script = $_SERVER['SCRIPT_NAME'] ?? '/';
-$basePath = rtrim(str_replace('\\','/', dirname($script)), '/');
-$basePath = ($basePath === '/' ? '' : $basePath); // si estás en raíz, queda vacío
 
-// Permite APP_URL opcional en .env; si no existe, calcula automáticamente
-$baseUrl = $_ENV['APP_URL'] ?? ($scheme . '://' . $host . $basePath);
+// Calcula automáticamente la carpeta del proyecto
+$scriptName = $_SERVER['SCRIPT_NAME'] ?? '/';
+$basePath   = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
 
+// Si la raíz es '/', la dejamos vacía
+$basePath = ($basePath === '/') ? '' : $basePath;
+
+// Base URL final
+$baseUrl = $_ENV['APP_URL'] ?? $_ENV['APP_BASE_URL'] ?? ($scheme . '://' . $host . $basePath);
+
+// Función para generar URLs absolutas
 function url(string $path): string {
     global $baseUrl;
-    return rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
+    $path = ltrim($path, '/');
+    return rtrim($baseUrl, '/') . '/' . $path;
 }
+
+// Función para URL canónica
+function canonical_url(): string {
+    global $baseUrl;
+    $requestPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+    return rtrim($baseUrl, '/') . $requestPath;
+}
+
 
 // 1) Autoload (Composer)
 require_once __DIR__ . '/vendor/autoload.php';
+
+
 
 use App\SecurityManager;
 
@@ -83,8 +101,8 @@ $db      = $_ENV['DB_NAME'] ?? '';
 $user    = $_ENV['DB_USER'] ?? '';
 $pass    = $_ENV['DB_PASS'] ?? '';
 $charset = $_ENV['DB_CHARSET'] ?? 'utf8mb4';
-
 $dsn = "mysql:host={$host};port={$port};dbname={$db};charset={$charset}";
+
 
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -121,4 +139,10 @@ $security = new SecurityManager(
 $security->boot();
 
 // (opcional) URL base para canónicas/links absolutos
-$_APP_BASE_URL = $_ENV['APP_URL'] ?? null;
+$_APP_BASE_URL = $_ENV['APP_URL'] ?? $_ENV['APP_BASE_URL'] ?? null;
+
+
+require_once __DIR__.'/admin/lib/settings.php';
+
+
+// fin init.php

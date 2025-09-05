@@ -15,7 +15,7 @@ ALTER TABLE post_etiquetas
   ALTER TABLE categorias
   MODIFY nombre_categoria VARCHAR(191)
   CHARACTER SET utf8mb4
-  COLLATE utf8mb4_0900_ai_ci
+  COLLATE utf8mb4_0900_ci
   NOT NULL;
 
 
@@ -128,7 +128,7 @@ CREATE TABLE `rate_limits` (
     `hits` INT(11) NOT NULL DEFAULT 1,
     PRIMARY KEY (`id`),
     UNIQUE KEY `uq_action_ip_ts` (`action`, `ip`, `ts`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4_unicode_ci COLLATE=utf8mb4_unicode_ci;
 
 
 
@@ -165,3 +165,376 @@ CREATE TABLE ajustes (
 );
 INSERT INTO ajustes (clave, valor) VALUES
   ('home_quote_text',''), ('home_quote_author','');
+
+
+  ---------------------------------------------------
+  ////////////////////////////////////////////////////
+  ---------------------------------------------------
+
+  ALTER TABLE rate_limits
+  ADD COLUMN bucket_start TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  DROP INDEX uq_action_ip_ts,
+  ADD UNIQUE INDEX uq_action_ip_bucket (action, ip, bucket_start);
+
+-- A partir de aquí, en PHP inserta el bucket redondeado al minuto:
+-- $bucket = (new DateTimeImmutable('now'))->setTime((int)date('H'), (int)date('i'), 0)->format('Y-m-d H:i:s');
+-- y usa INSERT ... ON DUPLICATE KEY UPDATE hits = hits + 1
+
+
+---------------------
+ALTER TABLE rate_limits
+  ADD COLUMN bucket_start TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  DROP INDEX uq_action_ip_ts,
+  ADD UNIQUE INDEX uq_action_ip_bucket (action, ip, bucket_start);
+------------------
+CREATE TABLE IF NOT EXISTS settings (
+  k VARCHAR(100) PRIMARY KEY,
+  v TEXT NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+---------------------------
+****************************
+----------------------------
+ultimas de base de datos:  Collation estable
+ALTER TABLE categorias
+  MODIFY nombre_categoria VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  MODIFY slug VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE paginas
+  MODIFY slug VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+-- Comprueba duplicados antes de UNIQUE
+SELECT nombre_categoria, COUNT(*) c FROM categorias GROUP BY 1 HAVING c>1;
+SELECT slug, COUNT(*) c FROM categorias GROUP BY 1 HAVING c>1;
+
+-- Si no hay duplicados, imponemos los UNIQUE (con nombres canónicos y sin duplicar índices)
+ALTER TABLE categorias
+  ADD UNIQUE KEY uq_categorias_nombre (nombre_categoria),
+  ADD UNIQUE KEY uq_categorias_slug (slug);
+
+-- (Opcional) borra índices viejos duplicados si existen (ajusta si no están)
+-- ALTER TABLE categorias DROP INDEX uniq_nombre_categoria;
+-- ALTER TABLE categorias DROP INDEX uniq_categorias_slug;
+
+
+CREATE TABLE IF NOT EXISTS rate_limits (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  action        VARCHAR(50) NOT NULL,
+  ip            VARCHAR(45) NOT NULL,
+  ts            TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  bucket_start  DATETIME NOT NULL,
+  hits          INT NOT NULL DEFAULT 1,
+  UNIQUE KEY uq_action_ip_bucket (action, ip, bucket_start),
+  KEY idx_ts (ts)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;  
+
+
+SELECT id_post, slug, titulo, fecha_publicacion
+FROM posts
+WHERE id_categoria = :cat
+ORDER BY fecha_publicacion DESC
+LIMIT :limit OFFSET :offset
+
+
+CREATE TABLE IF NOT EXISTS settings (
+  k VARCHAR(100) PRIMARY KEY,
+  v TEXT NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO settings (k, v) VALUES
+  ('theme_primary_color', '#0645ad'),
+  ('theme_bg_color', '#ffffff'),
+  ('header_bg_url', '')
+ON DUPLICATE KEY UPDATE v=VALUES(v); 
+
+
+CREATE TABLE IF NOT EXISTS settings (
+  k VARCHAR(100) PRIMARY KEY,
+  v TEXT NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO settings (k, v) VALUES
+  ('theme_primary_color', '#0645ad'),
+  ('theme_bg_color', '#ffffff'),
+  ('header_bg_url', '')
+ON DUPLICATE KEY UPDATE v=VALUES(v); 
+
+
+//////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
+
+version definitiva retocada
+
+
+
+-- ============================================
+-- BlogDB - Hardening y rendimiento (consolidado)
+-- Compatible: MariaDB / MySQL 5.7 / MySQL 8.0
+-- ============================================
+
+-- 0) Collation consistente en columnas clave (utf8mb4_unicode_ci)
+ALTER TABLE categorias 
+  MODIFY nombre_categoria VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  MODIFY slug VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE etiquetas 
+  MODIFY nombre_etiqueta VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE paginas 
+  MODIFY slug VARCHAR(191)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE posts 
+  MODIFY titulo VARCHAR(255)
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+-- 1) Verificar duplicados ANTES de imponer UNIQUE (revisa resultados)
+-- (ejecuta estas SELECTs manualmente; si devuelven filas, limpia primero)
+-- SELECT nombre_categoria, COUNT(*) c FROM categorias GROUP BY 1 HAVING c>1;
+-- SELECT slug, COUNT(*) c FROM categorias GROUP BY 1 HAVING c>1;
+-- SELECT nombre_etiqueta, COUNT(*) c FROM etiquetas GROUP BY 1 HAVING c>1;
+-- SELECT slug, COUNT(*) c FROM paginas GROUP BY 1 HAVING c>1;
+-- SELECT titulo, id_usuario, COUNT(*) c FROM posts GROUP BY 1,2 HAVING c>1;
+
+-- 2) Uniques (usa nombres canónicos uq_*)
+ALTER TABLE categorias 
+  ADD UNIQUE KEY uq_categorias_nombre (nombre_categoria),
+  ADD UNIQUE KEY uq_categorias_slug   (slug);
+
+ALTER TABLE etiquetas 
+  ADD UNIQUE KEY uq_etiquetas_nombre (nombre_etiqueta);
+
+ALTER TABLE paginas 
+  ADD UNIQUE KEY uq_paginas_slug (slug);
+
+-- Si tu modelo lo permite (mismo título por usuario no repetido):
+ALTER TABLE posts 
+  ADD UNIQUE KEY uq_posts_titulo_usuario (titulo, id_usuario);
+
+ALTER TABLE post_etiquetas 
+  ADD UNIQUE KEY uq_post_tag (id_post, id_etiqueta);
+
+-- 3) Timestamps de actualización automática
+ALTER TABLE paginas 
+  ADD COLUMN IF NOT EXISTS actualizado_en TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;
+
+ALTER TABLE posts 
+  ADD COLUMN IF NOT EXISTS actualizado_en TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;
+
+-- 4) Índices de rendimiento
+CREATE INDEX idx_posts_fecha_publicacion ON posts (fecha_publicacion);
+CREATE INDEX idx_posts_cat_fecha         ON posts (id_categoria, fecha_publicacion);
+
+-- 5) Rate limiting (con bucket por minuto)
+DROP TABLE IF EXISTS rate_limits;
+CREATE TABLE rate_limits (
+  id           INT AUTO_INCREMENT PRIMARY KEY,
+  action       VARCHAR(50) NOT NULL,
+  ip           VARCHAR(45) NOT NULL,           -- IPv4/IPv6 textual; simple y portable
+  ts           TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  bucket_start DATETIME   NOT NULL,            -- redondeado al minuto desde PHP
+  hits         INT        NOT NULL DEFAULT 1,
+  UNIQUE KEY uq_action_ip_bucket (action, ip, bucket_start),
+  KEY idx_ts (ts)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- En PHP (SecurityManager), usa algo así:
+-- $bucket = (new DateTimeImmutable('now'))
+--              ->setTime((int)date('H'), (int)date('i'), 0)
+--              ->format('Y-m-d H:i:s');
+-- INSERT INTO rate_limits (action, ip, ts, bucket_start, hits)
+-- VALUES (:a, :ip, NOW(), :bucket, 1)
+-- ON DUPLICATE KEY UPDATE hits = hits + 1;
+
+-- 6) Settings (k/v) y semillas del tema UI
+CREATE TABLE IF NOT EXISTS settings (
+  k VARCHAR(100) PRIMARY KEY,
+  v TEXT NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO settings (k, v) VALUES
+  ('theme_primary_color', '#0645ad'),
+  ('theme_bg_color',      '#ffffff'),
+  ('header_bg_url',       '')
+ON DUPLICATE KEY UPDATE v = VALUES(v);
+
+*-*--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+frag final CSS
+
+/* ==========================================================================
+   CORRECCIÓN GLOBAL DE COLORES Y ALTO CONTRASTE (PEGAR AL FINAL DEL CSS)
+   ========================================================================== */
+
+/* --- 1. AJUSTES A LOS MODOS NORMALES --- */
+
+/* MODO CLARO NORMAL: Aseguramos que el texto base sea negro puro */
+:root {
+  --fg: #000000;
+  --muted: #555555;
+}
+
+/* MODO OSCURO NORMAL: Aseguramos que el texto base sea blanco puro */
+html.theme-dark {
+  --fg: #ffffff;
+  --muted: #cccccc;
+  --link: #9ecbff; /* Mantenemos un color para enlaces por usabilidad */
+}
+/* Forzamos el color blanco en elementos comunes del modo oscuro */
+html.theme-dark h1,
+html.theme-dark h2,
+html.theme-dark h3,
+html.theme-dark h4,
+html.theme-dark p,
+html.theme-dark li,
+html.theme-dark span,
+html.theme-dark div {
+    color: var(--fg);
+}
+
+
+/* --- 2. REGLAS POTENCIADAS PARA ALTO CONTRASTE --- */
+
+/* ALTO CONTRASTE EN MODO CLARO (TEXTO GRANATE) */
+/* Primero, definimos las variables */
+.high-contrast {
+  --bg: #ffffff;
+  --card-bg: #ffffff;
+  --page-bg: #ffffff;
+  --fg: #9a0000; /* Granate / Rojo oscuro */
+  --muted: #9a0000;
+  --link: #0000b3; /* Azul oscuro para diferenciar enlaces */
+  --border: #000000;
+  --card-border: #000000;
+  --brand: #000000;
+}
+/* Y ahora, la regla "enforcer" que obliga a TODO a cambiar */
+body.high-contrast *,
+body.high-contrast {
+  color: #9a0000 !important; /* Forza el color granate a todo */
+  -webkit-text-fill-color: #9a0000 !important; /* Para casos difíciles */
+}
+/* Devolvemos un color distinto a los enlaces para que se diferencien */
+body.high-contrast a {
+  color: #0000b3 !important;
+  -webkit-text-fill-color: #0000b3 !important;
+}
+
+
+/* ALTO CONTRASTE EN MODO OSCURO (TEXTO AMARILLO) */
+/* Primero, definimos las variables */
+html.theme-dark .high-contrast {
+  --bg: #000000;
+  --card-bg: #000000;
+  --page-bg: #000000;
+  --fg: #ffff00; /* Amarillo */
+  --muted: #ffff00;
+  --link: #ffff00;
+  --border: #ffffff;
+  --card-border: #ffffff;
+  --brand: #ffff00;
+}
+/* Y ahora, la regla "enforcer" que obliga a TODO a cambiar */
+html.theme-dark.high-contrast *,
+html.theme-dark.high-contrast {
+  color: #ffff00 !important; /* Forza el color amarillo a todo */
+  -webkit-text-fill-color: #ffff00 !important; /* Para casos difíciles */
+}
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+/* --- Alto Contraste (Versión Adaptativa) ---------------------------------- */
+
+/* 1. Alto Contraste para TEMA CLARO (Fondo blanco, texto rojo oscuro) */
+/* Se activa cuando solo está la clase .high-contrast en el body/html */
+.high-contrast {
+  --bg: #ffffff;
+  --card-bg: #ffffff;
+  --page-bg: #ffffff; /* Importante para el fondo general */
+  --fg: #9a0000; /* Un rojo oscuro de alto contraste */
+  --muted: #9a0000;
+  --link: #0000b3; /* Un azul muy oscuro para diferenciar enlaces */
+  --link-visited: #0000b3;
+  --border: #000000; /* Bordes negros para máxima visibilidad */
+  --card-border: #000000;
+  --input-bg: #ffffff;
+  --input-fg: #9a0000;
+
+  /* Hacemos los botones más visibles */
+  --brand: #000000;
+  --theme-primary-hover: #9a0000;
+}
+
+/* 2. Alto Contraste para TEMA OSCURO (Fondo negro, texto amarillo) */
+/* Se activa solo cuando .theme-dark y .high-contrast están JUNTAS */
+html.theme-dark .high-contrast {
+  --bg: #000000;
+  --card-bg: #000000;
+  --page-bg: #000000; /* Importante para el fondo general */
+  --fg: #ffff00; /* Amarillo brillante */
+  --muted: #ffff00;
+  --link: #ffff00;
+  --link-visited: #ffff00;
+  --border: #ffffff; /* Bordes blancos para máxima visibilidad */
+  --card-border: #ffffff;
+  --input-bg: #000000;
+  --input-fg: #ffff00;
+
+  /* Hacemos los botones más visibles en este modo */
+  --brand: #ffff00;
+  --brand-text: #000000; /* Texto negro para los botones amarillos */
+  --theme-primary-hover: #000000;
+}
+
+/* --- Ajustes finos para Interacciones en Alto Contraste --- */
+
+.high-contrast a:hover {
+  text-decoration: underline;
+  background-color: transparent; /* Quitamos fondos raros en hover */
+}
+
+/* Botones en modo claro de alto contraste */
+.high-contrast .button,
+.high-contrast button {
+  background: var(--bg);
+  color: var(--fg);
+  border: 2px solid var(--fg);
+}
+.high-contrast .button:hover,
+.high-contrast button:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* Botones en modo oscuro de alto contraste */
+html.theme-dark .high-contrast .button,
+html.theme-dark .high-contrast button {
+  background: var(--brand);
+  color: var(--brand-text, #000000);
+  border: 2px solid var(--brand);
+}
+html.theme-dark .high-contrast .button:hover,
+html.theme-dark .high-contrast button:hover {
+  background: var(--bg);
+  color: var(--brand);
+  border: 2px solid var(--brand);
+}
+/* --- Tema Oscuro Específico --------------------------------------------- */
+html.theme-dark .mobile-nav-toggle {
+  background: #1a1a1a;
+  border-color: #333;
+  color: #eee;
+}

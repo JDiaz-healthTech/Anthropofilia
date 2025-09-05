@@ -30,10 +30,22 @@ $stmt_categorias->execute();
 $resultado_categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
 
 $page_title = 'Editar Post';
-require_once __DIR__ . '/header.php';
+  $categoria = null; // para migas condicionales
+  require_once __DIR__.'/header.php';
 ?>
 
 <main>
+
+    <nav class="breadcrumbs" aria-label="Breadcrumbs">
+    <a href="<?= url('index.php') ?>">Inicio</a> <span aria-hidden="true">›</span>
+    <?php if (!empty($categoria)): ?>
+      <a href="<?= url('categoria.php?slug=' . urlencode($categoria['slug'])) ?>">
+        <?= htmlspecialchars($categoria['nombre_categoria'], ENT_QUOTES, 'UTF-8') ?>
+      </a> <span aria-hidden="true">›</span>
+    <?php endif; ?>
+    <span aria-current="page"><?= htmlspecialchars($page_title ?? 'Actual', ENT_QUOTES, 'UTF-8') ?></span>
+  </nav>
+ 
     <h2>Editar Post</h2>
     <form action="actualizar_post.php" method="POST" class="form-container">
         <?php echo $security->csrfField(); ?>

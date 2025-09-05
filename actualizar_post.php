@@ -62,7 +62,7 @@ try {
 
     // 7) Update (si tienes columna de timestamp, puedes añadir: , actualizado_en = NOW())
     $sql = "UPDATE posts
-            SET titulo = ?, contenido = ?, id_categoria = ?, imagen_destacada_url = ?
+            SET titulo = ?, contenido = ?, id_categoria = ?, imagen_destacada_url = ?, actualizado_en=NOW()
             WHERE id_post = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$titulo, $contenido, $id_categoria, $imagen_url, $id_post]);

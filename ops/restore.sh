@@ -27,7 +27,7 @@ if [[ "$CONFIRM" == "SI" ]]; then
   echo "Haciendo backup previo por seguridad..."
   "$(dirname "$0")/backup.sh" || true
   echo "Recreando $PROD_DB y restaurando..."
-  mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "DROP DATABASE \`$PROD_DB\`; CREATE DATABASE \`$PROD_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "DROP DATABASE \`$PROD_DB\`; CREATE DATABASE \`$PROD_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
   gunzip -c "$INPUT" | mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" "$PROD_DB"
   echo "Restauración completada."
 else

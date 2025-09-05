@@ -27,9 +27,21 @@ try {
 }
 
 $page_title = 'Crear Nuevo Post';
-require_once __DIR__ . '/header.php';
+  $categoria = null; // para migas condicionales
+  require_once __DIR__.'/header.php';
 ?>
 <main class="container">
+
+    <nav class="breadcrumbs" aria-label="Breadcrumbs">
+    <a href="<?= url('index.php') ?>">Inicio</a> <span aria-hidden="true">›</span>
+    <?php if (!empty($categoria)): ?>
+      <a href="<?= url('categoria.php?slug=' . urlencode($categoria['slug'])) ?>">
+        <?= htmlspecialchars($categoria['nombre_categoria'], ENT_QUOTES, 'UTF-8') ?>
+      </a> <span aria-hidden="true">›</span>
+    <?php endif; ?>
+    <span aria-current="page"><?= htmlspecialchars($page_title ?? 'Actual', ENT_QUOTES, 'UTF-8') ?></span>
+  </nav>
+ 
   <h1>Crear nuevo post</h1>
 
   <form action="<?= url('guardar_post.php') ?>" method="post" enctype="multipart/form-data" class="form-container" accept-charset="UTF-8">
@@ -67,7 +79,7 @@ require_once __DIR__ . '/header.php';
 
     <div>
       <label for="contenido">Contenido</label>
-      <textarea id="contenido" name="contenido" rows="15" required maxlength="100000"><?= htmlspecialchars($old['contenido'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+      <textarea id="editor" name="contenido" rows="15" maxlength="100000"><?= htmlspecialchars($old['contenido'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
     </div>
 
     <div>
@@ -86,12 +98,14 @@ require_once __DIR__ . '/header.php';
 <script>
 if (typeof tinymce !== 'undefined') {
   tinymce.init({
-    selector: '#contenido',
+    selector: '#editor',
     // Plugins útiles
     plugins: 'code link lists image media table autoresize paste',
     toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media table | code',
     menubar: false,
     height: 540,
+    branding: false,
+    convert_urls: false, 
 
     // Bloques y formato
     block_formats: 'Párrafo=p; Encabezado 2=h2; Encabezado 3=h3; Encabezado 4=h4; Cita=blockquote; Preformateado=pre',

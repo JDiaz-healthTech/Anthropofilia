@@ -305,51 +305,54 @@ final class SecurityManager
         }
     }
 
-    public function checkRateLimit(string $action, int $maxAttempts, int $windowSeconds): void
-    {
-        $ip        = $this->clientIP();
+public function checkRateLimit(string $action, int $maxAttempts, int $windowSeconds): void
+{
+    $ip = $this->clientIP();
+
+    if ($this->pdo) {
+        // Limpieza: fuera de la ventana
         $threshold = date('Y-m-d H:i:s', time() - $windowSeconds);
+        $del = $this->pdo->prepare("DELETE FROM rate_limits WHERE ts < :threshold");
+        $del->execute([':threshold' => $threshold]);
 
-        if ($this->pdo) {
-            // ✅ MySQL no permite parametrizar "INTERVAL :w SECOND"
-            // Usamos timestamp absoluto para borrar/contar
-            $del = $this->pdo->prepare("DELETE FROM rate_limits WHERE ts < :threshold");
-            $del->execute([':threshold' => $threshold]);
+        // Bucket al minuto (ajusta 60-> tu ventana si quieres)
+        $bucketSql = "FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(NOW())/60)*60)";
 
-            $sel = $this->pdo->prepare(
-                "SELECT COUNT(*) FROM rate_limits WHERE action = :a AND ip = :ip AND ts >= :threshold"
-            );
-            $sel->execute([':a' => $action, ':ip' => $ip, ':threshold' => $threshold]);
-            $count = (int)$sel->fetchColumn();
+        // Inserta/acumula
+        $sql = "INSERT INTO rate_limits (action, ip, bucket_start, hits)
+                VALUES (:a, :ip, $bucketSql, 1)
+                ON DUPLICATE KEY UPDATE hits = hits + 1, ts = NOW()";
+        $ins = $this->pdo->prepare($sql);
+        $ins->execute([':a' => $action, ':ip' => $ip]);
 
-            if ($count >= $maxAttempts) {
-                http_response_code(429);
-                $this->logEvent('security', 'rate_limited', [
-                    'action'=>$action, 'max'=>$maxAttempts, 'window'=>$windowSeconds
-                ]);
-                exit('Demasiadas solicitudes. Intenta más tarde.');
-            }
+        // Cuenta dentro de la ventana (suma de hits)
+        $sel = $this->pdo->prepare(
+            "SELECT COALESCE(SUM(hits),0)
+             FROM rate_limits
+             WHERE action = :a AND ip = :ip AND ts >= :threshold"
+        );
+        $sel->execute([':a' => $action, ':ip' => $ip, ':threshold' => $threshold]);
+        $count = (int)$sel->fetchColumn();
 
-$ins = $this->pdo->prepare("
-    INSERT INTO rate_limits (action, ip, ts, hits)
-    VALUES (:a, :ip, NOW(), 1)
-    ON DUPLICATE KEY UPDATE hits = hits + 1
-");
-$ins->execute([':a' => $action, ':ip' => $ip]);
-        } else {
-            // Fallback en sesión
-            $key    = sprintf('rl_%s_%s', $action, bin2hex($ip));
-            $bucket = $_SESSION[$key] ?? [];
-            $now    = time();
-            $bucket = array_filter($bucket, fn($ts) => ($now - (int)$ts) < $windowSeconds);
-            if (count($bucket) >= $maxAttempts) {
-                http_response_code(429);
-                exit('Demasiadas solicitudes. Intenta más tarde.');
-            }
-            $bucket[]        = $now;
-            $_SESSION[$key]  = $bucket;
+        if ($count >= $maxAttempts) {
+            http_response_code(429);
+            exit('Demasiadas solicitudes. Intenta más tarde.');
         }
+        return;
     }
+
+    // Fallback en sesión (tu bloque actual está bien)
+    $key    = sprintf('rl_%s_%s', $action, bin2hex($ip));
+    $bucket = $_SESSION[$key] ?? [];
+    $now    = time();
+    $bucket = array_filter($bucket, fn($ts) => ($now - (int)$ts) < $windowSeconds);
+    if (count($bucket) >= $maxAttempts) {
+        http_response_code(429);
+        exit('Demasiadas solicitudes. Intenta más tarde.');
+    }
+    $bucket[]       = $now;
+    $_SESSION[$key] = $bucket;
+}
 
     /* =========
        Sanitización HTML
