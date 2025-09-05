@@ -5,19 +5,20 @@
 /* 🌞 TEMA CLARO (DEFAULT) – Variables Globales                               */
 /* ========================================================================== */
 :root {
-  /* === 🎯 Variables dinámicas (pueden venir de JS o data-attributes) === */
-  --brand: #0066cc;            /* Azul accesible como color de marca */
-  --page-bg: #ffffff;          /* Fondo general */
+  /* Paleta: Beige claro y gris oscuro */
+  --page-bg: #fdfaf3;      /* Beige muy clarito para el fondo de la página */
+  --bg: #fdfaf3;           /* Beige para el fondo de los elementos */
+  --fg: #3d3d3d;           /* Gris oscuro para el texto principal */
+  --muted: #666666;        /* Gris más suave para texto secundario */
+  --border: #dcd7ca;       /* Borde suave en tonos tierra */
+  --card-bg: #ffffff;      /* Tarjetas en blanco para que resalten un poco */
+  --card-border: #e5e0d4;
 
-  /* === 🌞 Paleta base === */
-  --bg: #ffffff;               /* Fondo principal */
-  --fg: #111111;               /* Texto principal */
-  --muted: #555555;            /* Texto secundario */
-  --border: #e5e7eb;           /* Bordes suaves */
-  --link: var(--brand);        /* Enlaces */
-  --link-visited: var(--brand);
-  --card-bg: #ffffff;          /* Fondo de tarjetas */
-  --card-border: #e5e7eb;      /* Bordes de tarjetas */
+  /* Colores de marca y enlaces */
+  --brand: #0066cc;
+  --link: var(--brand);
+  --link-visited: #551a8b;
+  --theme-primary-hover: #d9480f;
   --input-bg: #ffffff;         /* Fondo de inputs */
   --input-fg: #111111;         /* Texto de inputs */
 
@@ -27,7 +28,7 @@
   --theme-text: var(--fg);
   --theme-text-light: var(--muted);
   --theme-primary: var(--brand);
-  --theme-primary-hover: #d9480f;  /* Hover naranja accesible */
+  --theme-primary-hover: var(--brand-hover);
   --theme-border: var(--card-border);
   --theme-header-bg: var(--card-bg);
 
@@ -53,23 +54,27 @@
 /* 🌙 TEMA OSCURO – Variables redefinidas                                     */
 /* ========================================================================== */
 html.theme-dark {
-  --bg: #0f1115;
+  /* Paleta: Grises oscuros y texto blanco */
+  --page-bg: #0a0a0a;
+  --bg: #121212;
   --fg: #e0e0e0;
   --muted: #a1a1aa;
-  --border: #262b36;
+  --border: #2a2a2a;
+  --brand: #000000;
   --link: #9ecbff;
   --link-visited: #d0a6ff;
-  --card-bg: #11141a;
-  --card-border: #262b36;
-  --input-bg: #121621;
+  --card-bg: #1e1e1e;
+  --card-border: #2a2a2a;
+  --input-bg: #252525;
   --input-fg: #e0e0e0;
+  --theme-primary-hover: #ffb74d;
 
   --theme-bg: var(--bg);
   --theme-surface: var(--card-bg);
   --theme-text: var(--fg);
   --theme-text-light: var(--muted);
   --theme-primary: var(--brand);
-  --theme-primary-hover: #ffb74d;
+  --theme-primary-hover: var(--brand-hover);
   --theme-border: var(--card-border);
   --theme-header-bg: var(--card-bg);
 }
@@ -78,24 +83,27 @@ html.theme-dark {
 /* ♿ ALTO CONTRASTE – Tema Claro                                              */
 /* ========================================================================== */
 .high-contrast {
-  --bg: #ffffff;
+  /* Paleta: Blanco puro y negro absoluto */
   --page-bg: #ffffff;
-  --fg: #ffff00;         /* Amarillo brillante */
-  --muted: #ffff00;
-  --link: #ffff00;       /* Azul fuerte */
-  --link-visited: #ffff00;
+  --bg: #ffffff;
+  --fg: #000000;
+  --muted: #000000;
   --border: #000000;
+  --link: #000000;
+  --link-visited: #000000;
   --card-bg: #ffffff;
   --card-border: #000000;
   --input-bg: #ffffff;
-  --input-fg: #ffff00;
+  --input-fg: #000000;
+  --brand: #000000;
+  --theme-primary-hover: #000000;
 
   --theme-bg: var(--bg);
   --theme-surface: var(--card-bg);
   --theme-text: var(--fg);
-  --theme-text-light: var(--muted);
-  --theme-primary: #000000;
-  --theme-primary-hover: #ffff00;
+  --theme-text-light: var(--fg); /* En alto contraste, no hay texto "suave" */
+  --theme-primary: var(--fg);
+  --theme-primary-hover: var(--fg);
   --theme-border: var(--card-border);
   --theme-header-bg: var(--card-bg);
 }
@@ -104,24 +112,26 @@ html.theme-dark {
 /* ♿ ALTO CONTRASTE – Tema Oscuro                                             */
 /* ========================================================================== */
 html.theme-dark.high-contrast {
-  --bg: #000000;
   --page-bg: #000000;
-  --fg: #ffff00;         /* Amarillo brillante */
+  --bg: #000000;
+  --fg: #ffff00;          /* Amarillo eléctrico */
   --muted: #ffff00;
+  --border: #ffff00;
   --link: #ffff00;
   --link-visited: #ffff00;
-  --border: #ffffff;
   --card-bg: #000000;
-  --card-border: #ffffff;
+  --card-border: #ffff00;
   --input-bg: #000000;
   --input-fg: #ffff00;
+  --brand: #ffff00;
+  --theme-primary-hover: #ffff00;
 
   --theme-bg: var(--bg);
   --theme-surface: var(--card-bg);
   --theme-text: var(--fg);
-  --theme-text-light: var(--muted);
-  --theme-primary: #ffff00;
-  --theme-primary-hover: #000000;
+  --theme-text-light: var(--fg); /* En alto contraste, no hay texto "suave" */
+  --theme-primary: var(--fg);
+  --theme-primary-hover: var(--fg);
   --theme-border: var(--card-border);
   --theme-header-bg: var(--card-bg);
 }
