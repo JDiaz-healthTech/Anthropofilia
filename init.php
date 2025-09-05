@@ -32,21 +32,37 @@ set_error_handler(function ($severity, $message, $file, $line) {
     throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
-// init.php
-$scheme   = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host     = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$script   = $_SERVER['SCRIPT_NAME'] ?? '/';
-$basePath = rtrim(str_replace('\\', '/', dirname($script)), '/');
-$basePath = ($basePath === '/' ? '' : $basePath);
+// ========================
+// Base URL y funciones de URL 
+// ========================
 
-// Acepta APP_URL o APP_BASE_URL en .env
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
+
+// Calcula automáticamente la carpeta del proyecto
+$scriptName = $_SERVER['SCRIPT_NAME'] ?? '/';
+$basePath   = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
+
+// Si la raíz es '/', la dejamos vacía
+$basePath = ($basePath === '/') ? '' : $basePath;
+
+// Base URL final
 $baseUrl = $_ENV['APP_URL'] ?? $_ENV['APP_BASE_URL'] ?? ($scheme . '://' . $host . $basePath);
 
+// Función para generar URLs absolutas
 function url(string $path): string {
-  global $baseUrl;
-  $path = ltrim($path, '/');
-  return rtrim($baseUrl, '/') . '/' . $path;
+    global $baseUrl;
+    $path = ltrim($path, '/');
+    return rtrim($baseUrl, '/') . '/' . $path;
 }
+
+// Función para URL canónica
+function canonical_url(): string {
+    global $baseUrl;
+    $requestPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+    return rtrim($baseUrl, '/') . $requestPath;
+}
+
 
 // 1) Autoload (Composer)
 require_once __DIR__ . '/vendor/autoload.php';
@@ -84,9 +100,9 @@ $port    = (int)($_ENV['DB_PORT'] ?? 3306);
 $db      = $_ENV['DB_NAME'] ?? '';
 $user    = $_ENV['DB_USER'] ?? '';
 $pass    = $_ENV['DB_PASS'] ?? '';
-$charset = $_ENV['DB_CHARSET'] ?? 'utf8mb4_unicode_ci';
-
+$charset = $_ENV['DB_CHARSET'] ?? 'utf8mb4';
 $dsn = "mysql:host={$host};port={$port};dbname={$db};charset={$charset}";
+
 
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -123,24 +139,10 @@ $security = new SecurityManager(
 $security->boot();
 
 // (opcional) URL base para canónicas/links absolutos
-$_APP_BASE_URL = $_ENV['APP_URL'] ?? null;
+$_APP_BASE_URL = $_ENV['APP_URL'] ?? $_ENV['APP_BASE_URL'] ?? null;
 
-// Calcula $baseUrl de forma robusta si no viene del .env
-$scheme   = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host     = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$script   = $_SERVER['SCRIPT_NAME'] ?? '/';
-$basePath = rtrim(str_replace('\\', '/', dirname($script)), '/');
-$basePath = ($basePath === '/' ? '' : $basePath);
 
-$baseUrl = $_APP_BASE_URL ?: ($scheme . '://' . $host . $basePath);
-
-function canonical_url(): string {
-  global $baseUrl;
-  $requestPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
-  return rtrim($baseUrl, '/') . $requestPath;
-}
-
-require_once __DIR__.'/lib/settings.php';
+require_once __DIR__.'/admin/lib/settings.php';
 
 
 // fin init.php

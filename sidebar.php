@@ -108,11 +108,13 @@ try {
 
         // Prefiere mini-foto local si existe
         if ($local) {
-          $fs = $_SERVER['DOCUMENT_ROOT'] . $local;
-          if (@is_file($fs)) {
-            $imgSrc = $local;
-          }
-        }
+            // __DIR__ es la carpeta actual, así que subimos un nivel para llegar a la raíz del proyecto
+            $fs = dirname(__DIR__) . $local; 
+            if (file_exists($fs)) {
+                // Usamos la función url() para generar la ruta pública correcta
+                $imgSrc = url(ltrim($local, '/')); 
+            }
+        }     
         // Si no hay local, usa el favicon como placeholder
         if (!$imgSrc && $domain) {
           $imgSrc = 'https://www.google.com/s2/favicons?domain=' . urlencode($domain) . '&sz=64';

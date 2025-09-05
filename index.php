@@ -1,5 +1,5 @@
 <?php
-// index.php
+// index.php (CORREGIDO)
 declare(strict_types=1);
 
 require_once __DIR__ . '/init.php';
@@ -36,42 +36,43 @@ try {
 $pages = max(1, (int)ceil($total / $perPage));
 ?>
 <main class="home-list">
-  <?php if ($posts): ?>
-    <?php foreach ($posts as $post): ?>
-      <article class="post-card">
-        <h2 class="post-title">
-<a href="post.php?id=<?= (int)$post['id_post'] ?>">
-            <?php echo htmlspecialchars($post['titulo'] ?? '(sin título)', ENT_QUOTES, 'UTF-8'); ?>
-          </a>
-        </h2>
-        <p class="post-meta">
-          <?php
-          $ts = isset($post['fecha_publicacion']) ? strtotime((string)$post['fecha_publicacion']) : false;
-          echo $ts ? 'Publicado el ' . date('d/m/Y', $ts) : 'Fecha no disponible';
-          ?>
-        </p>
-      </article>
-      <hr>
-    <?php endforeach; ?>
-  <?php else: ?>
-    <p>No hay posts para mostrar.</p>
-  <?php endif; ?>
+    <?php if ($posts): ?>
+        <?php foreach ($posts as $post): ?>
+            <article class="post-card">
+                <h2 class="post-title">
+                    <a href="<?= url('post.php?id=' . (int)$post['id_post']) ?>">
+                        <?php echo htmlspecialchars($post['titulo'] ?? '(sin título)', ENT_QUOTES, 'UTF-8'); ?>
+                    </a>
+                </h2>
+                <p class="post-meta">
+                    <?php
+                    $ts = isset($post['fecha_publicacion']) ? strtotime((string)$post['fecha_publicacion']) : false;
+                    echo $ts ? 'Publicado el ' . date('d/m/Y', $ts) : 'Fecha no disponible';
+                    ?>
+                </p>
+            </article>
+            <hr>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p>No hay posts para mostrar.</p>
+    <?php endif; ?>
 
-  <?php if ($pages > 1): ?>
-    <nav class="pagination" aria-label="Paginación">
-      <?php
-      $base = '/index.php?';
-      // conserva otros filtros si los añades en el futuro
-      ?>
-      <?php if ($page > 1): ?>
-        <a href="<?php echo $base . 'page=' . ($page - 1); ?>">&laquo; Anterior</a>
-      <?php endif; ?>
-      <span>Página <?php echo $page; ?> de <?php echo $pages; ?></span>
-      <?php if ($page < $pages): ?>
-        <a href="<?php echo $base . 'page=' . ($page + 1); ?>">Siguiente &raquo;</a>
-      <?php endif; ?>
-    </nav>
-  <?php endif; ?>
+    <?php if ($pages > 1): ?>
+        <nav class="pagination" aria-label="Paginación">
+            
+            <?php if ($page > 1): ?>
+                <a href="<?= url('index.php?page=' . ($page - 1)) ?>">&laquo; Anterior</a>
+            <?php endif; ?>
+
+            <span>Página <?php echo $page; ?> de <?php echo $pages; ?></span>
+
+            <?php if ($page < $pages): ?>
+                <a href="<?= url('index.php?page=' . ($page + 1)) ?>">Siguiente &raquo;</a>
+            <?php endif; ?>
+
+        </nav>
+    <?php endif; // Este es el único endif necesario para la paginación ?>
+
 </main>
 
 <?php require_once __DIR__ . '/sidebar.php'; ?>

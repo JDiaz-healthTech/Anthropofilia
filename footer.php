@@ -6,6 +6,8 @@
 $year      = (int)date('Y');
 $isLogged  = isset($security) ? (bool)$security->userId() : false;
 ?>
+</div><!-- /.main-content-area -->
+
 <footer class="main-footer" role="contentinfo">
   <p>&copy; <?= $year ?> Ana López Sampedro. Todos los derechos reservados.</p>
 
@@ -19,9 +21,9 @@ $isLogged  = isset($security) ? (bool)$security->userId() : false;
 
   <nav class="admin-nav" aria-label="Área de administración">
     <?php if (!$isLogged): ?>
-      <a href="<?php echo $baseUrl; ?>/login.php" class="admin-link" rel="nofollow">Admin Login</a>
+      <a href="<?= url('login.php') ?>" class="admin-link" rel="nofollow">Admin Login</a>
     <?php else: ?>
-      <a href="<?php echo $baseUrl; ?>/admin.php" class="admin-link">Panel</a>
+      <a href="<?= url('admin.php') ?>" class="admin-link">Panel</a>
 <form action="<?= url('logout.php') ?>" method="POST" class="logout-form" style="display:inline">
   <?= isset($security) && method_exists($security,'csrfField') ? $security->csrfField() : '<input type="hidden" name="csrf_token" value="'.htmlspecialchars($_SESSION['csrf_token'] ?? '',ENT_QUOTES,'UTF-8').'">' ?>
   <button type="submit">Salir</button>
@@ -31,6 +33,9 @@ $isLogged  = isset($security) ? (bool)$security->userId() : false;
 
   <a href="#top" class="back-to-top">Volver arriba</a>
 </footer>
+</div><!-- /.container -->
+</body>
+</html>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 

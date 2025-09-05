@@ -26,7 +26,7 @@ $host    = env('DB_HOST');
 $port    = (int) (env('DB_PORT') ?? 3306);
 $socket  = env('DB_SOCKET'); // opcional (unix socket)
 $dbname  = env('DB_NAME');
-$charset = env('DB_CHARSET') ?: 'utf8mb4_unicode_ci';
+$charset = env('DB_CHARSET') ?: 'utf8mb4';
 
 $dsn = $socket
     ? sprintf('mysql:unix_socket=%s;dbname=%s;charset=%s', $socket, $dbname, $charset)

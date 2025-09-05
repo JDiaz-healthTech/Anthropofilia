@@ -113,7 +113,7 @@ $page_title = 'Panel de Administración';
         <ul>
           <li><a href="<?= url('crear_post.php') ?>">Crear nueva entrada</a></li>
           <li>
-            <a href="/gestionar_posts.php">Gestionar entradas</a>
+            <a href="<?= url('gestionar_posts.php') ?>">Gestionar entradas</a>
             <?php if ($postsCount): ?>
               <span class="badge" aria-label="Total de entradas"><?= $postsCount ?></span>
             <?php endif; ?>
@@ -126,9 +126,9 @@ $page_title = 'Panel de Administración';
       <h2 id="gestion-paginas">Gestionar Páginas</h2>
       <nav aria-label="Acciones de páginas">
         <ul>
-          <li><a href="/crear_pagina.php">Crear nueva página</a></li>
+        <li><a href="<?= url('crear_pagina.php') ?>">Crear nueva página</a></li>
           <li>
-            <a href="/gestionar_paginas.php">Gestionar páginas</a>
+            <a href="<?= url('gestionar_paginas.php') ?>">Gestionar páginas</a>
             <?php if ($paginasCount): ?>
               <span class="badge" aria-label="Total de páginas"><?= $paginasCount ?></span>
             <?php endif; ?>
