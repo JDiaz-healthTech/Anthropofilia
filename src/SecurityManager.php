@@ -45,7 +45,7 @@ final class SecurityManager
         'csp' => [
             'tinymce_cdn'       => 'https://cdn.tiny.cloud',
             'extra_script_src'  => ['https://cdn.jsdelivr.net'],
-            'allow_unsafe_inline' => true, // si lo pones a false, se usará nonce
+            'allow_unsafe_inline' => false, // si lo pones a false, se usará nonce
         ],
 
         // Uploads

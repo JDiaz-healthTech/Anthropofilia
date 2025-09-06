@@ -1,6 +1,6 @@
 <?php 
 $page_title = 'Acerca de mí';
-$meta_description = 'Perfil de Ana Sampedro: filosofía, biología y líneas de investigación en evolución del comportamiento.'; // si tu header lo usa
+$meta_description = 'Perfil de Ana López Sampedro: filosofía, biología y líneas de investigación en evolución del comportamiento.'; // si tu header lo usa
 require_once __DIR__ . '/init.php';   // define $baseUrl y url()
   $categoria = null; // para migas condicionales
   require_once __DIR__.'/header.php';
@@ -8,7 +8,7 @@ require_once __DIR__ . '/init.php';   // define $baseUrl y url()
 
 
 ?>
-<main class="container about">
+<main class="main-content-area container about">
 
     <nav class="breadcrumbs" aria-label="Breadcrumbs">
     <a href="<?= url('index.php') ?>">Inicio</a> <span aria-hidden="true">›</span>
@@ -37,7 +37,7 @@ require_once __DIR__ . '/init.php';   // define $baseUrl y url()
           width="200" height="200"             
           loading="lazy" decoding="async">
       </picture>
-      <figcaption>Ana Sampedro</figcaption>
+      <figcaption>Ana López Sampedro</figcaption>
     </figure>
 
     <section class="about__bio">
@@ -45,8 +45,11 @@ require_once __DIR__ . '/init.php';   // define $baseUrl y url()
       <p>Mis intereses se centran en la evolución del comportamiento humano, la ecología del comportamiento y la evolución cultural...</p>
     </section>
   </article>
+    <aside>
+    <?php include 'sidebar.php'; ?>
+  </aside>
 </main>
-<script type="application/ld+json">
+<!-- <script type="application/ld+json">
 {
   "@context":"https://schema.org",
   "@type":"Person",
@@ -58,5 +61,5 @@ require_once __DIR__ . '/init.php';   // define $baseUrl y url()
   "description":"Evolución del comportamiento humano, ecología del comportamiento y evolución cultural.",
   "url":"https://tudominio.com/acerca-de-mi"
 }
-</script>
+</script> -->
 <?php require_once 'footer.php'; ?>
