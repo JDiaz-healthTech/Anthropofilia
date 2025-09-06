@@ -1,38 +1,36 @@
 /* ==========================================================================
-                              ANTHROPOFILIA BLOG 
+                           ANTHROPOFILIA BLOG
    ========================================================================== */
 /* ========================================================================== */
-/* 🌞 TEMA CLARO (DEFAULT) – Variables Globales                               */
+/* 🌞 TEMA CLARO ARMÓNICO (DEFAULT) – Variables Globales                     */
 /* ========================================================================== */
 :root {
-  /* Paleta: Beige claro y gris oscuro */
-  --page-bg: #fdfaf3;      /* Beige muy clarito para el fondo de la página */
-  --bg: #fdfaf3;           /* Beige para el fondo de los elementos */
-  --fg: #3d3d3d;           /* Gris oscuro para el texto principal */
-  --muted: #666666;        /* Gris más suave para texto secundario */
-  --border: #dcd7ca;       /* Borde suave en tonos tierra */
-  --card-bg: #ffffff;      /* Tarjetas en blanco para que resalten un poco */
-  --card-border: #e5e0d4;
+  /* Paleta: Claro Armónico (Camel, Crema, Marrón) */
+  --page-bg: #FEFAE0;        /* Fondo: Blanco Hueso */
+  --bg: #FEFAE0;              /* Fondo: Blanco Hueso */
+  --fg: #4E4237;              /* Texto: Marrón Oscuro */
+  --muted: #7A6A53;            /* Texto secundario, un marrón más suave */
+  --border: #EAE2D1;          /* Borde suave derivado del fondo */
+  --card-bg: #FAEDCD;         /* Fondo de Tarjetas: Crema (Secundario) */
+  --card-border: var(--border);
 
   /* Colores de marca y enlaces */
-  --brand: #0066cc;   /* Color principal de la marca (ej. para botones, logos). */
-  --link: var(--brand);  /* Color para los enlaces de texto, hereda el color de la marca. */
-  --link-visited: #551a8b;  /* Color para los enlaces que ya han sido visitados (morado). */
-  --theme-primary-hover: #d9480f;   /* Color al pasar el ratón sobre elementos primarios (naranja/rojo). */
-  --input-bg: #ffffff;          /* Color de fondo para campos de formulario (inputs, textareas). */
-  --input-fg: #111111;        /* Color del texto dentro de los campos de formulario. */
-  --brand-hover: #d9480f; /* Color al pasar el ratón sobre elementos de la marca. */
+  --brand: #D4A373;           /* Primario: Camel */
+  --link: var(--brand);       /* Los enlaces usan el color primario */
+  --link-visited: #967C5E;    /* Un tono desaturado del Camel para visitados */
+  --brand-hover: #A98467;     /* Acento: Marrón Medio para hover */
+  --input-bg: #FFFFFF;        /* Fondo de inputs en blanco para mayor claridad */
+  --input-fg: var(--fg);      /* Texto de inputs */
 
   /* === 🎨 Aliases (compatibilidad con versiones anteriores) === */
-  --theme-bg: var(--bg);    /* Alias para el color de fondo general de los elementos. */
-  --theme-surface: var(--card-bg);  /* Alias para el color de "superficie" (ej. el fondo de las tarjetas). */
-  --theme-text: var(--fg);   /* Alias para el color del texto principal. */
-  --theme-text-light: var(--muted);  /* Alias para el texto secundario o de menor importancia (más claro). */
-  --theme-primary: var(--brand);  /* Alias para el color primario del tema, hereda de la marca. */
-  --theme-border: var(--card-border);  /* Alias para el color de los bordes. */
-  --theme-header-bg: var(--card-bg);  /* Alias para el fondo de la cabecera. */
-  --theme-primary-hover: var(--brand-hover);  /* Alias para el color hover primario
-
+  --theme-bg: var(--bg);
+  --theme-surface: var(--card-bg);
+  --theme-text: var(--fg);
+  --theme-text-light: var(--muted);
+  --theme-primary: var(--brand);
+  --theme-border: var(--card-border);
+  --theme-header-bg: var(--card-bg);
+  --theme-primary-hover: var(--brand-hover);
 
   /* === 🔤 Tipografía === */
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -45,32 +43,34 @@
   --step-2:  clamp(1.56rem, 1.30rem + 1.2vw, 1.80rem);
 
   /* === 🛠️ Extras === */
-  --radius: 6px;                      /* Bordes redondeados */
-  --transition: all 0.25s ease-in-out; /* Transiciones suaves */
-  --measure: 65ch;                    /* Ancho de línea ideal */
+  --radius: 6px;
+  --transition: all 0.25s ease-in-out;
+  --measure: 65ch;
   --shadow: 0 2px 6px rgba(0,0,0,0.08);
   --shadow-soft: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 /* ========================================================================== */
-/* 🌙 TEMA OSCURO – Variables redefinidas                                     */
+/* 🌙 TEMA OSCURO PROFESIONAL – Variables redefinidas                         */
 /* ========================================================================== */
 html.theme-dark {
-  /* Paleta: Grises oscuros y texto blanco */
-  --page-bg: #0a0a0a;
-  --bg: #121212;
-  --fg: #e0e0e0;
-  --muted: #a1a1aa;
-  --border: #2a2a2a;
-  --brand: #000000;
-  --link: #9ecbff;
-  --link-visited: #d0a6ff;
-  --card-bg: #1e1e1e;
-  --card-border: #2a2a2a;
-  --input-bg: #252525;
-  --input-fg: #e0e0e0;
-  --theme-primary-hover: #ffb74d;
-
+  /* Paleta: Oscuro Profesional (Gris Acero, Azul) */
+  --page-bg: #1F2937;         /* Fondo: Gris Oscuro */
+  --bg: #1F2937;              /* Fondo: Gris Oscuro */
+  --fg: #E0E0E0;              /* Texto: Gris Claro */
+  --muted: #A0AEC0;            /* Texto secundario, un gris más apagado */
+  --border: #4A5A70;          /* Borde: Gris Azulado (Secundario) */
+  --card-bg: #2D3A4D;         /* Fondo de Tarjetas: Gris Acero (Primario) */
+  --card-border: var(--border);
+  
+  /* Para enlaces, un azul brillante funciona mejor en modo oscuro por accesibilidad */
+  --brand: #3498DB;           /* Acento: Azul Cielo para botones y elementos de marca */
+  --link: #60A5FA;            /* Un azul ligeramente más brillante para texto de enlace */
+  --link-visited: #A78BFA;    /* Un tono lavanda para enlaces visitados */
+  --brand-hover: #93C5FD;     /* Un azul mucho más claro para el hover */
+  --input-bg: #2D3A4D;         /* Fondo de inputs igual que las tarjetas */
+  --input-fg: var(--fg);
+  
   --theme-bg: var(--bg);
   --theme-surface: var(--card-bg);
   --theme-text: var(--fg);
@@ -82,78 +82,78 @@ html.theme-dark {
 }
 
 /* ========================================================================== */
-/* ♿ ALTO CONTRASTE – Tema Claro                                              */
+/* ♿ ALTO CONTRASTE – Tema Claro                                            */
 /* ========================================================================== */
 .high-contrast {
-  /* Paleta: Blanco puro y negro absoluto */
-  --page-bg: #ffffff;
-  --bg: #ffffff;
-  --fg: #000000;
-  --muted: #000000;
-  --border: #000000;
-  --link: #000000;
-  --link-visited: #000000;
-  --card-bg: #ffffff;
-  --card-border: #000000;
-  --input-bg: #ffffff;
-  --input-fg: #000000;
-  --brand: #000000;
-  --theme-primary-hover: #000000;
-
+  /* Paleta: Claro Alto Contraste (Blanco, Azul Noche, Turquesa) */
+  --page-bg: #FFFFFF;         /* Fondo: Blanco Puro */
+  --bg: #FFFFFF;
+  --fg: #023047;              /* Texto: Azul Noche (mucho contraste, menos duro que el negro puro) */
+  --muted: var(--fg);         /* En alto contraste, el texto secundario mantiene el contraste */
+  --border: var(--fg);
+  --card-bg: #FFFFFF;
+  --card-border: var(--fg);
+  
+  --brand: #00A896;           /* Primario: Turquesa para elementos interactivos */
+  --link: var(--brand);
+  --link-visited: #00796B;    /* Turquesa más oscuro para visitados */
+  --brand-hover: #F4A261;     /* Acento: Naranja Arena para un hover muy notorio */
+  --input-bg: #FFFFFF;
+  --input-fg: var(--fg);
+  
   --theme-bg: var(--bg);
   --theme-surface: var(--card-bg);
   --theme-text: var(--fg);
-  --theme-text-light: var(--fg); /* En alto conraste, no hay texto "suave" */
-  --theme-primary: var(--fg);
-  --theme-primary-hover: var(--fg);
+  --theme-text-light: var(--fg);
+  --theme-primary: var(--brand);
+  --theme-primary-hover: var(--brand-hover);
   --theme-border: var(--card-border);
   --theme-header-bg: var(--card-bg);
-
-
 }
 
 /* ========================================================================== */
-/* ♿ ALTO CONTRASTE – Tema Oscuro                                             */
+/* ♿ ALTO CONTRASTE – Tema Oscuro                                           */
 /* ========================================================================== */
 html.theme-dark.high-contrast {
-  --page-bg: #000000;
-  --bg: #000000;
-  --fg: #ffff00;          /* Amarillo eléctrico */
-  --muted: #ffff00;
-  --border: #ffff00;
-  --link: #ffff00;
-  --link-visited: #ffff00;
-  --card-bg: #000000;
-  --card-border: #ffff00;
-  --input-bg: #000000;
-  --input-fg: #ffff00;
-  --brand: #ffff00;
-  --theme-primary-hover: #ffff00;
+  /* Paleta: Oscuro Alto Contraste (Negro Profundo, Amarillo Vistoso) */
+  --page-bg: #121212;         /* Fondo: Negro Profundo (no puro #000) */
+  --bg: #121212;
+  --fg: #F5F5F5;              /* Texto: Blanco Roto (más legible que amarillo para párrafos largos) */
+  --muted: var(--fg);
+  
+  /* El amarillo se reserva para elementos que requieren acción o atención */
+  --brand: #FFC700;           /* Primario: Amarillo Vistoso */
+  --border: var(--brand);
+  --link: var(--brand);
+  --link-visited: var(--brand);
+  --card-bg: #121212;
+  --card-border: var(--brand);
+  --input-bg: #121212;
+  --input-fg: var(--brand);
+  --brand-hover: #FFEE32;     /* Acento: Amarillo Limón para hover */
 
   --theme-bg: var(--bg);
   --theme-surface: var(--card-bg);
   --theme-text: var(--fg);
-  --theme-text-light: var(--fg); /* En alto contraste, no hay texto "suave" */
-  --theme-primary: var(--fg);
-  --theme-primary-hover: var(--fg);
+  --theme-text-light: var(--fg);
+  --theme-primary: var(--brand);
+  --theme-primary-hover: var(--brand-hover);
   --theme-border: var(--card-border);
   --theme-header-bg: var(--card-bg);
-
 }
 
-/* Hover en modo alto contraste */
-html.theme-dark.high-contrast  button:hover, html.high-contrast .btn:hover {
-    background-color: #ffff00; /* un color distinto para hover */
-    color: black;             /* texto negro también */
-
-
+/* Hover en modo alto contraste oscuro para máxima claridad */
+html.theme-dark.high-contrast button:hover,
+html.theme-dark.high-contrast .btn:hover {
+    background-color: var(--brand); /* Fondo amarillo */
+    color: #121212;                /* Texto negro profundo */
+    border-color: var(--brand);     /* Mantiene el borde amarillo */
 }
 
-
 /* ========================================================================== */
-/* 🔄 RESET Y BASE                                                           */
+/* 🔄 RESET Y BASE                                                          */
 /* ========================================================================== */
-/* Se asegura de que todos los navegadores partan de un estilo uniforme.     */
+/* Se asegura de que todos los navegadores partan de un estilo uniforme.      */
 
 * { 
   box-sizing: border-box; 
@@ -165,21 +165,20 @@ html {
   scroll-behavior: smooth;
   font-size: 16px;
   -webkit-text-size-adjust: 100%; /* Evita zoom automático en móviles iOS */
-  text-size-adjust: 100%;         /* Equivalente en Android */
+  text-size-adjust: 100%;       /* Equivalente en Android */
 }
 
 body {
   font-family: var(--font-body);
   font-size: var(--step-0);
-  line-height: 1.65;               /* Espaciado entre líneas legible */
+  line-height: 1.65;
   color: var(--theme-text);
-  background: var(--page-bg);      /* Fondo dinámico (claro por defecto) */
+  background: var(--page-bg);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
 }
-
 /* ========================================================================== */
 /* 📱 NOTCH SUPPORT (iOS + Android)                                          */
 /* ========================================================================== */
