@@ -410,22 +410,53 @@ blockquote {
   border-color: var(--theme-text);
 }
 
-/* --- Contenido Principal ------------------------------------------------- */
+/* -------------------------
+   Layout: contenido principal + sidebar
+   ------------------------- */
 .main-content-area {
-  display: flex;
-  grid-template-columns: 1fr;
+  display: grid;
+  grid-template-columns: 1fr; /* móvil: 1 columna */
   gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 1.5rem;
+  box-sizing: border-box;
 }
+
+/* Desktop: proporción 3:1 (posts : sidebar) */
 @media (min-width: 768px) {
   .main-content-area {
-    grid-template-columns: 2.5fr 1fr;
+    grid-template-columns: 3fr 1fr; /* <- cambia a 2fr 1fr para 2:1 si prefieres */
+    align-items: start;
   }
 }
-main { max-width: 100%; }
-aside {
+
+/* Asegurar que el <main> ocupe la primera columna */
+.main-content-area > main,
+.main-content-area > .home-list {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Sidebar: ocupar la segunda columna, pegado al borde de la columna */
+.main-content-area > aside {
   border-left: 1px solid var(--theme-border);
   padding-left: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* En pantallas pequeñas, hacer que aside se sitúe debajo con separación */
+@media (max-width: 767px) {
+  .main-content-area {
+    grid-template-columns: 1fr;
+  }
+  .main-content-area > aside {
+    border-left: none;
+    padding-left: 0;
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--theme-border);
+    padding-top: 1rem;
+  }
 }
 
 /* --- Componentes --------------------------------------------------------- */
@@ -528,10 +559,36 @@ aside {
   font-weight: 600;
   font-family: var(--font-header);
 }
-input, textarea, select, button {
+
+/* POR estas líneas más específicas: */
+input, select, button {
   font: inherit;
   width: 100%;
   max-width: 100%;
+}
+
+/* Textarea solo dentro de formularios, no afecta TinyMCE */
+.form-container textarea,
+form textarea:not([id*="mce"]) {
+  font: inherit;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Asegurar que TinyMCE tenga espacio para trabajar */
+.tox-tinymce {
+  width: 100% !important;
+}
+
+/* Evitar que otros estilos interfieran con TinyMCE */
+.tox-tinymce,
+.tox-tinymce * {
+  box-sizing: content-box;
+}
+
+/* Restaurar box-sizing para el contenido del editor */
+.tox-edit-area * {
+  box-sizing: border-box;
 }
 .form-container input[type="text"],
 .form-container input[type="url"],
@@ -827,3 +884,31 @@ footer, .site-footer {
 
 .main-footer { grid-column: 1 / -1; }
 
+/* --- Tabla: acciones de gestión de posts --- */
+td.actions {
+  display: flex;
+  gap: 0.5rem;         /* espacio entre botones */
+  justify-content: flex-start;
+  align-items: center;
+}
+
+td.actions .button {
+  padding: 0.25rem 0.6rem;  /* más compacto */
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+td.actions .button.danger {
+  background-color: #c0392b;
+  color: #fff;
+}
+
+td.actions .button.danger:hover {
+  background-color: #a93226;
+}
+
+/* El form no debe romper el flexbox */
+td.actions .inline-form {
+  display: inline;
+  margin: 0;
+}

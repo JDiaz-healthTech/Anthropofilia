@@ -7,8 +7,9 @@ require_once __DIR__ . '/init.php';   // define $baseUrl y url()
 ?>
 
 
-?>
-<main class="main-content-area container about">
+<div class="main-content-area container about">
+
+<main>
 
     <nav class="breadcrumbs" aria-label="Breadcrumbs">
     <a href="<?= url('index.php') ?>">Inicio</a> <span aria-hidden="true">›</span>
@@ -45,10 +46,11 @@ require_once __DIR__ . '/init.php';   // define $baseUrl y url()
       <p>Mis intereses se centran en la evolución del comportamiento humano, la ecología del comportamiento y la evolución cultural...</p>
     </section>
   </article>
-    <aside>
-    <?php include 'sidebar.php'; ?>
-  </aside>
+
+  
 </main>
+</div> <!-- .main-content-area -->
+
 <!-- <script type="application/ld+json">
 {
   "@context":"https://schema.org",

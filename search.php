@@ -146,5 +146,6 @@ function post_link(array $p): string {
 
 <!-- Si sidebar te estrecha el footer en algunas vistas, asegúrate del clearfix -->
 <div style="clear:both"></div>
-<?php require_once __DIR__ . '/sidebar.php'; ?>
+
+
 <?php require_once __DIR__ . '/footer.php'; ?>

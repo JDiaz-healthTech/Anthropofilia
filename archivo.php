@@ -92,5 +92,4 @@ try {
   <?php endif; ?>
 </main>
 
-<?php require_once __DIR__ . '/sidebar.php'; ?>
 <?php require_once __DIR__ . '/footer.php'; ?>

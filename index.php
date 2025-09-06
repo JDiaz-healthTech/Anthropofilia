@@ -77,5 +77,4 @@ $pages = max(1, (int)ceil($total / $perPage));
 
 </main>
 </html>
-<?php require_once __DIR__ . '/sidebar.php'; ?>
 <?php require_once __DIR__ . '/footer.php'; ?>

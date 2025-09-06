@@ -51,5 +51,4 @@ $meta_description = mb_substr(
   </article>
 </main>
 
-<?php require_once __DIR__ . '/sidebar.php'; ?>
 <?php require_once __DIR__ . '/footer.php'; ?>

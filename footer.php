@@ -5,8 +5,16 @@
 
 $year      = (int)date('Y');
 $isLogged  = isset($security) ? (bool)$security->userId() : false;
+
+if (empty($noSidebar)):
 ?>
-</div><!-- /.main-content-area -->
+  <aside class="site-sidebar" role="complementary" aria-label="Barra lateral">
+    <?php include __DIR__ . '/sidebar.php'; ?>
+  </aside>
+<?php
+endif;
+?>
+</div> <!-- /.main-content-area -->
 
 <footer class="main-footer" role="contentinfo">
   <p>&copy; <?= $year ?> Ana López Sampedro. Todos los derechos reservados.</p>
@@ -24,10 +32,10 @@ $isLogged  = isset($security) ? (bool)$security->userId() : false;
       <a href="<?= url('login.php') ?>" class="admin-link" rel="nofollow">Admin Login</a>
     <?php else: ?>
       <a href="<?= url('admin.php') ?>" class="admin-link">Panel</a>
-<form action="<?= url('logout.php') ?>" method="POST" class="logout-form" style="display:inline">
-  <?= isset($security) && method_exists($security,'csrfField') ? $security->csrfField() : '<input type="hidden" name="csrf_token" value="'.htmlspecialchars($_SESSION['csrf_token'] ?? '',ENT_QUOTES,'UTF-8').'">' ?>
-  <button type="submit">Salir</button>
-</form>
+      <form action="<?= url('logout.php') ?>" method="POST" class="logout-form" style="display:inline">
+        <?= isset($security) && method_exists($security, 'csrfField') ? $security->csrfField() : '<input type="hidden" name="csrf_token" value="' . htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') . '">' ?>
+        <button type="submit">Salir</button>
+      </form>
     <?php endif; ?>
   </nav>
 
@@ -35,26 +43,26 @@ $isLogged  = isset($security) ? (bool)$security->userId() : false;
 </footer>
 </div><!-- /.container -->
 </body>
+
 </html>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', function() {
 
     // Mobile navigation
     const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
     const mainNavLinks = document.getElementById('main-nav-links');
 
     if (mobileNavToggle && mainNavLinks) {
-      mobileNavToggle.addEventListener('click', function () {
+      mobileNavToggle.addEventListener('click', function() {
         const isOpen = mainNavLinks.classList.toggle('active');
         this.classList.toggle('is-open', isOpen);
         this.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         this.setAttribute('aria-label', isOpen ? 'Cerrar menú' : 'Abrir menú');
       });
     }
-});
+  });
 </script>
 <!-- el primero no tenia defer y daba problemas de carga -->
 <script defer src="<?= url('accessibility.js') ?>"></script>
 <script defer src="<?= url('public/js/ui.js') ?>"></script>
 <script defer src="<?= url('public/js/lightbox.js') ?>"></script>
-
