@@ -1,3 +1,31 @@
+# --- Seguridad básica: impedir ejecución de código ---
 php_flag engine off
 Options -ExecCGI
-RemoveHandler .php .phtml .php3 .php4 .php5 .phar
+
+# Quitar manejadores de extensiones peligrosas
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phar .cgi .pl .asp .aspx .sh .js
+
+# --- Evita listado de directorios ---
+Options -Indexes
+
+# --- Cabeceras de seguridad ---
+<IfModule mod_headers.c>
+  # Evita interpretación errónea de tipos MIME
+  Header set X-Content-Type-Options "nosniff"
+  # Previene que se embeba en iframes (clickjacking)
+  Header set X-Frame-Options "DENY"
+  # Oculta cabecera X-Powered-By
+  Header always unset X-Powered-By
+</IfModule>
+
+# --- Política de caché para archivos estáticos ---
+<IfModule mod_expires.c>
+  ExpiresActive On
+  # 1 mes por defecto para todos los recursos servidos desde aquí
+  ExpiresDefault "access plus 1 month"
+</IfModule>
+
+# --- Bloquear ejecución/servir de ficheros peligrosos ---
+<FilesMatch "\.(php|phtml|php[0-9]|phar|pl|cgi|asp|aspx|sh|exe|bat|js)$">
+  Require all denied
+</FilesMatch>

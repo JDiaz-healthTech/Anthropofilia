@@ -8,14 +8,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const body = document.body;
 
   // Persistencia en localStorage
-  const load = () => {
-
-return {
-  dark: localStorage.getItem('a11y_dark') === '1', // solo oscuro si el usuario lo eligió
-  hc:   localStorage.getItem('a11y_hc')   === '1',
-  zoom: parseInt(localStorage.getItem('a11y_zoom') || '100', 10)
-    };
+const load = () => {
+  // Si nunca se guardó preferencia → arrancar en claro
+  const darkPref = localStorage.getItem('a11y_dark');
+  return {
+    dark: darkPref === '0' ? true : false,
+    hc:   localStorage.getItem('a11y_hc') === '1',
+    zoom: parseInt(localStorage.getItem('a11y_zoom') || '100', 10)
   };
+};
 
   const save = (st) => {
     localStorage.setItem('a11y_dark', st.dark ? '1' : '0');
@@ -115,18 +116,18 @@ return {
     });
   }
 
-  // Escuchar cambios en las preferencias del sistema
-  if (window.matchMedia) {
-    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    darkModeQuery.addListener((e) => {
-      // Solo cambiar si no hay preferencia guardada explícitamente
-      if (!localStorage.getItem('a11y_dark')) {
-        state.dark = e.matches;
-        apply(state);
-        console.log('Preferencia del sistema detectada:', e.matches ? 'oscuro' : 'claro');
-      }
-    });
-  }
+  // // Escuchar cambios en las preferencias del sistema
+  // if (window.matchMedia) {
+  //   const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  //   darkModeQuery.addListener((e) => {
+  //     // Solo cambiar si no hay preferencia guardada explícitamente
+  //     if (!localStorage.getItem('a11y_dark')) {
+  //       state.dark = e.matches;
+  //       apply(state);
+  //       console.log('Preferencia del sistema detectada:', e.matches ? 'oscuro' : 'claro');
+  //     }
+  //   });
+  // }
 
   // Función de utilidad para debugging
   window.debugAccessibility = () => {

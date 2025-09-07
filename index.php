@@ -35,6 +35,8 @@ try {
 
 $pages = max(1, (int)ceil($total / $perPage));
 ?>
+<html lang="es" class="light">
+
 <main class="home-list">
     <?php if ($posts): ?>
         <?php foreach ($posts as $post): ?>
@@ -74,6 +76,5 @@ $pages = max(1, (int)ceil($total / $perPage));
     <?php endif; // Este es el único endif necesario para la paginación ?>
 
 </main>
-
-<?php require_once __DIR__ . '/sidebar.php'; ?>
+</html>
 <?php require_once __DIR__ . '/footer.php'; ?>

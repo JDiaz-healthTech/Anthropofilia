@@ -1,4 +1,5 @@
 <?php
+
 /**
  * security_manager.php
  * Gestor de seguridad para Anthropofilia
@@ -19,18 +20,18 @@ use RuntimeException;
 
 final class SecurityManager
 {
-    
+
     private ?PDO $pdo = null;
 
     /** @var array<string,mixed> */
     private array $config = [
-        
+
         'env' => 'prod',
 
         // Sesión
         'session_name'        => 'anth_session',
-        'session_idle_timeout'=> 1800, // 30 min
-        'session_rotate_every'=> 600,  // 10 min
+        'session_idle_timeout' => 1800, // 30 min
+        'session_rotate_every' => 600,  // 10 min
         'trust_proxy'         => false, // si estás detrás de proxy, ponlo a true
         // 'cookie_domain'     => null, // puedes fijarlo si lo necesitas
 
@@ -45,13 +46,13 @@ final class SecurityManager
         'csp' => [
             'tinymce_cdn'       => 'https://cdn.tiny.cloud',
             'extra_script_src'  => ['https://cdn.jsdelivr.net'],
-            'allow_unsafe_inline' => true, // si lo pones a false, se usará nonce
+            'allow_unsafe_inline' => false, // si lo pones a false, se usará nonce
         ],
 
         // Uploads
         'uploads' => [
             'max_size_bytes' => 2 * 1024 * 1024, // 2MB
-            'allowed_mime'   => ['image/jpeg','image/png','image/gif','image/webp'],
+            'allowed_mime'   => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
             'max_pixels'     => 1600,
         ],
     ];
@@ -164,9 +165,14 @@ final class SecurityManager
         $_SESSION = [];
         if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
-            setcookie(session_name(), '', time() - 42000,
-                $params['path'], $params['domain'] ?? '',
-                (bool)$params['secure'], (bool)$params['httponly']
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params['path'],
+                $params['domain'] ?? '',
+                (bool)$params['secure'],
+                (bool)$params['httponly']
             );
         }
         session_destroy();
@@ -214,7 +220,9 @@ final class SecurityManager
         if (!empty($this->config['csp']['tinymce_cdn'])) {
             $cdn = (string)$this->config['csp']['tinymce_cdn'];
             $scriptSrc[]  = $cdn;
+            $styleSrc[]   = $cdn;  // ← ESTA LÍNEA FALTABA
             $connectSrc[] = $cdn;
+            $fontSrc[]    = $cdn;  // ← OPCIONAL: por si TinyMCE usa fuentes
         }
 
         if (!empty($this->config['csp']['extra_script_src'])) {
@@ -228,7 +236,7 @@ final class SecurityManager
             $styleSrc[]  = "'unsafe-inline'";
         } else {
             // si desactivas inline, añade nonce
-            $scriptSrc[] = "'nonce-".$this->cspNonce()."'";
+            $scriptSrc[] = "'nonce-" . $this->cspNonce() . "'";
         }
 
         $csp = sprintf(
@@ -279,7 +287,7 @@ final class SecurityManager
     public function csrfField(): string
     {
         return '<input type="hidden" name="csrf_token" value="' .
-               htmlspecialchars($this->csrfToken(), ENT_QUOTES, 'UTF-8') . '">';
+            htmlspecialchars($this->csrfToken(), ENT_QUOTES, 'UTF-8') . '">';
     }
 
     /* =========
@@ -305,54 +313,54 @@ final class SecurityManager
         }
     }
 
-public function checkRateLimit(string $action, int $maxAttempts, int $windowSeconds): void
-{
-    $ip = $this->clientIP();
+    public function checkRateLimit(string $action, int $maxAttempts, int $windowSeconds): void
+    {
+        $ip = $this->clientIP();
 
-    if ($this->pdo) {
-        // Limpieza: fuera de la ventana
-        $threshold = date('Y-m-d H:i:s', time() - $windowSeconds);
-        $del = $this->pdo->prepare("DELETE FROM rate_limits WHERE ts < :threshold");
-        $del->execute([':threshold' => $threshold]);
+        if ($this->pdo) {
+            // Limpieza: fuera de la ventana
+            $threshold = date('Y-m-d H:i:s', time() - $windowSeconds);
+            $del = $this->pdo->prepare("DELETE FROM rate_limits WHERE ts < :threshold");
+            $del->execute([':threshold' => $threshold]);
 
-        // Bucket al minuto (ajusta 60-> tu ventana si quieres)
-        $bucketSql = "FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(NOW())/60)*60)";
+            // Bucket al minuto (ajusta 60-> tu ventana si quieres)
+            $bucketSql = "FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(NOW())/60)*60)";
 
-        // Inserta/acumula
-        $sql = "INSERT INTO rate_limits (action, ip, bucket_start, hits)
+            // Inserta/acumula
+            $sql = "INSERT INTO rate_limits (action, ip, bucket_start, hits)
                 VALUES (:a, :ip, $bucketSql, 1)
                 ON DUPLICATE KEY UPDATE hits = hits + 1, ts = NOW()";
-        $ins = $this->pdo->prepare($sql);
-        $ins->execute([':a' => $action, ':ip' => $ip]);
+            $ins = $this->pdo->prepare($sql);
+            $ins->execute([':a' => $action, ':ip' => $ip]);
 
-        // Cuenta dentro de la ventana (suma de hits)
-        $sel = $this->pdo->prepare(
-            "SELECT COALESCE(SUM(hits),0)
+            // Cuenta dentro de la ventana (suma de hits)
+            $sel = $this->pdo->prepare(
+                "SELECT COALESCE(SUM(hits),0)
              FROM rate_limits
              WHERE action = :a AND ip = :ip AND ts >= :threshold"
-        );
-        $sel->execute([':a' => $action, ':ip' => $ip, ':threshold' => $threshold]);
-        $count = (int)$sel->fetchColumn();
+            );
+            $sel->execute([':a' => $action, ':ip' => $ip, ':threshold' => $threshold]);
+            $count = (int)$sel->fetchColumn();
 
-        if ($count >= $maxAttempts) {
+            if ($count >= $maxAttempts) {
+                http_response_code(429);
+                exit('Demasiadas solicitudes. Intenta más tarde.');
+            }
+            return;
+        }
+
+        // Fallback en sesión (tu bloque actual está bien)
+        $key    = sprintf('rl_%s_%s', $action, bin2hex($ip));
+        $bucket = $_SESSION[$key] ?? [];
+        $now    = time();
+        $bucket = array_filter($bucket, fn($ts) => ($now - (int)$ts) < $windowSeconds);
+        if (count($bucket) >= $maxAttempts) {
             http_response_code(429);
             exit('Demasiadas solicitudes. Intenta más tarde.');
         }
-        return;
+        $bucket[]       = $now;
+        $_SESSION[$key] = $bucket;
     }
-
-    // Fallback en sesión (tu bloque actual está bien)
-    $key    = sprintf('rl_%s_%s', $action, bin2hex($ip));
-    $bucket = $_SESSION[$key] ?? [];
-    $now    = time();
-    $bucket = array_filter($bucket, fn($ts) => ($now - (int)$ts) < $windowSeconds);
-    if (count($bucket) >= $maxAttempts) {
-        http_response_code(429);
-        exit('Demasiadas solicitudes. Intenta más tarde.');
-    }
-    $bucket[]       = $now;
-    $_SESSION[$key] = $bucket;
-}
 
     /* =========
        Sanitización HTML
@@ -363,8 +371,9 @@ public function checkRateLimit(string $action, int $maxAttempts, int $windowSeco
         if (class_exists(\HTMLPurifier::class)) {
             $config = \HTMLPurifier_Config::createDefault();
             $config->set('Cache.SerializerPath', __DIR__ . '/cache');
-            $config->set('URI.AllowedSchemes', ['http'=>true,'https'=>true,'mailto'=>true,'data'=>true]);
-            $config->set('HTML.Allowed',
+            $config->set('URI.AllowedSchemes', ['http' => true, 'https' => true, 'mailto' => true, 'data' => true]);
+            $config->set(
+                'HTML.Allowed',
                 'p,br,strong,em,ul,ol,li,blockquote,a[href|title|target|rel],img[src|alt|title|width|height],h2,h3,code,pre,table,thead,tbody,tr,th,td'
             );
             $config->set('Attr.AllowedFrameTargets', ['_blank']);
@@ -381,15 +390,16 @@ public function checkRateLimit(string $action, int $maxAttempts, int $windowSeco
             if ($tag === 'a') {
                 if (preg_match('/href\s*=\s*([\'"])(.*?)\1/i', $m[0], $href)) {
                     $safe = htmlspecialchars($href[2], ENT_QUOTES, 'UTF-8');
-                    return '<a href="'.$safe.'" target="_blank" rel="noopener noreferrer">';
+                    return '<a href="' . $safe . '" target="_blank" rel="noopener noreferrer">';
                 }
                 return '<a>';
             }
             if ($tag === 'img') {
-                $src = ''; $alt = '';
+                $src = '';
+                $alt = '';
                 if (preg_match('/src\s*=\s*([\'"])(.*?)\1/i', $m[0], $m1)) $src = htmlspecialchars($m1[2], ENT_QUOTES, 'UTF-8');
                 if (preg_match('/alt\s*=\s*([\'"])(.*?)\1/i', $m[0], $m2)) $alt = htmlspecialchars($m2[2], ENT_QUOTES, 'UTF-8');
-                if ($src) return '<img src="'.$src.'" alt="'.$alt.'" style="max-width:100%;height:auto;">';
+                if ($src) return '<img src="' . $src . '" alt="' . $alt . '" style="max-width:100%;height:auto;">';
                 return '';
             }
             return $m[0];
@@ -414,7 +424,7 @@ public function checkRateLimit(string $action, int $maxAttempts, int $windowSeco
 
         $maxSize = (int)$this->config['uploads']['max_size_bytes'];
         if ((int)$file['size'] > $maxSize) {
-            throw new RuntimeException('Archivo demasiado grande (máx ' . round($maxSize/1024/1024,2) . 'MB).');
+            throw new RuntimeException('Archivo demasiado grande (máx ' . round($maxSize / 1024 / 1024, 2) . 'MB).');
         }
 
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
@@ -427,7 +437,7 @@ public function checkRateLimit(string $action, int $maxAttempts, int $windowSeco
         if (str_starts_with((string)$mime, 'image/')) {
             $info = getimagesize($file['tmp_name']);
             if ($info === false) throw new RuntimeException('Imagen inválida.');
-            [$w,$h] = $info;
+            [$w, $h] = $info;
             if ($w < 1 || $h < 1) throw new RuntimeException('Dimensiones inválidas.');
         }
     }
@@ -447,7 +457,7 @@ public function checkRateLimit(string $action, int $maxAttempts, int $windowSeco
     {
         return hash('sha256', $originalName . microtime(true) . random_bytes(16))
             . $this->extensionFromMime($mime);
-        }
+    }
 
     /* =========
        Logging y helpers
@@ -475,8 +485,13 @@ public function checkRateLimit(string $action, int $maxAttempts, int $windowSeco
             ]);
         } else {
             error_log('APP_LOG ' . json_encode([
-                'ts'=>date('c'),'ip'=>bin2hex($ip),'user_id'=>$uid,'level'=>$level,
-                'event'=>$event,'details'=>$details,'ua'=>$ua
+                'ts' => date('c'),
+                'ip' => bin2hex($ip),
+                'user_id' => $uid,
+                'level' => $level,
+                'event' => $event,
+                'details' => $details,
+                'ua' => $ua
             ], JSON_UNESCAPED_UNICODE));
         }
     }
@@ -511,6 +526,4 @@ public function checkRateLimit(string $action, int $maxAttempts, int $windowSeco
         }
         return $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
     }
-
-
 }

@@ -1,26 +1,27 @@
 /* ==========================================================================
-                              ANTHROPOFILIA BLOG 
+                           ANTHROPOFILIA BLOG
    ========================================================================== */
 /* ========================================================================== */
-/* 🌞 TEMA CLARO (DEFAULT) – Variables Globales                               */
+/* 🌞 TEMA CLARO ARMÓNICO (DEFAULT) – Variables Globales                     */
 /* ========================================================================== */
 :root {
-  /* Paleta: Beige claro y gris oscuro */
-  --page-bg: #fdfaf3;      /* Beige muy clarito para el fondo de la página */
-  --bg: #fdfaf3;           /* Beige para el fondo de los elementos */
-  --fg: #3d3d3d;           /* Gris oscuro para el texto principal */
-  --muted: #666666;        /* Gris más suave para texto secundario */
-  --border: #dcd7ca;       /* Borde suave en tonos tierra */
-  --card-bg: #ffffff;      /* Tarjetas en blanco para que resalten un poco */
-  --card-border: #e5e0d4;
+  /* Paleta: Claro Armónico (Camel, Crema, Marrón) */
+  --page-bg: #FEFAE0;        /* Fondo: Blanco Hueso */
+  --bg: #FEFAE0;              /* Fondo: Blanco Hueso */
+  --fg: #4E4237;              /* Texto: Marrón Oscuro */
+  --muted: #7A6A53;            /* Texto secundario, un marrón más suave */
+  --border: #EAE2D1;          /* Borde suave derivado del fondo */
+  --card-bg: #faf3e0;         /* Fondo de Tarjetas: Crema (Secundario) */
+  --home-card-bg:#ffffff;     /* Fondo de CARDS de los post: Blanco puro  */
+  --card-border: var(--border);
 
   /* Colores de marca y enlaces */
-  --brand: #0066cc;
-  --link: var(--brand);
-  --link-visited: #551a8b;
-  --theme-primary-hover: #d9480f;
-  --input-bg: #ffffff;         /* Fondo de inputs */
-  --input-fg: #111111;         /* Texto de inputs */
+  --brand: #D4A373;           /* Primario: Camel */
+  --link: var(--brand);       /* Los enlaces usan el color primario */
+  --link-visited: #967C5E;    /* Un tono desaturado del Camel para visitados */
+  --brand-hover: #A98467;     /* Acento: Marrón Medio para hover */
+  --input-bg: #FFFFFF;        /* Fondo de inputs en blanco para mayor claridad */
+  --input-fg: var(--fg);      /* Texto de inputs */
 
   /* === 🎨 Aliases (compatibilidad con versiones anteriores) === */
   --theme-bg: var(--bg);
@@ -28,9 +29,9 @@
   --theme-text: var(--fg);
   --theme-text-light: var(--muted);
   --theme-primary: var(--brand);
-  --theme-primary-hover: var(--brand-hover);
   --theme-border: var(--card-border);
   --theme-header-bg: var(--card-bg);
+  --theme-primary-hover: var(--brand-hover);
 
   /* === 🔤 Tipografía === */
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -43,34 +44,42 @@
   --step-2:  clamp(1.56rem, 1.30rem + 1.2vw, 1.80rem);
 
   /* === 🛠️ Extras === */
-  --radius: 6px;                      /* Bordes redondeados */
-  --transition: all 0.25s ease-in-out; /* Transiciones suaves */
-  --measure: 65ch;                    /* Ancho de línea ideal */
+  --radius: 6px;
+  --transition: all 0.25s ease-in-out;
+  --measure: 65ch;
   --shadow: 0 2px 6px rgba(0,0,0,0.08);
   --shadow-soft: 0 1px 3px rgba(0,0,0,0.05);
 }
 
+/* --- Estilo específico para las tarjetas de la Home --- */
+.home-list .post-card {
+  background-color: var(--home-card-bg); /* Usa la nueva variable para fondo de las tarjetas del main nav*/
+}
+
 /* ========================================================================== */
-/* 🌙 TEMA OSCURO – Variables redefinidas                                     */
+/* 🌙 TEMA OSCURO PROFESIONAL – Variables redefinidas                         */
 /* ========================================================================== */
 html.theme-dark {
-  /* Paleta: Grises oscuros y texto blanco */
-  --page-bg: #0a0a0a;
-  --bg: #121212;
-  --fg: #e0e0e0;
-  --muted: #a1a1aa;
-  --border: #2a2a2a;
-  --brand: #000000;
-  --link: #9ecbff;
-  --link-visited: #d0a6ff;
-  --card-bg: #1e1e1e;
-  --card-border: #2a2a2a;
-  --input-bg: #252525;
-  --input-fg: #e0e0e0;
-  --theme-primary-hover: #ffb74d;
-
+  /* Paleta: Oscuro Profesional (Gris Acero, Azul) */
+  --page-bg: #1F2937;         /* Fondo: Gris Oscuro */
+  --bg: #1F2937;              /* Fondo: Gris Oscuro */
+  --fg: #E0E0E0;              /* Texto: Gris Claro */
+  --muted: #A0AEC0;            /* Texto secundario, un gris más apagado */
+  --border: #4A5A70;          /* Borde: Gris Azulado (Secundario) */
+  --card-bg: #2D3A4D;         /* Fondo de Tarjetas: Gris Acero (Primario) */
+  --card-border: var(--border);
+  --home-card-bg:#1c2a44;
+  
+  /* Para enlaces, un azul brillante funciona mejor en modo oscuro por accesibilidad */
+  --brand: #3498DB;           /* Acento: Azul Cielo para botones y elementos de marca */
+  --link: #60A5FA;            /* Un azul ligeramente más brillante para texto de enlace */
+  --link-visited: #A78BFA;    /* Un tono lavanda para enlaces visitados */
+  --brand-hover: #93C5FD;     /* Un azul mucho más claro para el hover */
+  --input-bg: #2D3A4D;         /* Fondo de inputs igual que las tarjetas */
+  --input-fg: var(--fg);
+  
   --theme-bg: var(--bg);
-  --theme-surface: var(--card-bg);
+  --theme-surface: var(--card-bg); /* color de fondo del contenido */
   --theme-text: var(--fg);
   --theme-text-light: var(--muted);
   --theme-primary: var(--brand);
@@ -80,67 +89,78 @@ html.theme-dark {
 }
 
 /* ========================================================================== */
-/* ♿ ALTO CONTRASTE – Tema Claro                                              */
+/* ♿ ALTO CONTRASTE – Tema Claro                                            */
 /* ========================================================================== */
 .high-contrast {
-  /* Paleta: Blanco puro y negro absoluto */
-  --page-bg: #ffffff;
-  --bg: #ffffff;
-  --fg: #000000;
-  --muted: #000000;
-  --border: #000000;
-  --link: #000000;
-  --link-visited: #000000;
-  --card-bg: #ffffff;
-  --card-border: #000000;
-  --input-bg: #ffffff;
-  --input-fg: #000000;
-  --brand: #000000;
-  --theme-primary-hover: #000000;
-
+  /* Paleta: Claro Alto Contraste (Blanco, Azul Noche, Turquesa) */
+  --page-bg: #FFFFFF;         /* Fondo: Blanco Puro */
+  --bg: #FFFFFF;
+  --fg: #023047;              /* Texto: Azul Noche (mucho contraste, menos duro que el negro puro) */
+  --muted: var(--fg);         /* En alto contraste, el texto secundario mantiene el contraste */
+  --border: var(--fg);
+  --card-bg: #FFFFFF;
+  --card-border: var(--fg);
+  
+  --brand: #00A896;           /* Primario: Turquesa para elementos interactivos */
+  --link: var(--brand);
+  --link-visited: #00796B;    /* Turquesa más oscuro para visitados */
+  --brand-hover: #F4A261;     /* Acento: Naranja Arena para un hover muy notorio */
+  --input-bg: #FFFFFF;
+  --input-fg: var(--fg);
+  
   --theme-bg: var(--bg);
   --theme-surface: var(--card-bg);
   --theme-text: var(--fg);
-  --theme-text-light: var(--fg); /* En alto contraste, no hay texto "suave" */
-  --theme-primary: var(--fg);
-  --theme-primary-hover: var(--fg);
+  --theme-text-light: var(--fg);
+  --theme-primary: var(--brand);
+  --theme-primary-hover: var(--brand-hover);
   --theme-border: var(--card-border);
   --theme-header-bg: var(--card-bg);
 }
 
 /* ========================================================================== */
-/* ♿ ALTO CONTRASTE – Tema Oscuro                                             */
+/* ♿ ALTO CONTRASTE – Tema Oscuro                                           */
 /* ========================================================================== */
 html.theme-dark.high-contrast {
-  --page-bg: #000000;
-  --bg: #000000;
-  --fg: #ffff00;          /* Amarillo eléctrico */
-  --muted: #ffff00;
-  --border: #ffff00;
-  --link: #ffff00;
-  --link-visited: #ffff00;
-  --card-bg: #000000;
-  --card-border: #ffff00;
-  --input-bg: #000000;
-  --input-fg: #ffff00;
-  --brand: #ffff00;
-  --theme-primary-hover: #ffff00;
+  /* Paleta: Oscuro Alto Contraste (Negro Profundo, Amarillo Vistoso) */
+  --page-bg: #121212;         /* Fondo: Negro Profundo (no puro #000) */
+  --bg: #121212;
+  --fg: #F5F5F5;              /* Texto: Blanco Roto (más legible que amarillo para párrafos largos) */
+  --muted: var(--fg);
+  
+  /* El amarillo se reserva para elementos que requieren acción o atención */
+  --brand: #FFC700;           /* Primario: Amarillo Vistoso */
+  --border: var(--brand);
+  --link: var(--brand);
+  --link-visited: var(--brand);
+  --card-bg: #121212;
+  --card-border: var(--brand);
+  --input-bg: #121212;
+  --input-fg: var(--brand);
+  --brand-hover: #FFEE32;     /* Acento: Amarillo Limón para hover */
 
   --theme-bg: var(--bg);
   --theme-surface: var(--card-bg);
   --theme-text: var(--fg);
-  --theme-text-light: var(--fg); /* En alto contraste, no hay texto "suave" */
-  --theme-primary: var(--fg);
-  --theme-primary-hover: var(--fg);
+  --theme-text-light: var(--fg);
+  --theme-primary: var(--brand);
+  --theme-primary-hover: var(--brand-hover);
   --theme-border: var(--card-border);
   --theme-header-bg: var(--card-bg);
 }
 
+/* Hover en modo alto contraste oscuro para máxima claridad */
+html.theme-dark.high-contrast button:hover,
+html.theme-dark.high-contrast .btn:hover {
+    background-color: var(--brand); /* Fondo amarillo */
+    color: #121212;                /* Texto negro profundo */
+    border-color: var(--brand);     /* Mantiene el borde amarillo */
+}
 
 /* ========================================================================== */
-/* 🔄 RESET Y BASE                                                           */
+/* 🔄 RESET Y BASE                                                          */
 /* ========================================================================== */
-/* Se asegura de que todos los navegadores partan de un estilo uniforme.     */
+/* Se asegura de que todos los navegadores partan de un estilo uniforme.      */
 
 * { 
   box-sizing: border-box; 
@@ -152,21 +172,20 @@ html {
   scroll-behavior: smooth;
   font-size: 16px;
   -webkit-text-size-adjust: 100%; /* Evita zoom automático en móviles iOS */
-  text-size-adjust: 100%;         /* Equivalente en Android */
+  text-size-adjust: 100%;       /* Equivalente en Android */
 }
 
 body {
   font-family: var(--font-body);
   font-size: var(--step-0);
-  line-height: 1.65;               /* Espaciado entre líneas legible */
+  line-height: 1.65;
   color: var(--theme-text);
-  background: var(--page-bg);      /* Fondo dinámico (claro por defecto) */
+  background: var(--page-bg);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
 }
-
 /* ========================================================================== */
 /* 📱 NOTCH SUPPORT (iOS + Android)                                          */
 /* ========================================================================== */
@@ -398,27 +417,59 @@ blockquote {
   border-color: var(--theme-text);
 }
 
-/* --- Contenido Principal ------------------------------------------------- */
+/* -------------------------
+   Layout: contenido principal + sidebar
+   ------------------------- */
 .main-content-area {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr; /* móvil: 1 columna */
   gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 1.5rem;
+  box-sizing: border-box;
 }
+
+/* Desktop: proporción 3:1 (posts : sidebar) */
 @media (min-width: 768px) {
   .main-content-area {
-    grid-template-columns: 2.5fr 1fr;
+    grid-template-columns: 3fr 1fr; /* <- cambia a 2fr 1fr para 2:1 si prefieres */
+    align-items: start;
   }
 }
-main { max-width: 100%; }
-aside {
+
+/* Asegurar que el <main> ocupe la primera columna */
+.main-content-area > main,
+.main-content-area > .home-list {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Sidebar: ocupar la segunda columna, pegado al borde de la columna */
+.main-content-area > aside {
   border-left: 1px solid var(--theme-border);
   padding-left: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* En pantallas pequeñas, hacer que aside se sitúe debajo con separación */
+@media (max-width: 767px) {
+  .main-content-area {
+    grid-template-columns: 1fr;
+  }
+  .main-content-area > aside {
+    border-left: none;
+    padding-left: 0;
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--theme-border);
+    padding-top: 1rem;
+  }
 }
 
 /* --- Componentes --------------------------------------------------------- */
 .post-card {
   border: 1px solid var(--theme-border);
+  
   border-radius: var(--radius);
   box-shadow: var(--shadow-soft);
   padding: 1.2rem;
@@ -516,10 +567,36 @@ aside {
   font-weight: 600;
   font-family: var(--font-header);
 }
-input, textarea, select, button {
+
+/* POR estas líneas más específicas: */
+input, select, button {
   font: inherit;
   width: 100%;
   max-width: 100%;
+}
+
+/* Textarea solo dentro de formularios, no afecta TinyMCE */
+.form-container textarea,
+form textarea:not([id*="mce"]) {
+  font: inherit;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Asegurar que TinyMCE tenga espacio para trabajar */
+.tox-tinymce {
+  width: 100% !important;
+}
+
+/* Evitar que otros estilos interfieran con TinyMCE */
+.tox-tinymce,
+.tox-tinymce * {
+  box-sizing: content-box;
+}
+
+/* Restaurar box-sizing para el contenido del editor */
+.tox-edit-area * {
+  box-sizing: border-box;
 }
 .form-container input[type="text"],
 .form-container input[type="url"],
@@ -552,7 +629,7 @@ input:focus, textarea:focus, select:focus { /* <-- FUSIÓN: Aplicamos el :focus 
   border: 1px solid var(--brand);
   border-radius: var(--radius);
   background: var(--brand);
-  color: #fff;
+  color: #ffffff;
   font-family: var(--font-header);
   font-size: 1rem;
   cursor: pointer;
@@ -564,7 +641,7 @@ input:focus, textarea:focus, select:focus { /* <-- FUSIÓN: Aplicamos el :focus 
 .button:hover, .form-container button:hover, button:hover, .btn:hover, input[type=submit]:hover {
   background: var(--theme-primary-hover);
   border-color: var(--theme-primary-hover);
-  color: #fff;
+  color: #ffffff;
   text-decoration: none;
 }
 @media (min-width: 720px) {
@@ -815,4 +892,31 @@ footer, .site-footer {
 
 .main-footer { grid-column: 1 / -1; }
 
+/* --- Tabla: acciones de gestión de posts --- */
+td.actions {
+  display: flex;
+  gap: 0.5rem;         /* espacio entre botones */
+  justify-content: flex-start;
+  align-items: center;
+}
 
+td.actions .button {
+  padding: 0.25rem 0.6rem;  /* más compacto */
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+td.actions .button.danger {
+  background-color: #c0392b;
+  color: #fff;
+}
+
+td.actions .button.danger:hover {
+  background-color: #a93226;
+}
+
+/* El form no debe romper el flexbox */
+td.actions .inline-form {
+  display: inline;
+  margin: 0;
+}

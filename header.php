@@ -132,4 +132,8 @@ if (!empty($themeConfig['header_bg_url']) && !filter_var($themeConfig['header_bg
             </div>
         </nav>
 
+
+
         <div class="main-content-area">
+
+<?php

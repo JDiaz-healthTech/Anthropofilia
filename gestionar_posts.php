@@ -120,18 +120,16 @@ $page_title = 'Gestionar Posts';
                     <?php if ($isAdmin): ?>
                         <td><?php echo (int)$post['id_usuario']; ?></td>
                     <?php endif; ?>
-                    <td>
-                        <a class="button" href="editar_post.php?id=<?php echo (int)$post['id_post']; ?>">Editar</a>
+<td class="actions">
+  <a class="button small"  href="editar_post.php?id=<?= (int)$post['id_post'] ?>">Editar</a>
 
-                        <!-- Eliminar por POST con CSRF -->
-                        <form action="eliminar_post.php" method="POST"
-                              style="display:inline"
-                              onsubmit="return confirm('¿Seguro que quieres eliminar este post?');">
-                            <?php echo $security->csrfField(); ?>
-                            <input type="hidden" name="id" value="<?php echo (int)$post['id_post']; ?>">
-                            <button type="submit" class="button danger">Eliminar</button>
-                        </form>
-                    </td>
+  <form action="eliminar_post.php" method="POST" class="inline-form"
+        onsubmit="return confirm('¿Seguro que quieres eliminar este post?');">
+      <?= $security->csrfField(); ?>
+      <input type="hidden" name="id" value="<?= (int)$post['id_post']; ?>">
+      <button type="submit" class="button danger small">Eliminar</button>
+  </form>
+</td>
                 </tr>
             <?php endforeach; ?>
         <?php else: ?>
