@@ -11,7 +11,8 @@
   --fg: #4E4237;              /* Texto: Marrón Oscuro */
   --muted: #7A6A53;            /* Texto secundario, un marrón más suave */
   --border: #EAE2D1;          /* Borde suave derivado del fondo */
-  --card-bg: #FAEDCD;         /* Fondo de Tarjetas: Crema (Secundario) */
+  --card-bg: #faf3e0;         /* Fondo de Tarjetas: Crema (Secundario) */
+  --home-card-bg:#ffffff;     /* Fondo de CARDS de los post: Blanco puro  */
   --card-border: var(--border);
 
   /* Colores de marca y enlaces */
@@ -50,6 +51,11 @@
   --shadow-soft: 0 1px 3px rgba(0,0,0,0.05);
 }
 
+/* --- Estilo específico para las tarjetas de la Home --- */
+.home-list .post-card {
+  background-color: var(--home-card-bg); /* Usa la nueva variable para fondo de las tarjetas del main nav*/
+}
+
 /* ========================================================================== */
 /* 🌙 TEMA OSCURO PROFESIONAL – Variables redefinidas                         */
 /* ========================================================================== */
@@ -62,6 +68,7 @@ html.theme-dark {
   --border: #4A5A70;          /* Borde: Gris Azulado (Secundario) */
   --card-bg: #2D3A4D;         /* Fondo de Tarjetas: Gris Acero (Primario) */
   --card-border: var(--border);
+  --home-card-bg:#1c2a44;
   
   /* Para enlaces, un azul brillante funciona mejor en modo oscuro por accesibilidad */
   --brand: #3498DB;           /* Acento: Azul Cielo para botones y elementos de marca */
@@ -72,7 +79,7 @@ html.theme-dark {
   --input-fg: var(--fg);
   
   --theme-bg: var(--bg);
-  --theme-surface: var(--card-bg);
+  --theme-surface: var(--card-bg); /* color de fondo del contenido */
   --theme-text: var(--fg);
   --theme-text-light: var(--muted);
   --theme-primary: var(--brand);
@@ -462,6 +469,7 @@ blockquote {
 /* --- Componentes --------------------------------------------------------- */
 .post-card {
   border: 1px solid var(--theme-border);
+  
   border-radius: var(--radius);
   box-shadow: var(--shadow-soft);
   padding: 1.2rem;
