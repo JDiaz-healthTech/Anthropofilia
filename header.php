@@ -51,12 +51,42 @@ if (!preg_match('/^#[a-fA-F0-9]{6}$/', $themeConfig['primary_color'])) {
 if (!preg_match('/^#[a-fA-F0-9]{6}$/', $themeConfig['bg_color'])) {
     $themeConfig['bg_color'] = '#ffffff';
 }
-if (!empty($themeConfig['header_bg_url']) && !filter_var($themeConfig['header_bg_url'], FILTER_VALIDATE_URL)) {
-    $themeConfig['header_bg_url'] = '';
+// Normalizar header_bg_url: aceptar URL absoluta o rutas relativas (ej. /images/.. o public/uploads/..)
+// Resultado: $themeConfig['header_bg_url'] contendrá una URL absoluta válida o cadena vacía.
+$headerPath = trim((string)($themeConfig['header_bg_url'] ?? ''));
+
+$headerUrl = '';
+if ($headerPath !== '') {
+    // Si ya es absoluta (http/https) la usamos tal cual
+    if (preg_match('#^https?://#i', $headerPath)) {
+        $headerUrl = $headerPath;
+    } else {
+        // Si es ruta relativa, construimos URL absoluta basada en $baseUrl
+        // Ej: '/images/xx.jpg' o 'public/uploads/theme/xx.jpg'
+        $headerUrl = rtrim($baseUrl, '/') . '/' . ltrim($headerPath, '/');
+
+        // Opcional: validación de existencia en disco para evitar URL rota (intenta varias rutas posibles)
+        $possiblePaths = [
+            __DIR__ . '/' . ltrim($headerPath, '/'),           // ruta directa en el proyecto
+            __DIR__ . '/public/' . ltrim($headerPath, '/'),    // variante 'public/*'
+            __DIR__ . '/images/' . basename($headerPath),      // variante '/images/filename'
+        ];
+        $found = false;
+        foreach ($possiblePaths as $p) {
+            if (file_exists($p)) { $found = true; break; }
+        }
+        if (!$found) {
+            // Si no existe el fichero, evitar devolver una URL rota.
+            $headerUrl = '';
+        }
+    }
 }
+// Sobrescribimos la clave con la URL absoluta o cadena vacía
+$themeConfig['header_bg_url'] = $headerUrl;
+
 ?>
 <!DOCTYPE html>
-<html lang="es" 
+<html lang="es" class="theme-light"
       data-primary-color="<?= htmlspecialchars($themeConfig['primary_color'], ENT_QUOTES, 'UTF-8') ?>"
       data-bg-color="<?= htmlspecialchars($themeConfig['bg_color'], ENT_QUOTES, 'UTF-8') ?>"
       data-header-bg="<?= htmlspecialchars($themeConfig['header_bg_url'], ENT_QUOTES, 'UTF-8') ?>">

@@ -1,113 +1,122 @@
 /* ==========================================================================
                            ANTHROPOFILIA BLOG
+   ==========================================================================
+   Paleta principal: Claro Armónico (Camel, Crema, Marrón).
+   El tema claro es el DEFAULT.
+   Cada variable está comentada con su propósito y a qué afecta.
    ========================================================================== */
+
 /* ========================================================================== */
-/* 🌞 TEMA CLARO ARMÓNICO (DEFAULT) – Variables Globales                     */
+/* 🌞 TEMA CLARO ARMÓNICO (DEFAULT) – Variables Globales                      */
 /* ========================================================================== */
 :root {
   /* Paleta: Claro Armónico (Camel, Crema, Marrón) */
-  --page-bg: #FEFAE0;        /* Fondo: Blanco Hueso */
-  --bg: #FEFAE0;              /* Fondo: Blanco Hueso */
-  --fg: #4E4237;              /* Texto: Marrón Oscuro */
-  --muted: #7A6A53;            /* Texto secundario, un marrón más suave */
-  --border: #EAE2D1;          /* Borde suave derivado del fondo */
-  --card-bg: #faf3e0;         /* Fondo de Tarjetas: Crema (Secundario) */
-  --home-card-bg:#ffffff;     /* Fondo de CARDS de los post: Blanco puro  */
-  --card-border: var(--border);
+  --page-bg: #FEFAE0;        /* Fondo global de la página (body, html). */
+  --bg: #FEFAE0;             /* Alias: fondo principal. Igual a --page-bg. */
+  --fg: #4E4237;             /* Texto principal (foreground). Marrón oscuro. */
+  --muted: #7A6A53;          /* Texto secundario, metadatos, subtítulos. */
+  --border: #EAE2D1;         /* Bordes y divisores. Derivado del fondo. */
+  --card-bg: #faf3e0;        /* Fondo de tarjetas y contenedores secundarios. */
+  --home-card-bg: #ffffff;   /* Fondo de las tarjetas de posts en home. Blanco puro para destacar. */
+  --card-border: var(--border); /* Borde estándar aplicado a tarjetas. */
 
   /* Colores de marca y enlaces */
-  --brand: #D4A373;           /* Primario: Camel */
-  --link: var(--brand);       /* Los enlaces usan el color primario */
-  --link-visited: #967C5E;    /* Un tono desaturado del Camel para visitados */
-  --brand-hover: #A98467;     /* Acento: Marrón Medio para hover */
-  --input-bg: #FFFFFF;        /* Fondo de inputs en blanco para mayor claridad */
-  --input-fg: var(--fg);      /* Texto de inputs */
+  --brand: #D4A373;          /* Color primario: Camel. Usado en botones, CTAs, branding. */
+  --link: var(--brand);      /* Color de los enlaces. Hereda de la marca principal. */
+  --link-visited: #967C5E;   /* Enlaces visitados: tono desaturado de Camel. */
+  --brand-hover: #A98467;    /* Estado hover de elementos brand. Marrón medio. */
+  --input-bg: #FFFFFF;       /* Fondo de campos de formulario (inputs, selects, textareas). */
+  --input-fg: var(--fg);     /* Texto dentro de los inputs. */
 
   /* === 🎨 Aliases (compatibilidad con versiones anteriores) === */
-  --theme-bg: var(--bg);
-  --theme-surface: var(--card-bg);
-  --theme-text: var(--fg);
-  --theme-text-light: var(--muted);
-  --theme-primary: var(--brand);
-  --theme-border: var(--card-border);
-  --theme-header-bg: var(--card-bg);
-  --theme-primary-hover: var(--brand-hover);
+  --theme-bg: var(--bg);                 /* Alias: fondo global. */
+  --theme-surface: var(--card-bg);       /* Alias: superficies secundarias (cards). */
+  --theme-text: var(--fg);               /* Alias: texto principal. */
+  --theme-text-light: var(--muted);      /* Alias: texto secundario. */
+  --theme-primary: var(--brand);         /* Alias: color primario/marca. */
+  --theme-border: var(--card-border);    /* Alias: borde estándar. */
+  --theme-header-bg: var(--card-bg);     /* Fondo del header. */
+  --theme-primary-hover: var(--brand-hover); /* Hover del color primario. */
 
   /* === 🔤 Tipografía === */
-  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+  /* Fuente base para el contenido. */
   --font-header: -apple-system, BlinkMacSystemFont, "Segoe UI Semibold", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Fuente para headings y títulos. */
 
   /* === 🔤 Escala tipográfica fluida === */
-  --step--1: clamp(0.88rem, 0.85rem + 0.2vw, 0.95rem);
-  --step-0:  clamp(1.00rem, 0.95rem + 0.4vw, 1.10rem);
-  --step-1:  clamp(1.25rem, 1.10rem + 0.8vw, 1.40rem);
-  --step-2:  clamp(1.56rem, 1.30rem + 1.2vw, 1.80rem);
+  --step--1: clamp(0.88rem, 0.85rem + 0.2vw, 0.95rem); /* Tamaño menor: pequeños textos, captions. */
+  --step-0:  clamp(1.00rem, 0.95rem + 0.4vw, 1.10rem); /* Texto base (body). */
+  --step-1:  clamp(1.25rem, 1.10rem + 0.8vw, 1.40rem); /* Subtítulos, headings medios. */
+  --step-2:  clamp(1.56rem, 1.30rem + 1.2vw, 1.80rem); /* Headings grandes, títulos principales. */
 
   /* === 🛠️ Extras === */
-  --radius: 6px;
-  --transition: all 0.25s ease-in-out;
-  --measure: 65ch;
-  --shadow: 0 2px 6px rgba(0,0,0,0.08);
-  --shadow-soft: 0 1px 3px rgba(0,0,0,0.05);
+  --radius: 6px;             /* Radio de border-radius para tarjetas y botones. */
+  --transition: all 0.25s ease-in-out; /* Transiciones estándar para hover/animaciones. */
+  --measure: 65ch;           /* Máxima anchura de texto para legibilidad (≈ 65 caracteres). */
+  --shadow: 0 2px 6px rgba(0,0,0,0.08); /* Sombra estándar, ligera. */
+  --shadow-soft: 0 1px 3px rgba(0,0,0,0.05); /* Sombra más suave para elementos secundarios. */
 }
 
 /* --- Estilo específico para las tarjetas de la Home --- */
 .home-list .post-card {
-  background-color: var(--home-card-bg); /* Usa la nueva variable para fondo de las tarjetas del main nav*/
+  background-color: var(--home-card-bg); /* Fondo de las tarjetas de posts del home (usa blanco puro). */
 }
-
 /* ========================================================================== */
 /* 🌙 TEMA OSCURO PROFESIONAL – Variables redefinidas                         */
 /* ========================================================================== */
 html.theme-dark {
   /* Paleta: Oscuro Profesional (Gris Acero, Azul) */
-  --page-bg: #1F2937;         /* Fondo: Gris Oscuro */
-  --bg: #1F2937;              /* Fondo: Gris Oscuro */
-  --fg: #E0E0E0;              /* Texto: Gris Claro */
-  --muted: #A0AEC0;            /* Texto secundario, un gris más apagado */
-  --border: #4A5A70;          /* Borde: Gris Azulado (Secundario) */
-  --card-bg: #2D3A4D;         /* Fondo de Tarjetas: Gris Acero (Primario) */
-  --card-border: var(--border);
-  --home-card-bg:#1c2a44;
-  
-  /* Para enlaces, un azul brillante funciona mejor en modo oscuro por accesibilidad */
-  --brand: #3498DB;           /* Acento: Azul Cielo para botones y elementos de marca */
-  --link: #60A5FA;            /* Un azul ligeramente más brillante para texto de enlace */
-  --link-visited: #A78BFA;    /* Un tono lavanda para enlaces visitados */
-  --brand-hover: #93C5FD;     /* Un azul mucho más claro para el hover */
-  --input-bg: #2D3A4D;         /* Fondo de inputs igual que las tarjetas */
-  --input-fg: var(--fg);
-  
-  --theme-bg: var(--bg);
-  --theme-surface: var(--card-bg); /* color de fondo del contenido */
-  --theme-text: var(--fg);
-  --theme-text-light: var(--muted);
-  --theme-primary: var(--brand);
-  --theme-primary-hover: var(--brand-hover);
-  --theme-border: var(--card-border);
-  --theme-header-bg: var(--card-bg);
+  --page-bg: #1F2937;         /* Fondo global de la página (body, html). Gris oscuro. */
+  --bg: #1F2937;              /* Alias: fondo principal. Igual que --page-bg. */
+  --fg: #E0E0E0;              /* Texto principal: gris claro, alta legibilidad. */
+  --muted: #A0AEC0;           /* Texto secundario: gris apagado, menor jerarquía. */
+  --border: #4A5A70;          /* Bordes y divisores: gris azulado, aporta profundidad. */
+  --card-bg: #2D3A4D;         /* Fondo de tarjetas/contenedores: gris acero. */
+  --card-border: var(--border); /* Bordes de tarjetas, consistente con --border. */
+  --home-card-bg: #1c2a44;    /* Fondo de tarjetas en la home: azul-gris profundo. */
+
+  /* Enlaces y colores de marca – optimizados para accesibilidad en fondo oscuro */
+  --brand: #3498DB;           /* Acento primario: azul cielo (botones, CTAs, branding). */
+  --link: #60A5FA;            /* Enlaces: azul más brillante, mayor contraste con el fondo. */
+  --link-visited: #A78BFA;    /* Enlaces visitados: lavanda, mantiene diferenciación. */
+  --brand-hover: #93C5FD;     /* Hover: azul muy claro, destaca sobre el gris oscuro. */
+  --input-bg: #2D3A4D;        /* Fondo de inputs: mismo que tarjetas para coherencia. */
+  --input-fg: var(--fg);      /* Texto en inputs: gris claro. */
+
+  /* === Aliases para compatibilidad === */
+  --theme-bg: var(--bg);                /* Fondo global. */
+  --theme-surface: var(--card-bg);      /* Superficies secundarias (cards). */
+  --theme-text: var(--fg);              /* Texto principal. */
+  --theme-text-light: var(--muted);     /* Texto secundario. */
+  --theme-primary: var(--brand);        /* Color de marca/acento. */
+  --theme-primary-hover: var(--brand-hover); /* Hover del color primario. */
+  --theme-border: var(--card-border);   /* Bordes estándar. */
+  --theme-header-bg: var(--card-bg);    /* Fondo del header. */
 }
 
 /* ========================================================================== */
-/* ♿ ALTO CONTRASTE – Tema Claro                                            */
+/* ♿ ALTO CONTRASTE – Tema Claro                                             */
 /* ========================================================================== */
 .high-contrast {
   /* Paleta: Claro Alto Contraste (Blanco, Azul Noche, Turquesa) */
-  --page-bg: #FFFFFF;         /* Fondo: Blanco Puro */
-  --bg: #FFFFFF;
-  --fg: #023047;              /* Texto: Azul Noche (mucho contraste, menos duro que el negro puro) */
-  --muted: var(--fg);         /* En alto contraste, el texto secundario mantiene el contraste */
-  --border: var(--fg);
-  --card-bg: #FFFFFF;
-  --card-border: var(--fg);
-  
-  --brand: #00A896;           /* Primario: Turquesa para elementos interactivos */
-  --link: var(--brand);
-  --link-visited: #00796B;    /* Turquesa más oscuro para visitados */
-  --brand-hover: #F4A261;     /* Acento: Naranja Arena para un hover muy notorio */
-  --input-bg: #FFFFFF;
-  --input-fg: var(--fg);
-  
+  --page-bg: #FFFFFF;         /* Fondo global: blanco puro. */
+  --bg: #FFFFFF;              /* Alias: fondo principal. */
+  --fg: #023047;              /* Texto: azul noche (menos agresivo que negro puro). */
+  --muted: var(--fg);         /* Texto secundario: mismo color que el principal para mantener contraste. */
+  --border: var(--fg);        /* Bordes y divisores: mismo azul noche, máxima visibilidad. */
+  --card-bg: #FFFFFF;         /* Fondo de tarjetas: blanco puro. */
+  --card-border: var(--fg);   /* Bordes de tarjetas: azul noche. */
+
+  /* Colores de marca y enlaces */
+  --brand: #00A896;           /* Primario: turquesa (interactivo, llamativo). */
+  --link: var(--brand);       /* Enlaces: turquesa. */
+  --link-visited: #00796B;    /* Enlaces visitados: turquesa más oscuro. */
+  --brand-hover: #F4A261;     /* Hover: naranja arena, destaca fuertemente. */
+  --input-bg: #FFFFFF;        /* Fondo de inputs: blanco puro. */
+  --input-fg: var(--fg);      /* Texto en inputs: azul noche. */
+
+  /* === Aliases para compatibilidad === */
   --theme-bg: var(--bg);
   --theme-surface: var(--card-bg);
   --theme-text: var(--fg);
@@ -119,26 +128,27 @@ html.theme-dark {
 }
 
 /* ========================================================================== */
-/* ♿ ALTO CONTRASTE – Tema Oscuro                                           */
+/* ♿ ALTO CONTRASTE – Tema Oscuro                                            */
 /* ========================================================================== */
 html.theme-dark.high-contrast {
   /* Paleta: Oscuro Alto Contraste (Negro Profundo, Amarillo Vistoso) */
-  --page-bg: #121212;         /* Fondo: Negro Profundo (no puro #000) */
-  --bg: #121212;
-  --fg: #F5F5F5;              /* Texto: Blanco Roto (más legible que amarillo para párrafos largos) */
-  --muted: var(--fg);
-  
-  /* El amarillo se reserva para elementos que requieren acción o atención */
-  --brand: #FFC700;           /* Primario: Amarillo Vistoso */
-  --border: var(--brand);
-  --link: var(--brand);
-  --link-visited: var(--brand);
-  --card-bg: #121212;
-  --card-border: var(--brand);
-  --input-bg: #121212;
-  --input-fg: var(--brand);
-  --brand-hover: #FFEE32;     /* Acento: Amarillo Limón para hover */
+  --page-bg: #121212;         /* Fondo global: negro profundo (no #000 para reducir fatiga visual). */
+  --bg: #121212;              /* Alias: fondo principal. */
+  --fg: #F5F5F5;              /* Texto principal: blanco roto, más cómodo que #FFF puro. */
+  --muted: var(--fg);         /* Texto secundario: mismo que el principal, asegura contraste. */
 
+  /* Colores de marca (enfocados en acción y atención) */
+  --brand: #FFC700;           /* Primario: amarillo vistoso para resaltar elementos clave. */
+  --border: var(--brand);     /* Bordes: amarillo, siempre visibles. */
+  --link: var(--brand);       /* Enlaces: amarillo (muy notorio). */
+  --link-visited: var(--brand); /* Enlaces visitados: mismo amarillo (en este esquema no cambia). */
+  --card-bg: #121212;         /* Fondo de tarjetas: igual al fondo global. */
+  --card-border: var(--brand); /* Bordes de tarjetas: amarillo. */
+  --input-bg: #121212;        /* Fondo de inputs: negro profundo. */
+  --input-fg: var(--brand);   /* Texto en inputs: amarillo, garantiza visibilidad. */
+  --brand-hover: #FFEE32;     /* Hover: amarillo limón, aún más brillante. */
+
+  /* === Aliases para compatibilidad === */
   --theme-bg: var(--bg);
   --theme-surface: var(--card-bg);
   --theme-text: var(--fg);
@@ -152,140 +162,158 @@ html.theme-dark.high-contrast {
 /* Hover en modo alto contraste oscuro para máxima claridad */
 html.theme-dark.high-contrast button:hover,
 html.theme-dark.high-contrast .btn:hover {
-    background-color: var(--brand); /* Fondo amarillo */
-    color: #121212;                /* Texto negro profundo */
-    border-color: var(--brand);     /* Mantiene el borde amarillo */
+    background-color: var(--brand); /* Fondo amarillo (resalta acción). */
+    color: #121212;                /* Texto en hover: negro profundo, contraste máximo. */
+    border-color: var(--brand);    /* Bordes permanecen amarillos. */
 }
 
 /* ========================================================================== */
-/* 🔄 RESET Y BASE                                                          */
+/* 🔄 RESET Y BASE                                                           */
 /* ========================================================================== */
-/* Se asegura de que todos los navegadores partan de un estilo uniforme.      */
+/* Este bloque asegura un estilo inicial uniforme en todos los navegadores.  */
+/* Normaliza márgenes, padding y box-sizing para evitar inconsistencias.     */
 
 * { 
-  box-sizing: border-box; 
-  margin: 0; 
-  padding: 0; 
+  box-sizing: border-box; /* Incluye padding y border dentro del cálculo de width/height. */
+  margin: 0;              /* Elimina márgenes por defecto (ej. body, h1-h6, p). */
+  padding: 0;             /* Elimina padding por defecto en elementos (ej. listas). */
 }
 
 html {
-  scroll-behavior: smooth;
-  font-size: 16px;
-  -webkit-text-size-adjust: 100%; /* Evita zoom automático en móviles iOS */
-  text-size-adjust: 100%;       /* Equivalente en Android */
+  scroll-behavior: smooth;     /* Scroll animado en enlaces internos (anchors). */
+  font-size: 16px;             /* Base para rem. 1rem = 16px. */
+  -webkit-text-size-adjust: 100%; /* Previene zoom automático en iOS Safari al girar. */
+  text-size-adjust: 100%;      /* Equivalente en navegadores Android. */
 }
 
 body {
-  font-family: var(--font-body);
-  font-size: var(--step-0);
-  line-height: 1.65;
-  color: var(--theme-text);
-  background: var(--page-bg);
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  margin: 0;
+  font-family: var(--font-body);  /* Tipografía principal definida en variables. */
+  font-size: var(--step-0);       /* Tamaño de texto base (fluido, con clamp). */
+  line-height: 1.65;              /* Altura de línea óptima para lectura. */
+  color: var(--theme-text);       /* Color de texto principal (adaptable a tema). */
+  background: var(--page-bg);     /* Fondo de página según el tema activo. */
+  text-rendering: optimizeLegibility; /* Mejora kerning y ligaduras en tipografías. */
+  -webkit-font-smoothing: antialiased; /* Suavizado de fuentes en WebKit. */
+  -moz-osx-font-smoothing: grayscale;  /* Suavizado en macOS Firefox. */
+  margin: 0;                     /* Refuerzo: asegura sin margen extra en body. */
 }
 /* ========================================================================== */
 /* 📱 NOTCH SUPPORT (iOS + Android)                                          */
 /* ========================================================================== */
-/* Asegura que en dispositivos con "notch" (iPhone, Android modernos),
-   el contenido no quede pegado al borde y respete áreas seguras.            */
+/* Asegura que en dispositivos con notch (iPhone, Android modernos),
+   el contenido no quede pegado al borde y respete las áreas seguras.         */
 
 @supports (padding: max(0px)) {
   body {
-     padding-left:  max(0px, env(safe-area-inset-left));
-     padding-right: max(0px, env(safe-area-inset-right));
-     padding-top:   max(0px, env(safe-area-inset-top));
-     padding-bottom:max(0px, env(safe-area-inset-bottom));
+     padding-left:  max(0px, env(safe-area-inset-left));   /* Respeta notch izquierdo. */
+     padding-right: max(0px, env(safe-area-inset-right));  /* Respeta notch derecho. */
+     padding-top:   max(0px, env(safe-area-inset-top));    /* Respeta notch superior (ej. iPhone X). */
+     padding-bottom:max(0px, env(safe-area-inset-bottom)); /* Respeta notch inferior / barra de gestos. */
   }
 }
+
 /* --- Elementos Base ------------------------------------------------------ */
-img { max-width: 100%; height: auto; }
-hr { border: 0; border-top: 1px solid var(--theme-border); margin: 2rem 0; }
+img { 
+  max-width: 100%;  /* Imágenes nunca superan ancho del contenedor. */
+  height: auto;     /* Mantienen proporción. */
+}
+
+hr { 
+  border: 0; 
+  border-top: 1px solid var(--theme-border); /* Línea de separación usa color dinámico de tema. */
+  margin: 2rem 0;   /* Espaciado vertical amplio. */
+}
+
 a {
-  color: var(--brand); /* Variable dinámica */
-  text-decoration: none;
-  transition: var(--transition);
+  color: var(--brand);              /* Color base de enlace (variable dinámica de marca). */
+  text-decoration: none;            /* Sin subrayado por defecto. */
+  transition: var(--transition);    /* Animación fluida para cambios de color/estado. */
 }
 a:hover {
-  color: var(--theme-primary-hover);
-  text-decoration: underline;
+  color: var(--theme-primary-hover); /* Hover: color primario más claro. */
+  text-decoration: underline;        /* Añade subrayado en hover para accesibilidad. */
 }
+
 :focus-visible {
-  outline: 3px solid var(--theme-primary);
-  outline-offset: 2px;
+  outline: 3px solid var(--theme-primary); /* Resalta elementos con focus (teclado). */
+  outline-offset: 2px;                     /* Separa visualmente el borde del contenido. */
 }
+
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-header);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--font-header); /* Usa tipografía de títulos. */
+  font-weight: 600;                /* Semi-negrita para jerarquía. */
+  letter-spacing: -0.01em;         /* Ligero ajuste negativo para legibilidad. */
 }
-h1 { font-size: var(--step-2); line-height: 1.2; }
-h2 { font-size: var(--step-1); line-height: 1.25; }
-small, .help-text { font-size: var(--step--1); }
+h1 { font-size: var(--step-2); line-height: 1.2; }   /* Título principal. */
+h2 { font-size: var(--step-1); line-height: 1.25; }  /* Subtítulo / sección. */
+small, .help-text { font-size: var(--step--1); }     /* Texto auxiliar. */
+
 blockquote {
-  border-left: 4px solid var(--theme-primary);
-  padding: .75rem 1rem;
-  background: rgba(0,0,0,.03);
-  border-radius: 0 6px 6px 0;
+  border-left: 4px solid var(--theme-primary); /* Línea lateral en color primario. */
+  padding: .75rem 1rem;                        /* Espaciado interno. */
+  background: rgba(0,0,0,.03);                 /* Fondo tenue para destacar cita. */
+  border-radius: 0 6px 6px 0;                  /* Bordes redondeados en 3 lados. */
 }
 
 /* --- Layout Principal ---------------------------------------------------- */
 .container {
-  max-width: 1100px;
-  margin: 2rem auto;
-  background-color: var(--theme-surface);
-  border: 1px solid var(--theme-border);
-  box-shadow: var(--shadow);
-  border-radius: var(--radius);
-  overflow: hidden;
+  max-width: 1100px;                          /* Ancho máximo del contenido. */
+  margin: 2rem auto;                          /* Centrado con margen vertical. */
+  background-color: var(--theme-surface);     /* Fondo de contenedor, dinámico. */
+  border: 1px solid var(--theme-border);      /* Borde adaptable al tema. */
+  box-shadow: var(--shadow);                  /* Sombra estándar. */
+  border-radius: var(--radius);               /* Bordes redondeados (variable). */
+  overflow: hidden;                           /* Evita que elementos sobresalgan. */
 }
 
 /* === HEADER CON CONFIGURACIÓN DINÁMICA === */
 .main-header {
-  background: var(--theme-header-bg);
+  background: var(--theme-header-bg);         /* Fondo dinámico del header. */
   text-align: center;
   padding: 2rem 1.5rem;
-  border-bottom: 2px solid var(--theme-border);
-  min-height: 200px;
+  border-bottom: 2px solid var(--theme-border); /* Separador inferior. */
+  min-height: 200px;                            /* Altura mínima del header. */
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* El background-image se aplica dinámicamente via JS */
+  /* Nota: el background-image se aplica dinámicamente vía JS */
 }
 .main-header h1 {
   margin: 0 0 .25rem;
-  font-size: 2.5rem;
-  color: var(--theme-text);
+  font-size: 2.5rem;                 /* Sobrescribe variables para un tamaño destacado. */
+  color: var(--theme-text);          /* Texto principal del header. */
   position: relative;
-  z-index: 2;
+  z-index: 2;                        /* Asegura que quede sobre overlays. */
 }
 .main-header h1 a {
-  color: var(--fg);
+  color: var(--fg);                  /* Enlace del título: usa color foreground directo. */
   text-decoration: none;
 }
 .main-header p {
   margin: 0;
   font-size: 1.1rem;
-  color: var(--theme-text-light);
-  font-family: var(--font-header);
+  color: var(--theme-text-light);    /* Texto secundario. */
+  font-family: var(--font-header);   /* Consistencia con h1-h6. */
   position: relative;
   z-index: 2;
 }
-/* Estilos cuando el header tiene imagen de fondo */
+/* Si el header tiene imagen la pintamos desde la variable aplicada en el elemento */
 .main-header.has-bg-image {
-  color: white;
+  background-image: var(--header-image); /* <-- usa la variable fijada por JS */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  color: white; /* tu regla existente: forzar texto blanco para legibilidad */
+  position: relative; /* necesario para ::before overlay posicionarse correctamente */
 }
+
+/* overlay que ya tienes (lo dejamos) */
 .main-header.has-bg-image::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0, 0, 0, 0.4);
   z-index: 1;
 }
@@ -294,12 +322,11 @@ blockquote {
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
-/* <-- FUSIÓN: Añadido fallback por si no tiene la clase has-bg-image. */
+/* Fallback si no hay clase has-bg-image */
 .main-header:not(.has-bg-image) {
   background: var(--theme-header-bg);
   color: var(--theme-text);
 }
-
 
 /* --- Navegación ---------------------------------------------------------- */
 .main-nav {
@@ -308,28 +335,28 @@ blockquote {
   background: var(--theme-surface);
   border-bottom: 1px solid var(--theme-border);
   padding: 0 1rem;
-  flex-wrap: wrap;
+  flex-wrap: wrap;                     /* Permite salto en pantallas estrechas. */
 }
 .main-nav a {
   padding: 0.75rem 1rem;
   font-family: var(--font-header);
   font-weight: 500;
   text-decoration: none;
-  border-bottom: 3px solid transparent;
-  color: var(--theme-text); /* <-- FUSIÓN: Aseguramos que el color del enlace sea el de texto por defecto */
+  border-bottom: 3px solid transparent; /* Subrayado animado en hover/activo. */
+  color: var(--theme-text);             /* Texto de enlaces por defecto. */
 }
 .main-nav a:hover, .main-nav a.active {
   color: var(--theme-text);
-  border-bottom-color: var(--theme-primary);
-  background: none;
+  border-bottom-color: var(--theme-primary); /* Activo/hover: subrayado primario. */
+  background: none;                          /* No relleno de fondo. */
 }
 
 /* === NAVEGACIÓN MÓVIL === */
 .mobile-nav-toggle {
-  --size: 40px;
-  --bar-h: 2px;
-  --gap: 6px;
-  --anim: .22s ease-in-out;
+  --size: 40px;                         /* Tamaño cuadrado del botón. */
+  --bar-h: 2px;                         /* Grosor de las barras del icono. */
+  --gap: 6px;                           /* Espacio entre barras. */
+  --anim: .22s ease-in-out;             /* Duración/curva de animación. */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -349,7 +376,7 @@ blockquote {
 .hamburger-icon {
   position: relative;
   width: 22px;
-  height: calc(var(--bar-h) * 3 + var(--gap) * 2);
+  height: calc(var(--bar-h) * 3 + var(--gap) * 2); /* Altura dinámica según gap y barras. */
   display: inline-block;
 }
 .hamburger-icon::before,
@@ -360,14 +387,15 @@ blockquote {
   left: 0;
   right: 0;
   height: var(--bar-h);
-  background: currentColor;
+  background: currentColor; /* Usa el color actual del texto. */
   border-radius: 2px;
   transition: transform var(--anim), opacity var(--anim), top var(--anim), bottom var(--anim);
 }
-.hamburger-icon span { top: calc(var(--bar-h) + var(--gap)); }
-.hamburger-icon::before { top: 0; }
-.hamburger-icon::after { bottom: 0; }
-/* Estado abierto → "X" */
+.hamburger-icon span { top: calc(var(--bar-h) + var(--gap)); } /* Barra central. */
+.hamburger-icon::before { top: 0; }   /* Barra superior. */
+.hamburger-icon::after { bottom: 0; } /* Barra inferior. */
+
+/* Estado abierto → se convierte en "X" */
 .mobile-nav-toggle.is-open .hamburger-icon::before {
   top: calc(var(--bar-h) + var(--gap));
   transform: rotate(45deg);
@@ -378,8 +406,9 @@ blockquote {
   transform: rotate(-45deg);
 }
 .mobile-nav-toggle.is-open .hamburger-icon span {
-  opacity: 0;
+  opacity: 0; /* Barra central desaparece. */
 }
+
 /* Responsive de navegación */
 @media (max-width: 880px) {
   .main-nav-links { display: none; }
@@ -388,7 +417,7 @@ blockquote {
   .mobile-nav-toggle { display: inline-flex; }
 }
 @media (min-width: 881px) {
-  .mobile-nav-toggle { display: none; }
+  .mobile-nav-toggle { display: none; } /* Oculta botón en pantallas grandes. */
 }
 
 /* --- Controles de Accesibilidad ----------------------------------------- */

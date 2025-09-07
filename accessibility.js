@@ -1,63 +1,71 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const btnDark = document.getElementById('toggle-dark');
-  const btnHC   = document.getElementById('toggle-high-contrast');
-  const btnInc  = document.getElementById('increase-font-size');
-  const btnDec  = document.getElementById('decrease-font-size');
+document.addEventListener("DOMContentLoaded", () => {
+  const btnDark = document.getElementById("toggle-dark");
+  const btnHC = document.getElementById("toggle-high-contrast");
+  const btnInc = document.getElementById("increase-font-size");
+  const btnDec = document.getElementById("decrease-font-size");
 
   const html = document.documentElement;
   const body = document.body;
 
   // Persistencia en localStorage
-const load = () => {
-  // Si nunca se guardó preferencia → arrancar en claro
-  const darkPref = localStorage.getItem('a11y_dark');
-  return {
-    dark: darkPref === '0' ? true : false,
-    hc:   localStorage.getItem('a11y_hc') === '1',
-    zoom: parseInt(localStorage.getItem('a11y_zoom') || '100', 10)
+  const load = () => {
+    // Si nunca se guardó preferencia → arrancar en claro
+    const darkPrefRaw = localStorage.getItem("a11y_dark");
+    const darkPref =
+      darkPrefRaw === null
+        ? false
+        : darkPrefRaw === "1" || darkPrefRaw === "true";
+    return {
+      dark: Boolean(darkPref),
+      hc: localStorage.getItem("a11y_hc") === "1",
+      zoom: Number.parseInt(localStorage.getItem("a11y_zoom") || "100", 10),
+    };
   };
-};
 
   const save = (st) => {
-    localStorage.setItem('a11y_dark', st.dark ? '1' : '0');
-    localStorage.setItem('a11y_hc',   st.hc   ? '1' : '0');
-    localStorage.setItem('a11y_zoom', String(st.zoom));
+    localStorage.setItem("a11y_dark", st.dark ? "1" : "0");
+    localStorage.setItem("a11y_hc", st.hc ? "1" : "0");
+    localStorage.setItem("a11y_zoom", String(st.zoom));
   };
 
   const apply = (st) => {
     // CRÍTICO: Aplicar las clases correctamente
-    html.classList.toggle('theme-dark', st.dark);
-    html.classList.toggle('high-contrast', st.hc);
-    
+    html.classList.toggle("theme-dark", st.dark);
+    html.classList.toggle("high-contrast", st.hc);
+
     // Para el zoom, aplicamos en el html
-    html.style.fontSize = st.zoom + '%';
+    html.style.fontSize = st.zoom + "%";
 
     // Actualizar UI de botones
     updateButtonUI(st);
-    
+
     // Debug: mostrar estado actual
-    console.log('Estado aplicado:', {
+    console.log("Estado aplicado:", {
       dark: st.dark,
       hc: st.hc,
       zoom: st.zoom,
       htmlClasses: html.className,
-      bodyClasses: body.className
+      bodyClasses: body.className,
     });
   };
 
   const updateButtonUI = (st) => {
     // Botón modo oscuro
     if (btnDark) {
-      btnDark.setAttribute('aria-pressed', String(st.dark));
-      btnDark.title = st.dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
-      btnDark.textContent = st.dark ? '☀️' : '🌗';
+      btnDark.setAttribute("aria-pressed", String(st.dark));
+      btnDark.title = st.dark
+        ? "Cambiar a modo claro"
+        : "Cambiar a modo oscuro";
+      btnDark.textContent = st.dark ? "☀️" : "🌗";
     }
 
     // Botón alto contraste
     if (btnHC) {
-      btnHC.setAttribute('aria-pressed', String(st.hc));
-      btnHC.title = st.hc ? 'Desactivar alto contraste' : 'Activar alto contraste';
-      btnHC.textContent = st.hc ? 'HC OFF' : 'HC ON';
+      btnHC.setAttribute("aria-pressed", String(st.hc));
+      btnHC.title = st.hc
+        ? "Desactivar alto contraste"
+        : "Activar alto contraste";
+      btnHC.textContent = st.hc ? "HC OFF" : "HC ON";
     }
 
     // Botones de zoom
@@ -65,7 +73,7 @@ const load = () => {
       btnInc.title = `Aumentar tamaño de texto (actual: ${st.zoom}%)`;
       btnInc.disabled = st.zoom >= 160;
     }
-    
+
     if (btnDec) {
       btnDec.title = `Reducir tamaño de texto (actual: ${st.zoom}%)`;
       btnDec.disabled = st.zoom <= 85;
@@ -81,38 +89,38 @@ const load = () => {
 
   // Event listeners para los botones
   if (btnDark) {
-    btnDark.addEventListener('click', () => {
+    btnDark.addEventListener("click", () => {
       state.dark = !state.dark;
       save(state);
       apply(state);
-      console.log('Modo oscuro toggled:', state.dark);
+      console.log("Modo oscuro toggled:", state.dark);
     });
   }
 
   if (btnHC) {
-    btnHC.addEventListener('click', () => {
+    btnHC.addEventListener("click", () => {
       state.hc = !state.hc;
       save(state);
       apply(state);
-      console.log('Alto contraste toggled:', state.hc);
+      console.log("Alto contraste toggled:", state.hc);
     });
   }
 
   if (btnInc) {
-    btnInc.addEventListener('click', () => {
+    btnInc.addEventListener("click", () => {
       state.zoom = clamp(state.zoom + 5);
       save(state);
       apply(state);
-      console.log('Zoom aumentado:', state.zoom + '%');
+      console.log("Zoom aumentado:", state.zoom + "%");
     });
   }
 
   if (btnDec) {
-    btnDec.addEventListener('click', () => {
+    btnDec.addEventListener("click", () => {
       state.zoom = clamp(state.zoom - 5);
       save(state);
       apply(state);
-      console.log('Zoom reducido:', state.zoom + '%');
+      console.log("Zoom reducido:", state.zoom + "%");
     });
   }
 
@@ -131,15 +139,15 @@ const load = () => {
 
   // Función de utilidad para debugging
   window.debugAccessibility = () => {
-    console.log('Estado actual de accesibilidad:', {
+    console.log("Estado actual de accesibilidad:", {
       state: state,
       htmlClasses: html.className,
       bodyClasses: body.className,
       localStorage: {
-        dark: localStorage.getItem('a11y_dark'),
-        hc: localStorage.getItem('a11y_hc'),
-        zoom: localStorage.getItem('a11y_zoom')
-      }
+        dark: localStorage.getItem("a11y_dark"),
+        hc: localStorage.getItem("a11y_hc"),
+        zoom: localStorage.getItem("a11y_zoom"),
+      },
     });
   };
 });
