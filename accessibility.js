@@ -28,26 +28,32 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("a11y_zoom", String(st.zoom));
   };
 
-  const apply = (st) => {
-    // CRÍTICO: Aplicar las clases correctamente
-    html.classList.toggle("theme-dark", st.dark);
-    html.classList.toggle("high-contrast", st.hc);
+ const apply = (st) => {
+  // Forzar una sola clase de tono (evita conflictos)
+  if (st.dark) {
+    html.classList.add('theme-dark');
+    html.classList.remove('theme-light');
+  } else {
+    html.classList.remove('theme-dark');
+    html.classList.add('theme-light');
+  }
 
-    // Para el zoom, aplicamos en el html
-    html.style.fontSize = st.zoom + "%";
+  // Alto contraste
+  html.classList.toggle('high-contrast', !!st.hc);
 
-    // Actualizar UI de botones
-    updateButtonUI(st);
+  // Zoom
+  html.style.fontSize = st.zoom + "%";
 
-    // Debug: mostrar estado actual
-    console.log("Estado aplicado:", {
-      dark: st.dark,
-      hc: st.hc,
-      zoom: st.zoom,
-      htmlClasses: html.className,
-      bodyClasses: body.className,
-    });
-  };
+  // UI y debug
+  updateButtonUI(st);
+  console.log("Estado aplicado:", {
+    dark: st.dark,
+    hc: st.hc,
+    zoom: st.zoom,
+    htmlClasses: html.className,
+    bodyClasses: body.className,
+  });
+};
 
   const updateButtonUI = (st) => {
     // Botón modo oscuro

@@ -64,5 +64,5 @@ endif;
 </script>
 <!-- el primero no tenia defer y daba problemas de carga -->
 <script defer src="<?= url('accessibility.js') ?>"></script>
-<script defer src="<?= url('public/js/ui.js') ?>"></script>
+<!-- <script defer src="<?= url('public/js/ui.js') ?>"></script> -->
 <script defer src="<?= url('public/js/lightbox.js') ?>"></script>

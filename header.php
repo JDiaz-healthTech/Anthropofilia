@@ -86,11 +86,26 @@ $themeConfig['header_bg_url'] = $headerUrl;
 
 ?>
 <!DOCTYPE html>
-<html lang="es" class="theme-light"
+<html lang="es" 
       data-primary-color="<?= htmlspecialchars($themeConfig['primary_color'], ENT_QUOTES, 'UTF-8') ?>"
       data-bg-color="<?= htmlspecialchars($themeConfig['bg_color'], ENT_QUOTES, 'UTF-8') ?>"
       data-header-bg="<?= htmlspecialchars($themeConfig['header_bg_url'], ENT_QUOTES, 'UTF-8') ?>">
 <head>
+    <script>
+  (function(){
+    try {
+      const r = localStorage.getItem('a11y_dark');
+      if (r === '1' || r === 'true') {
+        document.documentElement.classList.add('theme-dark');
+        document.documentElement.classList.remove('theme-light');
+      } else {
+        document.documentElement.classList.remove('theme-dark');
+        document.documentElement.classList.add('theme-light');
+      }
+    } catch (e) { /* noop */ }
+  })();
+</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)">
@@ -125,7 +140,7 @@ $themeConfig['header_bg_url'] = $headerUrl;
     
     <!-- JavaScript de accesibilidad e inicialización del tema -->
     <script src="./theme-init.js" defer></script>
-    <script src="./accessibility.js" defer></script>
+    <!-- <script src="./accessibility.js" defer></script> -->
 </head>
 <body id="top">
     <div class="container">

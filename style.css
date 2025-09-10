@@ -299,34 +299,31 @@ blockquote {
   position: relative;
   z-index: 2;
 }
-/* Si el header tiene imagen la pintamos desde la variable aplicada en el elemento */
+/* fallback: usar color temático */
 .main-header.has-bg-image {
-  background-image: var(--header-image); /* <-- usa la variable fijada por JS */
+  background-image: var(--header-image);
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  color: white; /* tu regla existente: forzar texto blanco para legibilidad */
-  position: relative; /* necesario para ::before overlay posicionarse correctamente */
+  color: var(--theme-text); /* ahora depende del tema */
+  position: relative;
 }
 
-/* overlay que ya tienes (lo dejamos) */
-.main-header.has-bg-image::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 1;
+/* overlay: diferente según el tema para evitar que el header siempre se vea oscuro */
+html.theme-dark .main-header.has-bg-image::before {
+  background: rgba(0, 0, 0, 0.45); /* oscuro para modo oscuro */
 }
-.main-header.has-bg-image h1,
-.main-header.has-bg-image p {
+html:not(.theme-dark) .main-header.has-bg-image::before {
+  background: rgba(255, 255, 255, 0.18); /* tenue para modo claro */
+}
+
+/* si quieres conservar el text-shadow en modo oscuro */
+html.theme-dark .main-header.has-bg-image h1,
+html.theme-dark .main-header.has-bg-image p {
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
-/* Fallback si no hay clase has-bg-image */
-.main-header:not(.has-bg-image) {
-  background: var(--theme-header-bg);
-  color: var(--theme-text);
-}
+
 
 /* --- Navegación ---------------------------------------------------------- */
 .main-nav {
