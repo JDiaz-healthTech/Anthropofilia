@@ -1,53 +1,38 @@
-// theme-init.js — inicialización robusta y coherente con accessibility.js
+// === INICIO SNIPPET theme-init.js (reemplazar entero) ===
 (function(){
   'use strict';
-  const root = document.documentElement;
-  const primaryColor = root.dataset.primaryColor || '#0645ad';
-  const bgColor = root.dataset.bgColor || '#ffffff';
-  const headerBg = root.dataset.headerBg || '';
+  var root = document.documentElement;
 
-  // leer valores guardados (aceptamos '1' y 'true' por compatibilidad)
-  const rawHc = localStorage.getItem('a11y_hc');
-  const userHc  = rawHc === '1' || rawHc === 'true';
-  const rawDark = localStorage.getItem('a11y_dark');
-  const userDark = rawDark === '1' || rawDark === 'true';
+  // Leer preferencias persistidas
+  var theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  var hc    = localStorage.getItem('a11y_hc') === '1';
 
-  // Si el usuario pidió alto contraste, no pisamos variables críticas de HC.
-  if (!userHc) {
-    root.style.setProperty('--brand', primaryColor);
-    root.style.setProperty('--page-bg', bgColor);
-    if (headerBg) root.style.setProperty('--theme-header-bg', headerBg);
-  } else {
-    if (['localhost','127.0.0.1'].includes(window.location.hostname))
-      console.log('theme-init: HC activo, se omiten overrides de variables');
+  // Aplicar clases sin FOUC (independientes)
+  root.classList.toggle('theme-dark', theme === 'dark');
+  // Si quisieras una clase 'theme-light' podrías activarla aquí, pero no es necesaria si no la usas en CSS
+  root.classList.toggle('high-contrast', hc);
+
+  // Font zoom (si existiese de sesiones previas)
+  var rawZoom = parseInt(localStorage.getItem('a11y_zoom') || '100', 10);
+  if (rawZoom && isFinite(rawZoom)) {
+    root.style.setProperty('--font-zoom', String(rawZoom/100));
   }
 
-  // Aseguramos que solo exista una clase de tono (light OR dark)
-  if (userDark) {
-    root.classList.add('theme-dark');
-    root.classList.remove('theme-light');
-  } else {
-    root.classList.remove('theme-dark');
-    root.classList.add('theme-light');
+  // Valores opcionales por data-* (no afectan HC)
+  if (!hc){
+    var primaryColor = root.dataset.primaryColor || '';
+    var pageBg       = root.dataset.bgColor || '';
+    var headerBg     = root.dataset.headerBg || '';
+    if (primaryColor) root.style.setProperty('--brand', primaryColor);
+    if (pageBg)       root.style.setProperty('--page-bg', pageBg);
+    if (headerBg){
+      var safeUrl = headerBg.replace(/"/g, '\\"').replace(/\s+/g, '%20');
+      var header  = document.querySelector('.main-header');
+      if (header){
+        header.style.setProperty('--header-image', 'url("'+safeUrl+'")');
+        header.classList.add('has-bg-image');
+      }
+    }
   }
 })();
-
-// Añade al final de theme-init.js (o en un archivo cargado con defer)
-document.addEventListener('DOMContentLoaded', function () {
-  const html = document.documentElement;
-  const headerBg = (html.dataset.headerBg || '').trim();
-  if (!headerBg) return;
-
-  const header = document.querySelector('.main-header');
-  if (!header) return;
-
-  // Sanitiza la URL para incluirla en CSS url("...")
-  // Evita rupturas si la URL contiene comillas
-  const safeUrl = headerBg.replace(/"/g, '\\"').replace(/\s+/g, '%20');
-
-  // Aplicar como variable en el propio elemento (no en :root)
-  header.style.setProperty('--header-image', `url("${safeUrl}")`);
-
-  // Asegura que el CSS que depende de la clase se active
-  header.classList.add('has-bg-image');
-});
+// === FIN SNIPPET theme-init.js ===

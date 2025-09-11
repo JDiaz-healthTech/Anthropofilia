@@ -10,31 +10,23 @@
       if(!img.hasAttribute('sizes')) img.setAttribute('sizes', '(min-width: 800px) 720px, 100vw');
     });
 
-    // Crea overlay
-    var overlay = document.createElement('div');
-    overlay.className = 'lightbox-overlay';
-    overlay.innerHTML = '<button class="lb-close" aria-label="Cerrar">×</button><img alt="">';
-    document.body.appendChild(overlay);
+// crear overlay sin innerHTML ===
+var overlay = document.createElement('div');
+overlay.className = 'lightbox-overlay';
 
-    var imgEl = overlay.querySelector('img');
-    function open(src, alt){
-      imgEl.src = src;
-      imgEl.alt = alt || '';
-      overlay.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
-    function close(){
-      overlay.classList.remove('open');
-      imgEl.removeAttribute('src');
-      document.body.style.overflow = '';
-    }
+var closeBtn = document.createElement('button');
+closeBtn.className = 'lb-close';
+closeBtn.setAttribute('aria-label', 'Cerrar');
+closeBtn.appendChild(document.createTextNode('×'));
 
-    overlay.addEventListener('click', function(e){
-      if (e.target === overlay || e.target.classList.contains('lb-close')) close();
-    });
-    document.addEventListener('keydown', function(e){
-      if (e.key === 'Escape') close();
-    });
+var imgEl = document.createElement('img');
+imgEl.setAttribute('alt', '');
+
+overlay.appendChild(closeBtn);
+overlay.appendChild(imgEl);
+document.body.appendChild(overlay);
+// === FIN SNIPPET lightbox.js ===
+
 
     // Delegación: abrir al clickear imágenes dentro del contenido
     document.body.addEventListener('click', function(e){

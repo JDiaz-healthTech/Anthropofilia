@@ -6,6 +6,10 @@
    Cada variable está comentada con su propósito y a qué afecta.
    ========================================================================== */
 
+   /*— Ajuste base de tamaño === */
+html { font-size: calc(100% * var(--font-zoom, 1)); }
+
+
 /* ========================================================================== */
 /* 🌞 TEMA CLARO ARMÓNICO (DEFAULT) – Variables Globales                      */
 /* ========================================================================== */
@@ -37,6 +41,16 @@
   --theme-border: var(--card-border);    /* Alias: borde estándar. */
   --theme-header-bg: var(--card-bg);     /* Fondo del header. */
   --theme-primary-hover: var(--brand-hover); /* Hover del color primario. */
+
+  --color-bg:            var(--page-bg);
+  --color-surface:       var(--card-bg);
+  --color-text:          var(--fg);
+  --color-text-muted:    var(--muted);
+  --color-border:        var(--card-border);
+  --color-primary:       var(--brand);
+  --color-primary-hover: var(--brand-hover);
+  --color-link:          var(--link);
+  --color-link-visited:  var(--link-visited);
 
   /* === 🔤 Tipografía === */
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
@@ -93,12 +107,25 @@ html.theme-dark {
   --theme-primary-hover: var(--brand-hover); /* Hover del color primario. */
   --theme-border: var(--card-border);   /* Bordes estándar. */
   --theme-header-bg: var(--card-bg);    /* Fondo del header. */
+
+  /* === INICIO SNIPPET styles.css — Alias canónicos (OSC.) === */
+
+  --color-bg:            var(--page-bg);
+  --color-surface:       var(--card-bg);
+  --color-text:          var(--fg);
+  --color-text-muted:    var(--muted);
+  --color-border:        var(--card-border);
+  --color-primary:       var(--brand);
+  --color-primary-hover: var(--brand-hover);
+  --color-link:          var(--link);
+  --color-link-visited:  var(--link-visited);
 }
+
 
 /* ========================================================================== */
 /* ♿ ALTO CONTRASTE – Tema Claro                                             */
 /* ========================================================================== */
-.high-contrast {
+html.high-contrast:not(.theme-dark) {
   /* Paleta: Claro Alto Contraste (Blanco, Azul Noche, Turquesa) */
   --page-bg: #FFFFFF;         /* Fondo global: blanco puro. */
   --bg: #FFFFFF;              /* Alias: fondo principal. */
@@ -125,6 +152,16 @@ html.theme-dark {
   --theme-primary-hover: var(--brand-hover);
   --theme-border: var(--card-border);
   --theme-header-bg: var(--card-bg);
+
+  --color-bg:            var(--page-bg);
+--color-surface:       var(--card-bg);
+--color-text:          var(--fg);
+--color-text-muted:    var(--fg);
+--color-border:        var(--card-border);
+--color-primary:       var(--brand);
+--color-primary-hover: var(--brand-hover);
+--color-link:          var(--link);
+--color-link-visited:  var(--link-visited);
 }
 
 /* ========================================================================== */
@@ -157,6 +194,17 @@ html.theme-dark.high-contrast {
   --theme-primary-hover: var(--brand-hover);
   --theme-border: var(--card-border);
   --theme-header-bg: var(--card-bg);
+
+  --color-bg:            var(--page-bg);
+  --color-surface:       var(--card-bg);
+  --color-text:          var(--fg);
+  --color-text-muted:    var(--fg);
+  --color-border:        var(--card-border);
+  --color-primary:       var(--brand);
+  --color-primary-hover: var(--brand-hover);
+  --color-link:          var(--link);
+  --color-link-visited:  var(--link-visited);
+
 }
 
 /* Hover en modo alto contraste oscuro para máxima claridad */
@@ -181,7 +229,7 @@ html.theme-dark.high-contrast .btn:hover {
 
 html {
   scroll-behavior: smooth;     /* Scroll animado en enlaces internos (anchors). */
-  font-size: 16px;             /* Base para rem. 1rem = 16px. */
+  font-size: calc(16px * var(--font-zoom, 1));
   -webkit-text-size-adjust: 100%; /* Previene zoom automático en iOS Safari al girar. */
   text-size-adjust: 100%;      /* Equivalente en navegadores Android. */
 }
