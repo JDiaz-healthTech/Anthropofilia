@@ -1,12 +1,13 @@
 <?php
 /**
  * init.php - Bootstrap de la aplicación
- * 
- * Este archivo está en /public y carga recursos de la raíz del proyecto.
- * PUBLIC_PATH = /var/www/html/public (donde está este archivo)
- * BASE_PATH   = /var/www/html (raíz del proyecto, un nivel arriba)
  */
 declare(strict_types=1);
+
+// 1. IMPORTACIONES (Siempre arriba del todo)
+use App\Models\Database;
+use App\Security\SecurityManager;
+use Dotenv\Dotenv;
 
 // ============================================================
 // CONSTANTES DE RUTAS
@@ -45,25 +46,21 @@ set_error_handler(function ($severity, $message, $file, $line) {
 });
 
 // ============================================================
-// AUTOLOAD (Composer) - En la RAÍZ del proyecto
+// AUTOLOAD (Composer)
 // ============================================================
 $autoloadPath = BASE_PATH . '/vendor/autoload.php';
 if (!file_exists($autoloadPath)) {
-    die('<h1>Error: vendor/autoload.php no encontrado</h1>
-         <p>Ejecuta: <code>composer install</code> en la raíz del proyecto</p>
-         <p>Buscando en: ' . $autoloadPath . '</p>');
+    die('<h1>Error: vendor/autoload.php no encontrado</h1>');
 }
 require_once $autoloadPath;
 
 // ============================================================
-// VARIABLES DE ENTORNO (.env) - En la RAÍZ del proyecto
+// VARIABLES DE ENTORNO (.env)
 // ============================================================
 if (!file_exists(BASE_PATH . '/.env')) {
-    die('<h1>Error: .env no encontrado</h1>
-         <p>Copia .env.example a .env y configúralo</p>
-         <p>Buscando en: ' . BASE_PATH . '/.env</p>');
+    die('<h1>Error: .env no encontrado</h1>');
 }
-$dotenv = Dotenv\Dotenv::createImmutable(BASE_PATH);
+$dotenv = Dotenv::createImmutable(BASE_PATH);
 $dotenv->load();
 
 // ============================================================
@@ -88,23 +85,17 @@ if (function_exists('mb_internal_encoding')) {
 date_default_timezone_set($_ENV['APP_TZ'] ?? 'Europe/Madrid');
 
 // ============================================================
-// BASE URL (para generar enlaces)
+// BASE URL
 // ============================================================
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $baseUrl = $_ENV['APP_URL'] ?? ($scheme . '://' . $host);
 
-/**
- * Genera una URL absoluta
- */
 function url(string $path = ''): string {
     global $baseUrl;
     return rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
 }
 
-/**
- * Genera la URL canónica de la página actual
- */
 function canonical_url(): string {
     global $baseUrl;
     $requestPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
@@ -114,33 +105,26 @@ function canonical_url(): string {
 // ============================================================
 // CONEXIÓN A BASE DE DATOS (PDO)
 // ============================================================
-$dbHost    = $_ENV['DB_HOST'] ?? '127.0.0.1';
-$dbPort    = (int)($_ENV['DB_PORT'] ?? 3306);
-$dbName    = $_ENV['DB_NAME'] ?? '';
-$dbUser    = $_ENV['DB_USER'] ?? '';
-$dbPass    = $_ENV['DB_PASS'] ?? '';
-$dbCharset = $_ENV['DB_CHARSET'] ?? 'utf8mb4';
-
-$dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset={$dbCharset}";
-
-$pdoOptions = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-
 try {
-    $pdo = new PDO($dsn, $dbUser, $dbPass, $pdoOptions);
-} catch (PDOException $e) {
+    // Usamos la clase importada arriba.
+    // Esto define la variable $pdo que usaremos abajo
+    $pdo = Database::getConnection();
+    
+} catch (Exception $e) {
     error_log('[DB] Connection failed: ' . $e->getMessage());
+    
+    if (isset($env) && $env === 'dev') {
+        die("<h1>Error de Conexión</h1><p>" . htmlspecialchars($e->getMessage()) . "</p>");
+    }
+    
     http_response_code(500);
-    exit('Error de conexión a la base de datos. Inténtalo más tarde.');
+    exit('Error de conexión a la base de datos.');
 }
 
 // ============================================================
-// SECURITY MANAGER - Namespace corregido: App\Security
+// SECURITY MANAGER
 // ============================================================
-use App\Security\SecurityManager;
+// Ya no hace falta "use" aquí, está arriba del todo.
 
 $security = new SecurityManager(
     [
@@ -152,15 +136,11 @@ $security = new SecurityManager(
             'extra_script_src'    => ['https://cdn.jsdelivr.net'],
         ],
     ],
-    $pdo
+    $pdo // Pasamos la conexión creada en el bloque anterior
 );
 $security->boot();
 
 // ============================================================
-// HELPERS ADICIONALES - En la RAÍZ del proyecto
+// HELPERS ADICIONALES
 // ============================================================
 require_once BASE_PATH . '/admin/lib/settings.php';
-
-// ============================================================
-// FIN DE INIT.PHP
-// ============================================================
