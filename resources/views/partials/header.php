@@ -125,8 +125,8 @@ $themeConfig['header_bg_url'] = $headerUrl;
     <meta name="robots" content="noindex, nofollow">
     <?php endif; ?>
 
-    <!-- CSS Principal - TODA LA LÓGICA ESTÁ AQUÍ -->
-    <link rel="stylesheet" href="./style.css">
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="<?= url('css/style.css') ?>">
 
     <?php if ($needsTinymce): ?>
     <!-- Performance hint para TinyMCE -->
@@ -139,8 +139,9 @@ $themeConfig['header_bg_url'] = $headerUrl;
     <?php endif; ?>
     
     <!-- JavaScript de accesibilidad e inicialización del tema -->
-    <script src="./theme-init.js" defer></script>
-    <!-- <script src="./accessibility.js" defer></script> -->
+<script src="<?= url('js/theme-init.js') ?>" defer></script>
+
+
 </head>
 <body id="top">
     <div class="container">

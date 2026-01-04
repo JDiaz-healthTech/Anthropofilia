@@ -994,3 +994,25 @@ td.actions .inline-form {
   display: inline;
   margin: 0;
 }
+
+/* Post navigation */
+.post-navigation {
+  display: block;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ddd;
+  clear: both;
+}
+
+.btn-volver {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--brand, #0645ad);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.btn-volver:hover {
+  opacity: 0.85;
+}

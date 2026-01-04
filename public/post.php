@@ -16,7 +16,7 @@ try {
     // 2) Cargar post (por slug si viene; si no, por id)
     $useSlug = ($slug !== null && $slug !== '');
     $sql = "SELECT p.id_post, p.slug, p.titulo, p.contenido, p.imagen_destacada_url, p.fecha_publicacion,
-                   p.id_categoria, c.nombre_categoria
+                  p.id_categoria, c.nombre_categoria, c.slug AS slug_categoria
             FROM posts p
             LEFT JOIN categorias c ON c.id_categoria = p.id_categoria
             WHERE " . ($useSlug ? "p.slug = ?" : "p.id_post = ?") . "
@@ -89,18 +89,19 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
   <article>
     <header>
       <h1><?= $titulo_safe ?></h1>
-      <p class="meta">
-        <span class="categoria"><?= $categoria_safe ?></span>
+      <span class="post-meta">
+        Publicado el: <?= date('d/m/Y', strtotime($post['fecha_publicacion'])) ?>
+        <?php if (!empty($post['nombre_categoria'])): ?>
+          · En <a href="<?= url('categoria.php?slug=' . urlencode($post['slug_categoria'] ?? '')) ?>"><?= $categoria_safe ?></a>
+        <?php endif; ?>
         <?php if (!empty($tags)): ?>
           · <span class="tags">
               <?php foreach ($tags as $t): ?>
-<a href="<?= url('search.php?q=' . urlencode($t)) ?>" rel="tag">
-                  <?= htmlspecialchars($t, ENT_QUOTES, 'UTF-8') ?>
-                </a>
+                <a href="<?= url('search.php?q=' . urlencode($t)) ?>" rel="tag"><?= htmlspecialchars($t, ENT_QUOTES, 'UTF-8') ?></a>
               <?php endforeach; ?>
             </span>
         <?php endif; ?>
-      </p>
+      </span>
       <?php if (!empty($imagen_url)): ?>
         <figure class="imagen-destacada">
           <!-- Alt vacío intencionadamente; la imagen es decorativa 
@@ -119,5 +120,8 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
       <?= $contenido_html ?>
     </section>
   </article>
+  <nav class="post-navigation">
+    <a href="<?= url('index.php') ?>" class="btn-volver">&larr; Volver a inicio</a>
+  </nav>
 </main>
 <?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>

@@ -8,7 +8,7 @@ use App\Models\Post;
 
 // 1. LÓGICA
 $page    = max(1, (int)($_GET['page'] ?? 1));
-$perPage = 1; // Sigue en 1 para tus pruebas (luego ponlo a 10)
+$perPage = 10; // Sigue en 1 para tus pruebas (luego ponlo a 10)
 $offset  = ($page - 1) * $perPage;
 
 try {
@@ -67,7 +67,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <?php endif; ?>
     </main>
 
-    <?php require_once BASE_PATH . '/resources/views/partials/sidebar.php'; ?>
+ 
 
 <?php 
 // 4. FOOTER
