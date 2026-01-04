@@ -11,8 +11,10 @@ if (!$post_id || $post_id <= 0) {
 }
 
 // 3) Cargar post
-$sql_post = "SELECT id_post, id_usuario, titulo, contenido, imagen_destacada_url, id_categoria, etiquetas
-             FROM posts WHERE id_post = ?";
+$sql_post = "SELECT id_post, slug, titulo, contenido, imagen_destacada_url, 
+                              fecha_publicacion, id_usuario, id_categoria
+                       FROM posts 
+                       WHERE id_post = :id";
 $stmt = $pdo->prepare($sql_post);
 $stmt->execute([$post_id]);
 $post = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -107,7 +109,7 @@ if (typeof tinymce !== 'undefined') {
     selector: '#contenido',
     // Plugins útiles
     plugins: 'code link lists image media table autoresize paste',
-    toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media table | code',
+    toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | link image media table | code',
     menubar: false,
     height: 540,
 

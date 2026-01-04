@@ -11,7 +11,7 @@ if (!isset($_SESSION['id_usuario'])) {
 // 2) Solo POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    header("Location: gestionar_posts.php");
+    header("Location: dashboard.php");
     exit();
 }
 
@@ -68,7 +68,7 @@ try {
     $stmt->execute([$titulo, $contenido, $id_categoria, $imagen_url, $id_post]);
 
     // rowCount puede ser 0 si no hubo cambios; no es error.
-    header("Location: gestionar_posts.php?status=updated&id={$id_post}", true, 303); // PRG
+    header("Location: dashboard.php?status=updated&id={$id_post}", true, 303); // PRG
     exit();
 
 } catch (PDOException $e) {

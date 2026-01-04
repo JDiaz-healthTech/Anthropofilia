@@ -118,7 +118,7 @@ try {
     }
 
     $pdo->commit();
-    header('Location: gestionar_posts.php?msg=created');
+    header('Location: dashboard.php?msg=created');
     exit();
 
 } catch (\PDOException $e) {

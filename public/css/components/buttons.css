@@ -1,0 +1,24 @@
+/* Botón de logout en footer */
+.btn-logout {
+  padding: 0.5rem 1rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.btn-logout:hover {
+  background: #c82333;
+}
+
+/* Admin nav en footer */
+.admin-nav {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}

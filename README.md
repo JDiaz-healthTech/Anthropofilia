@@ -70,7 +70,7 @@ Este repositorio forma parte de mi portfolio.
 - /categoria.php → listado por categoría
 - /contacto.php → formulario de contacto
 - /enviar_contacto.php → handler de contacto
-- /gestionar_posts.php → admin posts
+- /dashboard.php → admin posts
 - /gestionar_paginas.php → admin páginas
 - /upload_image.php → subida de imágenes (TinyMCE)
 - /public/js/lightbox.js → proyección de imágenes

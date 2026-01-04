@@ -36,6 +36,7 @@ try {
     $titulo    = trim($security->cleanInput($_POST['titulo'] ?? ''));
     $slug_in   = trim($security->cleanInput($_POST['slug'] ?? ''));
     $contenido = $_POST['contenido'] ?? ''; // puede tener HTML; sanitiza al render
+    $orden     = max(0, min(100, (int)($_POST['orden'] ?? 0))); // Entre 0-100
 
     if ($id_pagina <= 0 || $titulo === '' || $slug_in === '' || $contenido === '') {
         http_response_code(400);
@@ -67,13 +68,12 @@ try {
         http_response_code(409);
         die("El slug ya está en uso por otra página.");
     }
-
     // 5) Update (marca timestamp si tienes columna)
     $sql = "UPDATE paginas 
-            SET titulo = ?, slug = ?, contenido = ?, actualizado_en = NOW()
+            SET titulo = ?, slug = ?, contenido = ?, orden = ?, actualizado_en = NOW()
             WHERE id_pagina = ?";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$titulo, $slug, $contenido, $id_pagina]);
+    $stmt->execute([$titulo, $slug, $contenido, $orden, $id_pagina]);
 
     // Si no cambió nada, rowCount puede ser 0; no es error.
     header("Location: gestionar_paginas.php?status=updated&id={$id_pagina}", true, 303); // PRG

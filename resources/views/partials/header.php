@@ -20,13 +20,18 @@ $canonical = rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
 
 // Páginas que no deben indexarse
 $noindexPages = [
-    'login.php','admin.php','gestionar_posts.php','gestionar_paginas.php',
+    'login.php','admin.php','dashboard.php','gestionar_paginas.php',
     'crear_post.php','editar_post.php','eliminar_post.php',
     'crear_pagina.php','editar_pagina.php','eliminar_pagina.php'
 ];
 
 // ¿Cargar TinyMCE?
-$needsTinymce = in_array($current_page, ['crear_post.php','editar_post.php'], true);
+$needsTinymce = in_array($current_page, [
+    'crear_post.php',
+    'editar_post.php',
+    'crear_pagina.php',
+    'editar_pagina.php'
+], true);
 
 // Helper para clase "active" en nav
 function nav_active(string $file, ?string $slug = null): string {
@@ -155,19 +160,39 @@ $themeConfig['header_bg_url'] = $headerUrl;
                 <span class="visually-hidden">Menú</span>
                 <span class="hamburger-icon"><span></span></span>
             </button>
+<?php
+// Cargar páginas desde la BD para el menú
+$menuPages = [];
+try {
+    $stmtPages = $pdo->query("SELECT slug, titulo FROM paginas ORDER BY orden ASC, id_pagina ASC");
+    $menuPages = $stmtPages->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    error_log("Error cargando páginas para menú: " . $e->getMessage());
+}
+?>
+
             <div class="main-nav-links" id="main-nav-links">
+                <!-- Enlace fijo: Inicio -->
                 <a href="<?= url('index.php') ?>"<?= nav_active('index.php'); ?>>Inicio</a>
-                <a href="<?= url('pagina.php?slug=historia-da-filosofia') ?>"<?= nav_active('pagina.php','historia-da-filosofia'); ?>>Historia da Filosofía</a>
-                <a href="<?= url('categoria.php?slug=lecturas-e-peliculas') ?>"<?= nav_active('categoria.php'); ?>>Lecturas e Películas</a>
-                <a href="<?= url('pagina.php?slug=etica') ?>"<?= nav_active('pagina.php','etica'); ?>>Ética</a>
+                
+                <!-- Páginas dinámicas desde la BD -->
+                <?php foreach ($menuPages as $page): ?>
+                    <a href="<?= url('pagina.php?slug=' . urlencode($page['slug'])) ?>"<?= nav_active('pagina.php', $page['slug']); ?>>
+                        <?= htmlspecialchars($page['titulo'], ENT_QUOTES, 'UTF-8') ?>
+                    </a>
+                <?php endforeach; ?>
+                
+                <!-- Enlaces fijos adicionales -->
                 <a href="<?= url('acerca_de_mi.php') ?>"<?= nav_active('acerca_de_mi.php'); ?>>Acerca de mí</a>
                 <a href="<?= url('contacto.php') ?>"<?= nav_active('contacto.php'); ?>>Contacto</a>
 
                 <span class="spacer"></span>
+                
+                <!-- Dashboard/Login según estado -->
                 <?php if ($isLogged): ?>
-                <a href="<?= url('gestionar_posts.php') ?>"<?= nav_active('gestionar_posts.php'); ?>>Panel</a>
+                    <a href="<?= url('dashboard.php') ?>"<?= nav_active('dashboard.php'); ?>>Dashboard</a>
                 <?php else: ?>
-                <a href="<?= url('login.php') ?>"<?= nav_active('login.php'); ?> rel="nofollow">Admin</a>
+                    <a href="<?= url('dashboard.php') ?>"<?= nav_active('dashboard.php'); ?> rel="nofollow">Dashboard</a>
                 <?php endif; ?>
             </div>
             <div class="accessibility-controls">

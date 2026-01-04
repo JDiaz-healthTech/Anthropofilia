@@ -56,6 +56,7 @@ try {
     $titulo    = trim((string)($_POST['titulo'] ?? ''));
     $slugInput = trim((string)($_POST['slug'] ?? ''));
     $contenido = (string)($_POST['contenido'] ?? '');
+    $orden     = max(0, min(100, (int)($_POST['orden'] ?? 0))); // Entre 0-100
     $userId    = (int)$security->userId();
 
     // Longitudes (ajústalas si quieres)
@@ -77,11 +78,9 @@ try {
     $contenidoLimpio = $security->sanitizeHTML($contenido);
 
     // 4) Insert
-    // Nota: Asumo columnas: id_usuario, titulo, slug, contenido.
-    // Si tienes más (fecha_creacion, etc.), añádelas aquí.
-    $sql = 'INSERT INTO paginas (id_usuario, titulo, slug, contenido) VALUES (?, ?, ?, ?)';
+    $sql = 'INSERT INTO paginas (titulo, slug, contenido, orden, fecha_creacion) VALUES (?, ?, ?, ?, NOW())';
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$userId, $titulo, $slug, $contenidoLimpio]);
+    $stmt->execute([$titulo, $slug, $contenidoLimpio, $orden]);
 
     header('Location: gestionar_paginas.php?msg=created');
     exit();

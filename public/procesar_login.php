@@ -65,7 +65,7 @@ try {
     $security->logEvent('info', 'login_success', ['user_id' => (int)$user['id_usuario']]);
 
     // 8) Redirigir a panel
-    header('Location: admin.php');
+    header('Location: dashboard.php');
     exit();
 
 } catch (\PDOException $e) {

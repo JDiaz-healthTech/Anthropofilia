@@ -144,6 +144,19 @@ final class SecurityManager
         }
     }
 
+    /**
+     * Valida el token y lanza excepción si falla.
+     * Es necesario porque tus archivos actualizar_pagina.php, etc. lo están llamando.
+     */
+    public function csrfValidate(?string $token = null): void
+    {
+        // Reutiliza la lógica de verificación que ya tienes
+        if (!$this->verifyCsrf($token)) {
+            // Lanza excepción para que la capturen tus try/catch
+            throw new \RuntimeException('Error de seguridad: Token CSRF inválido o expirado.');
+        }
+    }
+
     /* ==============
        Sesión segura
        ============== */

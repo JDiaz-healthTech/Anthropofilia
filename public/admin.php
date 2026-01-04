@@ -113,7 +113,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <ul>
           <li><a href="<?= url('crear_post.php') ?>">Crear nueva entrada</a></li>
           <li>
-            <a href="<?= url('gestionar_posts.php') ?>">Gestionar entradas</a>
+            <a href="<?= url('dashboard.php') ?>">Gestionar entradas</a>
             <?php if ($postsCount): ?>
               <span class="badge" aria-label="Total de entradas"><?= $postsCount ?></span>
             <?php endif; ?>

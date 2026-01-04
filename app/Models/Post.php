@@ -10,8 +10,13 @@ class Post {
      */
     public static function getAll(): array {
         $db = Database::getConnection();
-        // PDO usa 'query' para consultas directas sin variables
-        $stmt = $db->query("SELECT * FROM posts ORDER BY fecha_publicacion DESC");
+        // Seleccionamos explícitamente las columnas necesarias
+        $stmt = $db->query(
+            "SELECT id_post, slug, titulo, contenido, imagen_destacada_url, 
+                    fecha_publicacion, id_usuario, id_categoria, actualizado_en
+             FROM posts 
+             ORDER BY fecha_publicacion DESC"
+        );
         return $stmt->fetchAll();
     }
 
@@ -20,19 +25,43 @@ class Post {
      */
     public static function find(int $id) {
         $db = Database::getConnection();
-        // Usamos sentencias preparadas para seguridad (evita Inyección SQL)
-        $stmt = $db->prepare("SELECT * FROM posts WHERE id_post = :id LIMIT 1");
+        // Seleccionamos explícitamente las columnas necesarias
+        $stmt = $db->prepare(
+            "SELECT id_post, slug, titulo, contenido, imagen_destacada_url, 
+                    fecha_publicacion, id_usuario, id_categoria, actualizado_en
+             FROM posts 
+             WHERE id_post = :id 
+             LIMIT 1"
+        );
         $stmt->execute([':id' => $id]);
         return $stmt->fetch();
     }
     
     /**
-     * Buscar posts por término de búsqueda (Para el buscador)
+     * Buscar posts por término de búsqueda
+     * 
+     * @param string $query Término a buscar
+     * @return array Lista de posts que coinciden
      */
     public static function search(string $query): array {
         $db = Database::getConnection();
-        $stmt = $db->prepare("SELECT * FROM posts WHERE title LIKE :q OR contenido LIKE :q ORDER BY fecha_publicacion DESC");
-        $searchTerm = "%" . $query . "%";
+        
+        // Escapar comodines SQL para prevenir búsquedas incorrectas
+        $escapedQuery = strtr($query, [
+            '\\' => '\\\\',
+            '%'  => '\\%',
+            '_'  => '\\_',
+        ]);
+        
+        $searchTerm = "%{$escapedQuery}%";
+        
+        $stmt = $db->prepare(
+            "SELECT id_post, slug, titulo, contenido, imagen_destacada_url, fecha_publicacion, id_categoria
+            FROM posts 
+            WHERE (titulo LIKE :q ESCAPE '\\' OR contenido LIKE :q ESCAPE '\\')
+            ORDER BY fecha_publicacion DESC, id_post DESC"
+        );
+        
         $stmt->execute([':q' => $searchTerm]);
         return $stmt->fetchAll();
     }
@@ -105,4 +134,6 @@ class Post {
 
         return $post;
     }
+
+    
 }

@@ -12,8 +12,14 @@ class User {
     public static function findByUsername(string $username) {
         $db = Database::getConnection();
         
-        // Buscamos por nombre_usuario (según tu SQL)
-        $stmt = $db->prepare("SELECT * FROM usuarios WHERE nombre_usuario = :user LIMIT 1");
+        // Seleccionamos explícitamente las columnas necesarias
+        $stmt = $db->prepare(
+            "SELECT id_usuario, nombre_usuario, email, contrasena_hash, 
+                    rol, fecha_registro
+             FROM usuarios 
+             WHERE nombre_usuario = :user 
+             LIMIT 1"
+        );
         $stmt->execute([':user' => $username]);
         
         return $stmt->fetch();
