@@ -1,0 +1,126 @@
+/* ==========================================================================
+   VARIABLES GLOBALES – SISTEMA DE TEMAS
+   ========================================================================== */
+
+/* 🌞 TEMA CLARO ARMÓNICO (DEFAULT) */
+:root {
+  /* Escala */
+  --font-zoom: 1;
+
+  /* Paleta base */
+  --page-bg: #FEFAE0;
+  --bg: #FEFAE0;
+  --fg: #4E4237;
+  --muted: #7A6A53;
+  --border: #EAE2D1;
+  --card-bg: #faf3e0;
+  --home-card-bg: #ffffff;
+  --card-border: var(--border);
+
+  /* Marca */
+  --brand: #D4A373;
+  --brand-hover: #A98467;
+  --link: var(--brand);
+  --link-visited: #967C5E;
+
+  /* Formularios */
+  --input-bg: #FFFFFF;
+  --input-fg: var(--fg);
+
+  /* Aliases legacy / semánticos */
+  --theme-bg: var(--bg);
+  --theme-surface: var(--card-bg);
+  --theme-text: var(--fg);
+  --theme-text-light: var(--muted);
+  --theme-primary: var(--brand);
+  --theme-primary-hover: var(--brand-hover);
+  --theme-border: var(--card-border);
+  --theme-header-bg: var(--card-bg);
+
+  --color-bg: var(--page-bg);
+  --color-surface: var(--card-bg);
+  --color-text: var(--fg);
+  --color-text-muted: var(--muted);
+  --color-border: var(--card-border);
+  --color-primary: var(--brand);
+  --color-primary-hover: var(--brand-hover);
+  --color-link: var(--link);
+  --color-link-visited: var(--link-visited);
+
+  /* Tipografía */
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-header: -apple-system, BlinkMacSystemFont, "Segoe UI Semibold", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Escala fluida */
+  --step--1: clamp(0.88rem, 0.85rem + 0.2vw, 0.95rem);
+  --step-0:  clamp(1.00rem, 0.95rem + 0.4vw, 1.10rem);
+  --step-1:  clamp(1.25rem, 1.10rem + 0.8vw, 1.40rem);
+  --step-2:  clamp(1.56rem, 1.30rem + 1.2vw, 1.80rem);
+
+  /* UI */
+  --radius: 6px;
+  --transition: all 0.25s ease-in-out;
+  --measure: 65ch;
+  --shadow: 0 2px 6px rgba(0,0,0,0.08);
+  --shadow-soft: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+
+/* 🌙 TEMA OSCURO */
+html.theme-dark {
+  --page-bg: #1F2937;
+  --bg: #1F2937;
+  --fg: #E0E0E0;
+  --muted: #A0AEC0;
+  --border: #4A5A70;
+  --card-bg: #2D3A4D;
+  --card-border: var(--border);
+  --home-card-bg: #1c2a44;
+
+  --brand: #3498DB;
+  --brand-hover: #93C5FD;
+  --link: #60A5FA;
+  --link-visited: #A78BFA;
+
+  --input-bg: #2D3A4D;
+  --input-fg: var(--fg);
+}
+
+/* ♿ ALTO CONTRASTE – CLARO */
+html.high-contrast:not(.theme-dark) {
+  --page-bg: #FFFFFF;
+  --bg: #FFFFFF;
+  --fg: #023047;
+  --muted: var(--fg);
+  --border: var(--fg);
+  --card-bg: #FFFFFF;
+  --card-border: var(--fg);
+
+  --brand: #00A896;
+  --brand-hover: #F4A261;
+  --link: var(--brand);
+  --link-visited: #00796B;
+
+  --input-bg: #FFFFFF;
+  --input-fg: var(--fg);
+}
+
+/* ♿ ALTO CONTRASTE – OSCURO */
+html.theme-dark.high-contrast {
+  --page-bg: #121212;
+  --bg: #121212;
+  --fg: #F5F5F5;
+  --muted: var(--fg);
+
+  --brand: #FFC700;
+  --brand-hover: #FFEE32;
+  --border: var(--brand);
+  --card-bg: #121212;
+  --card-border: var(--brand);
+
+  --link: var(--brand);
+  --link-visited: var(--brand);
+
+  --input-bg: #121212;
+  --input-fg: var(--brand);
+}

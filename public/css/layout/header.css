@@ -1,0 +1,59 @@
+
+/* === HEADER CON CONFIGURACIÓN DINÁMICA === */
+.main-header {
+  background: var(--theme-header-bg);         /* Fondo dinámico del header. */
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-bottom: 2px solid var(--theme-border); /* Separador inferior. */
+  min-height: 200px;                            /* Altura mínima del header. */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Nota: el background-image se aplica dinámicamente vía JS */
+}
+.main-header h1 {
+  margin: 0 0 .25rem;
+  font-size: 2.5rem;                 /* Sobrescribe variables para un tamaño destacado. */
+  color: var(--theme-text);          /* Texto principal del header. */
+  position: relative;
+  z-index: 2;                        /* Asegura que quede sobre overlays. */
+}
+.main-header h1 a {
+  color: var(--fg);                  /* Enlace del título: usa color foreground directo. */
+  text-decoration: none;
+}
+.main-header p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--theme-text-light);    /* Texto secundario. */
+  font-family: var(--font-header);   /* Consistencia con h1-h6. */
+  position: relative;
+  z-index: 2;
+}
+/* fallback: usar color temático */
+.main-header.has-bg-image {
+  background-image: var(--header-image);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  color: var(--theme-text); /* ahora depende del tema */
+  position: relative;
+}
+
+/* overlay: diferente según el tema para evitar que el header siempre se vea oscuro */
+html.theme-dark .main-header.has-bg-image::before {
+  background: rgba(0, 0, 0, 0.45); /* oscuro para modo oscuro */
+}
+html:not(.theme-dark) .main-header.has-bg-image::before {
+  background: rgba(255, 255, 255, 0.18); /* tenue para modo claro */
+}
+
+/* si quieres conservar el text-shadow en modo oscuro */
+html.theme-dark .main-header.has-bg-image h1,
+html.theme-dark .main-header.has-bg-image p {
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+

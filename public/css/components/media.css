@@ -1,0 +1,59 @@
+
+/* --- Imágenes y Media ---------------------------------------------------- */
+.contenido img {
+  display: block;
+  margin: 1.25rem auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  max-width: 100%;
+  height: auto;
+}
+.contenido figure {
+  margin: 1.5rem 0;
+}
+.contenido figcaption {
+  color: var(--theme-text-light);
+  font-size: .9rem;
+  text-align: center;
+  margin-top: .5rem;
+}
+.imagen-destacada {
+  margin: 1rem 0 2rem;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.imagen-destacada img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Lightbox minimalista */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.88);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.lightbox-overlay.open {
+  display: flex;
+}
+.lightbox-overlay img {
+  max-width: 95vw;
+  max-height: 90vh;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.6);
+}
+.lightbox-overlay .lb-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 2rem;
+  line-height: 1;
+  background: transparent;
+  color: #fff;
+  border: 0;
+  cursor: pointer;
+}

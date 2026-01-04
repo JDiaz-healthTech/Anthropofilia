@@ -1,0 +1,11 @@
+/* --- Preferencias de Usuario --------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+
+.main-footer { grid-column: 1 / -1; }

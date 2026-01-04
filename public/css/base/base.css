@@ -1,0 +1,209 @@
+
+
+/* ========================================================================== */
+/* 🌞 TEMA CLARO ARMÓNICO (DEFAULT) – Variables Globales                      */
+/* ========================================================================== */
+:root {
+  /* Paleta: Claro Armónico (Camel, Crema, Marrón) */
+  --page-bg: #FEFAE0;        /* Fondo global de la página (body, html). */
+  --bg: #FEFAE0;             /* Alias: fondo principal. Igual a --page-bg. */
+  --fg: #4E4237;             /* Texto principal (foreground). Marrón oscuro. */
+  --muted: #7A6A53;          /* Texto secundario, metadatos, subtítulos. */
+  --border: #EAE2D1;         /* Bordes y divisores. Derivado del fondo. */
+  --card-bg: #faf3e0;        /* Fondo de tarjetas y contenedores secundarios. */
+  --home-card-bg: #ffffff;   /* Fondo de las tarjetas de posts en home. Blanco puro para destacar. */
+  --card-border: var(--border); /* Borde estándar aplicado a tarjetas. */
+
+  /* Colores de marca y enlaces */
+  --brand: #D4A373;          /* Color primario: Camel. Usado en botones, CTAs, branding. */
+  --link: var(--brand);      /* Color de los enlaces. Hereda de la marca principal. */
+  --link-visited: #967C5E;   /* Enlaces visitados: tono desaturado de Camel. */
+  --brand-hover: #A98467;    /* Estado hover de elementos brand. Marrón medio. */
+  --input-bg: #FFFFFF;       /* Fondo de campos de formulario (inputs, selects, textareas). */
+  --input-fg: var(--fg);     /* Texto dentro de los inputs. */
+
+  /* === 🎨 Aliases (compatibilidad con versiones anteriores) === */
+  --theme-bg: var(--bg);                 /* Alias: fondo global. */
+  --theme-surface: var(--card-bg);       /* Alias: superficies secundarias (cards). */
+  --theme-text: var(--fg);               /* Alias: texto principal. */
+  --theme-text-light: var(--muted);      /* Alias: texto secundario. */
+  --theme-primary: var(--brand);         /* Alias: color primario/marca. */
+  --theme-border: var(--card-border);    /* Alias: borde estándar. */
+  --theme-header-bg: var(--card-bg);     /* Fondo del header. */
+  --theme-primary-hover: var(--brand-hover); /* Hover del color primario. */
+
+  --color-bg:            var(--page-bg);
+  --color-surface:       var(--card-bg);
+  --color-text:          var(--fg);
+  --color-text-muted:    var(--muted);
+  --color-border:        var(--card-border);
+  --color-primary:       var(--brand);
+  --color-primary-hover: var(--brand-hover);
+  --color-link:          var(--link);
+  --color-link-visited:  var(--link-visited);
+
+  /* === 🔤 Tipografía === */
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+  /* Fuente base para el contenido. */
+  --font-header: -apple-system, BlinkMacSystemFont, "Segoe UI Semibold", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Fuente para headings y títulos. */
+
+  /* === 🔤 Escala tipográfica fluida === */
+  --step--1: clamp(0.88rem, 0.85rem + 0.2vw, 0.95rem); /* Tamaño menor: pequeños textos, captions. */
+  --step-0:  clamp(1.00rem, 0.95rem + 0.4vw, 1.10rem); /* Texto base (body). */
+  --step-1:  clamp(1.25rem, 1.10rem + 0.8vw, 1.40rem); /* Subtítulos, headings medios. */
+  --step-2:  clamp(1.56rem, 1.30rem + 1.2vw, 1.80rem); /* Headings grandes, títulos principales. */
+
+  /* === 🛠️ Extras === */
+  --radius: 6px;             /* Radio de border-radius para tarjetas y botones. */
+  --transition: all 0.25s ease-in-out; /* Transiciones estándar para hover/animaciones. */
+  --measure: 65ch;           /* Máxima anchura de texto para legibilidad (≈ 65 caracteres). */
+  --shadow: 0 2px 6px rgba(0,0,0,0.08); /* Sombra estándar, ligera. */
+  --shadow-soft: 0 1px 3px rgba(0,0,0,0.05); /* Sombra más suave para elementos secundarios. */
+}
+
+
+/* ========================================================================== */
+/* 🌙 TEMA OSCURO PROFESIONAL – Variables redefinidas                         */
+/* ========================================================================== */
+html.theme-dark {
+  /* Paleta: Oscuro Profesional (Gris Acero, Azul) */
+  --page-bg: #1F2937;         /* Fondo global de la página (body, html). Gris oscuro. */
+  --bg: #1F2937;              /* Alias: fondo principal. Igual que --page-bg. */
+  --fg: #E0E0E0;              /* Texto principal: gris claro, alta legibilidad. */
+  --muted: #A0AEC0;           /* Texto secundario: gris apagado, menor jerarquía. */
+  --border: #4A5A70;          /* Bordes y divisores: gris azulado, aporta profundidad. */
+  --card-bg: #2D3A4D;         /* Fondo de tarjetas/contenedores: gris acero. */
+  --card-border: var(--border); /* Bordes de tarjetas, consistente con --border. */
+  --home-card-bg: #1c2a44;    /* Fondo de tarjetas en la home: azul-gris profundo. */
+
+  /* Enlaces y colores de marca – optimizados para accesibilidad en fondo oscuro */
+  --brand: #3498DB;           /* Acento primario: azul cielo (botones, CTAs, branding). */
+  --link: #60A5FA;            /* Enlaces: azul más brillante, mayor contraste con el fondo. */
+  --link-visited: #A78BFA;    /* Enlaces visitados: lavanda, mantiene diferenciación. */
+  --brand-hover: #93C5FD;     /* Hover: azul muy claro, destaca sobre el gris oscuro. */
+  --input-bg: #2D3A4D;        /* Fondo de inputs: mismo que tarjetas para coherencia. */
+  --input-fg: var(--fg);      /* Texto en inputs: gris claro. */
+
+  /* === Aliases para compatibilidad === */
+  --theme-bg: var(--bg);                /* Fondo global. */
+  --theme-surface: var(--card-bg);      /* Superficies secundarias (cards). */
+  --theme-text: var(--fg);              /* Texto principal. */
+  --theme-text-light: var(--muted);     /* Texto secundario. */
+  --theme-primary: var(--brand);        /* Color de marca/acento. */
+  --theme-primary-hover: var(--brand-hover); /* Hover del color primario. */
+  --theme-border: var(--card-border);   /* Bordes estándar. */
+  --theme-header-bg: var(--card-bg);    /* Fondo del header. */
+
+  /* === INICIO SNIPPET styles.css — Alias canónicos (OSC.) === */
+
+  --color-bg:            var(--page-bg);
+  --color-surface:       var(--card-bg);
+  --color-text:          var(--fg);
+  --color-text-muted:    var(--muted);
+  --color-border:        var(--card-border);
+  --color-primary:       var(--brand);
+  --color-primary-hover: var(--brand-hover);
+  --color-link:          var(--link);
+  --color-link-visited:  var(--link-visited);
+}
+
+
+/* ========================================================================== */
+/* ♿ ALTO CONTRASTE – Tema Claro                                             */
+/* ========================================================================== */
+html.high-contrast:not(.theme-dark) {
+  /* Paleta: Claro Alto Contraste (Blanco, Azul Noche, Turquesa) */
+  --page-bg: #FFFFFF;         /* Fondo global: blanco puro. */
+  --bg: #FFFFFF;              /* Alias: fondo principal. */
+  --fg: #023047;              /* Texto: azul noche (menos agresivo que negro puro). */
+  --muted: var(--fg);         /* Texto secundario: mismo color que el principal para mantener contraste. */
+  --border: var(--fg);        /* Bordes y divisores: mismo azul noche, máxima visibilidad. */
+  --card-bg: #FFFFFF;         /* Fondo de tarjetas: blanco puro. */
+  --card-border: var(--fg);   /* Bordes de tarjetas: azul noche. */
+
+  /* Colores de marca y enlaces */
+  --brand: #00A896;           /* Primario: turquesa (interactivo, llamativo). */
+  --link: var(--brand);       /* Enlaces: turquesa. */
+  --link-visited: #00796B;    /* Enlaces visitados: turquesa más oscuro. */
+  --brand-hover: #F4A261;     /* Hover: naranja arena, destaca fuertemente. */
+  --input-bg: #FFFFFF;        /* Fondo de inputs: blanco puro. */
+  --input-fg: var(--fg);      /* Texto en inputs: azul noche. */
+
+  /* === Aliases para compatibilidad === */
+  --theme-bg: var(--bg);
+  --theme-surface: var(--card-bg);
+  --theme-text: var(--fg);
+  --theme-text-light: var(--fg);
+  --theme-primary: var(--brand);
+  --theme-primary-hover: var(--brand-hover);
+  --theme-border: var(--card-border);
+  --theme-header-bg: var(--card-bg);
+
+  --color-bg:            var(--page-bg);
+--color-surface:       var(--card-bg);
+--color-text:          var(--fg);
+--color-text-muted:    var(--fg);
+--color-border:        var(--card-border);
+--color-primary:       var(--brand);
+--color-primary-hover: var(--brand-hover);
+--color-link:          var(--link);
+--color-link-visited:  var(--link-visited);
+}
+
+/* ========================================================================== */
+/* ♿ ALTO CONTRASTE – Tema Oscuro                                            */
+/* ========================================================================== */
+html.theme-dark.high-contrast {
+  /* Paleta: Oscuro Alto Contraste (Negro Profundo, Amarillo Vistoso) */
+  --page-bg: #121212;         /* Fondo global: negro profundo (no #000 para reducir fatiga visual). */
+  --bg: #121212;              /* Alias: fondo principal. */
+  --fg: #F5F5F5;              /* Texto principal: blanco roto, más cómodo que #FFF puro. */
+  --muted: var(--fg);         /* Texto secundario: mismo que el principal, asegura contraste. */
+
+  /* Colores de marca (enfocados en acción y atención) */
+  --brand: #FFC700;           /* Primario: amarillo vistoso para resaltar elementos clave. */
+  --border: var(--brand);     /* Bordes: amarillo, siempre visibles. */
+  --link: var(--brand);       /* Enlaces: amarillo (muy notorio). */
+  --link-visited: var(--brand); /* Enlaces visitados: mismo amarillo (en este esquema no cambia). */
+  --card-bg: #121212;         /* Fondo de tarjetas: igual al fondo global. */
+  --card-border: var(--brand); /* Bordes de tarjetas: amarillo. */
+  --input-bg: #121212;        /* Fondo de inputs: negro profundo. */
+  --input-fg: var(--brand);   /* Texto en inputs: amarillo, garantiza visibilidad. */
+  --brand-hover: #FFEE32;     /* Hover: amarillo limón, aún más brillante. */
+
+  /* === Aliases para compatibilidad === */
+  --theme-bg: var(--bg);
+  --theme-surface: var(--card-bg);
+  --theme-text: var(--fg);
+  --theme-text-light: var(--fg);
+  --theme-primary: var(--brand);
+  --theme-primary-hover: var(--brand-hover);
+  --theme-border: var(--card-border);
+  --theme-header-bg: var(--card-bg);
+
+  --color-bg:            var(--page-bg);
+  --color-surface:       var(--card-bg);
+  --color-text:          var(--fg);
+  --color-text-muted:    var(--fg);
+  --color-border:        var(--card-border);
+  --color-primary:       var(--brand);
+  --color-primary-hover: var(--brand-hover);
+  --color-link:          var(--link);
+  --color-link-visited:  var(--link-visited);
+
+}
+
+/* Ajuste base de tamaño */
+html {
+  font-size: calc(100% * var(--font-zoom, 1));
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: calc(16px * var(--font-zoom, 1));
+}
+body {
+  color: var(--theme-text);
+  background: var(--page-bg);
+}

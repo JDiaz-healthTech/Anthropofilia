@@ -1,0 +1,119 @@
+
+/* --- Navegación ---------------------------------------------------------- */
+.main-nav {
+  display: flex;
+  justify-content: center;
+  background: var(--theme-surface);
+  border-bottom: 1px solid var(--theme-border);
+  padding: 0 1rem;
+  flex-wrap: wrap;                     /* Permite salto en pantallas estrechas. */
+}
+.main-nav a {
+  padding: 0.75rem 1rem;
+  font-family: var(--font-header);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 3px solid transparent; /* Subrayado animado en hover/activo. */
+  color: var(--theme-text);             /* Texto de enlaces por defecto. */
+}
+.main-nav a:hover, .main-nav a.active {
+  color: var(--theme-text);
+  border-bottom-color: var(--theme-primary); /* Activo/hover: subrayado primario. */
+  background: none;                          /* No relleno de fondo. */
+}
+
+/* === NAVEGACIÓN MÓVIL === */
+.mobile-nav-toggle {
+  --size: 40px;                         /* Tamaño cuadrado del botón. */
+  --bar-h: 2px;                         /* Grosor de las barras del icono. */
+  --gap: 6px;                           /* Espacio entre barras. */
+  --anim: .22s ease-in-out;             /* Duración/curva de animación. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size);
+  height: var(--size);
+  border: 1px solid var(--theme-border);
+  background: var(--theme-surface);
+  border-radius: 8px;
+  padding: 0;
+  cursor: pointer;
+  line-height: 1;
+}
+.mobile-nav-toggle:focus {
+  outline: 2px solid var(--theme-primary);
+  outline-offset: 2px;
+}
+.hamburger-icon {
+  position: relative;
+  width: 22px;
+  height: calc(var(--bar-h) * 3 + var(--gap) * 2); /* Altura dinámica según gap y barras. */
+  display: inline-block;
+}
+.hamburger-icon::before,
+.hamburger-icon::after,
+.hamburger-icon span {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--bar-h);
+  background: currentColor; /* Usa el color actual del texto. */
+  border-radius: 2px;
+  transition: transform var(--anim), opacity var(--anim), top var(--anim), bottom var(--anim);
+}
+.hamburger-icon span { top: calc(var(--bar-h) + var(--gap)); } /* Barra central. */
+.hamburger-icon::before { top: 0; }   /* Barra superior. */
+.hamburger-icon::after { bottom: 0; } /* Barra inferior. */
+
+/* Estado abierto → se convierte en "X" */
+.mobile-nav-toggle.is-open .hamburger-icon::before {
+  top: calc(var(--bar-h) + var(--gap));
+  transform: rotate(45deg);
+}
+.mobile-nav-toggle.is-open .hamburger-icon::after {
+  bottom: auto;
+  top: calc(var(--bar-h) + var(--gap));
+  transform: rotate(-45deg);
+}
+.mobile-nav-toggle.is-open .hamburger-icon span {
+  opacity: 0; /* Barra central desaparece. */
+}
+
+/* Responsive de navegación */
+@media (max-width: 880px) {
+  .main-nav-links { display: none; }
+  .main-nav-links.active { display: block; }
+  .main-nav-links a { display: block; padding: .6rem 0; }
+  .mobile-nav-toggle { display: inline-flex; }
+}
+@media (min-width: 881px) {
+  .mobile-nav-toggle { display: none; } /* Oculta botón en pantallas grandes. */
+}
+
+
+
+
+
+/* Post navigation */
+.post-navigation {
+  display: block;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ddd;
+  clear: both;
+}
+
+.btn-volver {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--brand, #0645ad);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.btn-volver:hover {
+  opacity: 0.85;
+}
+

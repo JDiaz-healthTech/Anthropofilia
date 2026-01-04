@@ -1,0 +1,47 @@
+.post-card {
+  border: 1px solid var(--theme-border);
+  
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 1.2rem;
+  background: var(--theme-surface);
+  transition: var(--transition); /* <-- FUSIÓN: Añadimos la transición para un hover más suave */
+}
+.post-card h2 {
+  margin-top: 0;
+}
+.post-card h2 a {
+  text-decoration: none;
+}
+.post-card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px); /* <-- FUSIÓN: Pequeño efecto de elevación al pasar el ratón */
+}
+.post-meta {
+  display: block;
+  font-family: var(--font-header);
+  font-size: 0.9rem;
+  color: var(--theme-text-light);
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--theme-border);
+  padding-bottom: 1rem;
+}
+.single-post-content {
+  max-width: var(--measure);
+  margin-inline: auto;
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+
+/* --- Estilo específico para las tarjetas de la Home --- */
+.home-list .post-card {
+  background-color: var(--home-card-bg); /* Fondo de las tarjetas de posts del home (usa blanco puro). */
+}
+/* Hover en modo alto contraste oscuro para máxima claridad */
+html.theme-dark.high-contrast button:hover,
+html.theme-dark.high-contrast .btn:hover {
+    background-color: var(--brand); /* Fondo amarillo (resalta acción). */
+    color: #121212;                /* Texto en hover: negro profundo, contraste máximo. */
+    border-color: var(--brand);    /* Bordes permanecen amarillos. */
+}

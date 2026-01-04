@@ -1,0 +1,27 @@
+
+/* --- Controles de Accesibilidad ----------------------------------------- */
+.accessibility-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto; /* <-- FUSIÓN: Pequeño ajuste para alinearlo a la derecha si está en la barra de nav */
+  padding-right: 1rem;
+}
+.accessibility-button {
+  background: transparent;
+  border: 1px solid var(--theme-border);
+  color: var(--theme-text-light);
+  font-family: var(--font-header);
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.accessibility-button:hover {
+  background: var(--theme-header-bg);
+  color: var(--theme-text);
+  border-color: var(--theme-text);
+}
+

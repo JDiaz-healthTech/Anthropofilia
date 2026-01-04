@@ -354,50 +354,52 @@ final class SecurityManager
     /* =========
        Sanitización HTML
        ========= */
-
-    public function sanitizeHTML(string $html): string
+public function sanitizeHTML(string $html): string
     {
+        // Al haber instalado la librería con Composer, esto siempre será true
         if (class_exists(\HTMLPurifier::class)) {
+            
+            // 1. Configuración base
             $config = \HTMLPurifier_Config::createDefault();
+
+            // 2. Caché (Vital para el rendimiento)
             $cachePath = defined('BASE_PATH') ? BASE_PATH . '/storage/cache' : sys_get_temp_dir();
+            if (!is_dir($cachePath)) {
+                mkdir($cachePath, 0755, true);
+            }
             $config->set('Cache.SerializerPath', $cachePath);
-            $config->set('URI.AllowedSchemes', ['http' => true, 'https' => true, 'mailto' => true, 'data' => true]);
+
+            // 3. TUS PREFERENCIAS (Aquí recuperamos lo que tenías)
+            
+            // Permitir 'data' para imágenes en base64 y mailto
+            $config->set('URI.AllowedSchemes', [
+                'http' => true, 
+                'https' => true, 
+                'mailto' => true, 
+                'data' => true
+            ]);
+
+            // Tu lista exacta de etiquetas permitidas (tablas, código, citas, etc.)
             $config->set(
                 'HTML.Allowed',
                 'p,br,strong,em,ul,ol,li,blockquote,a[href|title|target|rel],img[src|alt|title|width|height],h2,h3,code,pre,table,thead,tbody,tr,th,td'
             );
+
+            // Permitir que los enlaces se abran en nueva pestaña
             $config->set('Attr.AllowedFrameTargets', ['_blank']);
+            
+            // Opcional: Si quieres FORZAR que todos los enlaces externos se abran en _blank
+            // $config->set('HTML.TargetBlank', true); 
+
+            // 4. Limpieza y retorno
             $purifier = new \HTMLPurifier($config);
             return $purifier->purify($html);
         }
 
-        // Fallback sencillo
-        $allowed = '<p><br><strong><em><ul><ol><li><blockquote><a><img><h2><h3><code><pre>';
-        $clean = strip_tags($html, $allowed);
-
-        $clean = (string)preg_replace_callback('/<(a|img)\s+[^>]*>/i', function ($m) {
-            $tag = strtolower($m[1]);
-            if ($tag === 'a') {
-                if (preg_match('/href\s*=\s*([\'"])(.*?)\1/i', $m[0], $href)) {
-                    $safe = htmlspecialchars($href[2], ENT_QUOTES, 'UTF-8');
-                    return '<a href="' . $safe . '" target="_blank" rel="noopener noreferrer">';
-                }
-                return '<a>';
-            }
-            if ($tag === 'img') {
-                $src = '';
-                $alt = '';
-                if (preg_match('/src\s*=\s*([\'"])(.*?)\1/i', $m[0], $m1)) $src = htmlspecialchars($m1[2], ENT_QUOTES, 'UTF-8');
-                if (preg_match('/alt\s*=\s*([\'"])(.*?)\1/i', $m[0], $m2)) $alt = htmlspecialchars($m2[2], ENT_QUOTES, 'UTF-8');
-                if ($src) return '<img src="' . $src . '" alt="' . $alt . '" style="max-width:100%;height:auto;">';
-                return '';
-            }
-            return $m[0];
-        }, $clean);
-
-        return $clean;
+        // Si llegamos aquí, es que Composer falló o se borró la carpeta vendor.
+        // Lanzamos error para no guardar datos inseguros sin darnos cuenta.
+        throw new \RuntimeException('HTMLPurifier no está instalado. Ejecuta: docker compose run --rm composer install');
     }
-
     /* =========
        Uploads
        ========= */

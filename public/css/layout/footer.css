@@ -1,0 +1,13 @@
+/* --- Footer -------------------------------------------------------------- */
+.main-footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: var(--theme-header-bg);
+  color: var(--theme-text-light);
+  margin-top: 2rem;
+  border-top: 1px solid var(--theme-border);
+  font-family: var(--font-header);
+}
+.main-footer a {
+  color: var(--theme-primary);
+}

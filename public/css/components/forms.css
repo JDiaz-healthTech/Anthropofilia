@@ -1,0 +1,101 @@
+
+/* --- Formularios --------------------------------------------------------- */
+.form-container, form {
+  border: 1px solid var(--theme-border);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  background-color: var(--theme-surface); /* <-- FUSIÓN: Aseguramos un fondo explícito */
+}
+.form-container div, form div {
+  margin-bottom: 1rem;
+}
+.form-container label, form label {
+  display: block;
+  margin-bottom: .5rem;
+  font-weight: 600;
+  font-family: var(--font-header);
+}
+
+/* POR estas líneas más específicas: */
+input, select, button {
+  font: inherit;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Textarea solo dentro de formularios, no afecta TinyMCE */
+.form-container textarea,
+form textarea:not([id*="mce"]) {
+  font: inherit;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Asegurar que TinyMCE tenga espacio para trabajar */
+.tox-tinymce {
+  width: 100% !important;
+}
+
+/* Evitar que otros estilos interfieran con TinyMCE */
+.tox-tinymce,
+.tox-tinymce * {
+  box-sizing: content-box;
+}
+
+/* Restaurar box-sizing para el contenido del editor */
+.tox-edit-area * {
+  box-sizing: border-box;
+}
+.form-container input[type="text"],
+.form-container input[type="url"],
+.form-container input[type="password"],
+.form-container input[type="email"],
+.form-container input[type="search"],
+.form-container input[type="file"],
+.form-container select,
+.form-container textarea,
+input, textarea, select {
+  padding: .6rem .7rem;
+  border: 1px solid var(--theme-border);
+  border-radius: var(--radius);
+  background: var(--input-bg);
+  color: var(--input-fg);
+  transition: var(--transition);
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+.form-container input:focus,
+.form-container select:focus,
+.form-container textarea:focus,
+input:focus, textarea:focus, select:focus { /* <-- FUSIÓN: Aplicamos el :focus a los inputs genéricos también */
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 3px rgba(0, 89, 153, 0.2);
+  outline: none;
+}
+.button, .form-container button, button, .btn, input[type=submit] {
+  padding: .6rem 1.2rem;
+  border: 1px solid var(--brand);
+  border-radius: var(--radius);
+  background: var(--brand);
+  color: #ffffff;
+  font-family: var(--font-header);
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: var(--transition);
+  min-height: 44px; /* <-- FUSIÓN: Mantenemos el mínimo táctil de Archivo 2 */
+}
+.button:hover, .form-container button:hover, button:hover, .btn:hover, input[type=submit]:hover {
+  background: var(--theme-primary-hover);
+  border-color: var(--theme-primary-hover);
+  color: #ffffff;
+  text-decoration: none;
+}
+@media (min-width: 720px) {
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .8rem;
+  }
+}
