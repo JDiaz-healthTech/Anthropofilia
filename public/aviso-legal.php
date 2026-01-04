@@ -3,7 +3,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/init.php';
 $page_title = 'Aviso Legal';
   $categoria = null; // para migas condicionales
-  require_once __DIR__.'/header.php';
+require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 <main class="container">
 
@@ -35,4 +35,4 @@ $page_title = 'Aviso Legal';
   <p>Para cualquier consulta, puedes escribir a <a href="mailto:analosampedro@gmail.com">analosampedro@gmail.com</a>.</p>
 </main>
 
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>

@@ -20,7 +20,7 @@ $messages = [
     'blocked'         => 'Demasiados intentos. Inténtalo más tarde.',
 ];
   $categoria = null; // para migas condicionales
-  require_once __DIR__.'/header.php';
+require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 <main class="container" id="content">
   <h2>Acceso al Panel</h2>
@@ -71,4 +71,4 @@ $messages = [
   <p class="help-text">¿Problemas para acceder? Contacta con el administrador.</p>
 </main>
 
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>

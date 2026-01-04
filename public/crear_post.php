@@ -29,7 +29,7 @@ try {
 $needsTinymce = true; //Gestiona que incluyo tinyMCE
 $page_title = 'Crear Nuevo Post';
 $categoria = null; // para migas condicionales
-require_once __DIR__ . '/header.php';
+require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 <main class="container">
 
@@ -238,4 +238,4 @@ if (document.readyState === 'loading') {
 
     <?php endif; ?>
 
-    <?php require_once __DIR__ . '/footer.php'; ?>
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>

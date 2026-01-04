@@ -38,7 +38,7 @@ try {
 
 $page_title = 'Editar Página';
   $categoria = null; // para migas condicionales
-  require_once __DIR__.'/header.php';
+require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 <main class="container">
 
@@ -89,7 +89,7 @@ $page_title = 'Editar Página';
     </div>
   </form>
 </main>
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>
 
 <!-- Auto-slug opcional (no sustituye normalización server-side) -->
 <script>

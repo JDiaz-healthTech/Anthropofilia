@@ -17,7 +17,7 @@ if (mb_strlen($q) > 120) { // límite defensivo
 // Título y meta
 $page_title = 'Resultados para: ' . $q;
 $meta_description = 'Resultados de búsqueda para "' . $q . '" en Anthropofilia.';
-require_once __DIR__ . '/header.php';
+require_once BASE_PATH . '/resources/views/partials/header.php';
 
 // 2) Preparar LIKE escapando comodines (% y _)
 $like = '%' . str_replace(['\\','%','_'], ['\\\\','\\%','\\_'], $q) . '%';
@@ -148,4 +148,4 @@ function post_link(array $p): string {
 <div style="clear:both"></div>
 
 
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>

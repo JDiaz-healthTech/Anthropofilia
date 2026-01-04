@@ -1,15 +1,21 @@
 version: '3.8'
 
 services:
-  # --- Tu Web (PHP + Apache) ---
+  # --- Aplicación Web (PHP + Apache) ---
   web:
-    build: .
+    build:
+      context: ..
+      dockerfile: ops/docker/Dockerfile
     ports:
       - "8080:80"
     volumes:
-      - .:/var/www/html # Sincroniza tus cambios al instante
+      # Monta todo el proyecto
+      - ..:/var/www/html
     depends_on:
       - db
+    environment:
+      # Las variables se cargan del .env, pero podemos setear algunas aquí
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
     networks:
       - anthropo-net
 
@@ -18,17 +24,15 @@ services:
     image: mariadb:10.4
     restart: always
     environment:
-      # Contraseña maestra (para emergencias)
       MYSQL_ROOT_PASSWORD: root
-      
-      # AQUÍ ESTÁ LA MAGIA: Docker crea esto usando tus datos del .env
       MYSQL_DATABASE: blogdb
       MYSQL_USER: blogmaster
       MYSQL_PASSWORD: juliusDev2025
     volumes:
       - db_data:/var/lib/mysql
-      # Importante: Asegúrate que tu archivo SQL se llame así
-      - ./blogdb.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../database/blogdb.sql:/docker-entrypoint-initdb.d/init.sql
+      # Si tienes un SQL de inicialización:
+      # - ../database/schema.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - anthropo-net
 
@@ -39,8 +43,7 @@ services:
       - "8081:80"
     environment:
       PMA_HOST: db
-      # Para entrar a phpMyAdmin usa: blogmaster / juliusDev2025
-      MYSQL_ROOT_PASSWORD: root 
+      MYSQL_ROOT_PASSWORD: root
       UPLOAD_LIMIT: 64M
     depends_on:
       - db

@@ -17,7 +17,7 @@ $messages = [
 $page_title = 'Contacto';
 $meta_description = 'Formulario de contacto para consultas y sugerencias.';
   $categoria = null; // para migas condicionales
-  require_once __DIR__.'/header.php';
+require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 <main class="container">
 
@@ -85,7 +85,7 @@ $meta_description = 'Formulario de contacto para consultas y sugerencias.';
     <button type="submit">Enviar mensaje</button>
   </form>
 </main>
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>
 
 <?php
 // Limpiar datos del formulario después de renderizar

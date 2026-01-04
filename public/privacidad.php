@@ -3,7 +3,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/init.php';
 $page_title = 'Política de Privacidad';
   $categoria = null; // para migas condicionales
-  require_once __DIR__.'/header.php';
+require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 <main class="container">
 
@@ -40,4 +40,4 @@ $page_title = 'Política de Privacidad';
   <p>Responsable del tratamiento: Anthropofilia – Editora Ana López Sampedro.</p>
 </main>
 
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>

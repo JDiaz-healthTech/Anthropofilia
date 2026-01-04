@@ -25,9 +25,9 @@ try {
     if (!$categoria) {
         http_response_code(404);
         $page_title = 'Categoría no encontrada';
-        require_once __DIR__ . '/header.php';
+        require_once BASE_PATH . '/resources/views/partials/header.php';
         echo '<main class="container"><h1>Categoría no encontrada</h1><p>La categoría solicitada no existe.</p></main>';
-        require_once __DIR__ . '/footer.php';
+        require_once BASE_PATH . '/resources/views/partials/footer.php';
         exit();
     }
 
@@ -60,7 +60,7 @@ try {
 $page_title = 'Categoría: ' . ($categoria['nombre_categoria'] ?? '');
 $meta_description = 'Entradas de la categoría ' . ($categoria['nombre_categoria'] ?? '');
 
-require_once __DIR__.'/header.php';
+require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 <main class="container">
   <nav class="breadcrumbs" aria-label="Breadcrumbs">
@@ -111,4 +111,4 @@ require_once __DIR__.'/header.php';
   <?php endif; ?>
 </main>
 
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>

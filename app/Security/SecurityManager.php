@@ -1,7 +1,6 @@
 <?php
-
 /**
- * security_manager.php
+ * SecurityManager.php
  * Gestor de seguridad para Anthropofilia
  *
  * Requisitos:
@@ -9,49 +8,45 @@
  * - PDO configurado (MySQL/MariaDB)
  * - Composer autoload (opcional: HTMLPurifier)
  */
-
 declare(strict_types=1);
 
-namespace App;
+namespace App\Security;
 
-use PDO;                // ✅ evitar App\PDO
+use PDO;
 use PDOException;
 use RuntimeException;
 
 final class SecurityManager
 {
-
     private ?PDO $pdo = null;
 
     /** @var array<string,mixed> */
     private array $config = [
-
         'env' => 'prod',
 
         // Sesión
-        'session_name'        => 'anth_session',
+        'session_name'         => 'anth_session',
         'session_idle_timeout' => 1800, // 30 min
         'session_rotate_every' => 600,  // 10 min
-        'trust_proxy'         => false, // si estás detrás de proxy, ponlo a true
-        // 'cookie_domain'     => null, // puedes fijarlo si lo necesitas
+        'trust_proxy'          => false,
 
         // Rate limit
         'rate_limit' => [
             'enabled' => true,
-            'general' => ['max' => 120, 'window' => 3600], // 120 req/h
-            'post'    => ['max' => 30,  'window' => 3600], // 30 POST/h
+            'general' => ['max' => 120, 'window' => 3600],
+            'post'    => ['max' => 30,  'window' => 3600],
         ],
 
         // CSP
         'csp' => [
-            'tinymce_cdn'       => 'https://cdn.tiny.cloud',
-            'extra_script_src'  => ['https://cdn.jsdelivr.net'],
-            'allow_unsafe_inline' => false, // si lo pones a false, se usará nonce
+            'tinymce_cdn'         => 'https://cdn.tiny.cloud',
+            'extra_script_src'    => ['https://cdn.jsdelivr.net'],
+            'allow_unsafe_inline' => false,
         ],
 
         // Uploads
         'uploads' => [
-            'max_size_bytes' => 2 * 1024 * 1024, // 2MB
+            'max_size_bytes' => 2 * 1024 * 1024,
             'allowed_mime'   => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
             'max_pixels'     => 1600,
         ],
@@ -110,13 +105,43 @@ final class SecurityManager
         return $this->hasRole('admin');
     }
 
-    /** Permite dueño o roles dados; si no, 403 */
     public function requireOwnershipOrRole(?int $ownerId, array $allowedRoles = ['admin']): void
     {
         $uid = $this->userId();
         if ($ownerId !== null && $uid === $ownerId) return;
         foreach ($allowedRoles as $r) if ($this->hasRole($r)) return;
         $this->abort(403, 'Acceso denegado.');
+    }
+
+    /* ==============
+       CSRF
+       ============== */
+
+    public function csrfToken(): string
+    {
+        $this->startSecureSession();
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+
+    public function csrfField(): string
+    {
+        return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars($this->csrfToken(), ENT_QUOTES, 'UTF-8') . '">';
+    }
+
+    public function verifyCsrf(?string $token = null): bool
+    {
+        $token = $token ?? $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+        return hash_equals($this->csrfToken(), $token);
+    }
+
+    public function requireValidCsrf(): void
+    {
+        if (!$this->verifyCsrf()) {
+            $this->abort(403, 'Token CSRF inválido.');
+        }
     }
 
     /* ==============
@@ -220,81 +245,45 @@ final class SecurityManager
         if (!empty($this->config['csp']['tinymce_cdn'])) {
             $cdn = (string)$this->config['csp']['tinymce_cdn'];
             $scriptSrc[]  = $cdn;
-            $styleSrc[]   = $cdn;  // ← ESTA LÍNEA FALTABA
+            $styleSrc[]   = $cdn;
             $connectSrc[] = $cdn;
-            $fontSrc[]    = $cdn;  // ← OPCIONAL: por si TinyMCE usa fuentes
+            $fontSrc[]    = $cdn;
         }
 
         if (!empty($this->config['csp']['extra_script_src'])) {
-            foreach ($this->config['csp']['extra_script_src'] as $u) {
-                $scriptSrc[] = (string)$u;
+            foreach ((array)$this->config['csp']['extra_script_src'] as $src) {
+                $scriptSrc[] = $src;
             }
         }
 
-        if (!empty($this->config['csp']['allow_unsafe_inline'])) {
+        $allowInline = !empty($this->config['csp']['allow_unsafe_inline']);
+        if ($allowInline) {
             $scriptSrc[] = "'unsafe-inline'";
             $styleSrc[]  = "'unsafe-inline'";
         } else {
-            // si desactivas inline, añade nonce
-            $scriptSrc[] = "'nonce-" . $this->cspNonce() . "'";
+            $nonce = $this->cspNonce();
+            $scriptSrc[] = "'nonce-{$nonce}'";
+            $styleSrc[]  = "'nonce-{$nonce}'";
         }
 
         $csp = sprintf(
-            "default-src 'self'; script-src %s; style-src %s; img-src %s; font-src %s; connect-src %s; frame-ancestors %s;",
-            implode(' ', array_unique($scriptSrc)),
-            implode(' ', array_unique($styleSrc)),
-            implode(' ', array_unique($imgSrc)),
-            implode(' ', array_unique($fontSrc)),
-            implode(' ', array_unique($connectSrc)),
-            implode(' ', array_unique($frameAnc))
+            "default-src 'self'; script-src %s; style-src %s; img-src %s; font-src %s; connect-src %s; frame-ancestors %s; base-uri 'self'; form-action 'self'",
+            implode(' ', $scriptSrc),
+            implode(' ', $styleSrc),
+            implode(' ', $imgSrc),
+            implode(' ', $fontSrc),
+            implode(' ', $connectSrc),
+            implode(' ', $frameAnc)
         );
-        header("Content-Security-Policy: $csp");
+
+        header('Content-Security-Policy: ' . $csp);
     }
 
     /* =========
-       CSRF
+       Rate Limiting
        ========= */
 
-    public function csrfToken(): string
-    {
-        $this->startSecureSession();
-        if (empty($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-            $_SESSION['csrf_time']  = time();
-        }
-        return $_SESSION['csrf_token'];
-    }
-
-    /** Valida y rota token; TTL por defecto 2h */
-    public function csrfValidate(?string $token, int $ttlSeconds = 7200): void
-    {
-        $this->startSecureSession();
-        $stored = $_SESSION['csrf_token'] ?? null;
-        $t      = (int)($_SESSION['csrf_time'] ?? 0);
-
-        $ok = $token && $stored && hash_equals((string)$stored, (string)$token)
-            && ($ttlSeconds <= 0 || (time() - $t) <= $ttlSeconds);
-
-        if (!$ok) {
-            $this->logEvent('security', 'csrf_invalid', ['uri' => $_SERVER['REQUEST_URI'] ?? '']);
-            $this->abort(419, 'CSRF inválido o caducado.');
-        }
-
-        unset($_SESSION['csrf_token'], $_SESSION['csrf_time']); // rotación
-    }
-
-    /** Helper para vistas */
-    public function csrfField(): string
-    {
-        return '<input type="hidden" name="csrf_token" value="' .
-            htmlspecialchars($this->csrfToken(), ENT_QUOTES, 'UTF-8') . '">';
-    }
-
-    /* =========
-       Rate limiting
-       ========= */
-
-    private function enforceRateLimits(): void
+    public function enforceRateLimits(): void
     {
         if (empty($this->config['rate_limit']['enabled'])) return;
 
@@ -318,39 +307,39 @@ final class SecurityManager
         $ip = $this->clientIP();
 
         if ($this->pdo) {
-            // Limpieza: fuera de la ventana
-            $threshold = date('Y-m-d H:i:s', time() - $windowSeconds);
-            $del = $this->pdo->prepare("DELETE FROM rate_limits WHERE ts < :threshold");
-            $del->execute([':threshold' => $threshold]);
+            try {
+                $threshold = date('Y-m-d H:i:s', time() - $windowSeconds);
+                $del = $this->pdo->prepare("DELETE FROM rate_limits WHERE ts < :threshold");
+                $del->execute([':threshold' => $threshold]);
 
-            // Bucket al minuto (ajusta 60-> tu ventana si quieres)
-            $bucketSql = "FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(NOW())/60)*60)";
+                $bucketSql = "FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(NOW())/60)*60)";
 
-            // Inserta/acumula
-            $sql = "INSERT INTO rate_limits (action, ip, bucket_start, hits)
-                VALUES (:a, :ip, $bucketSql, 1)
-                ON DUPLICATE KEY UPDATE hits = hits + 1, ts = NOW()";
-            $ins = $this->pdo->prepare($sql);
-            $ins->execute([':a' => $action, ':ip' => $ip]);
+                $sql = "INSERT INTO rate_limits (action, ip, bucket_start, hits)
+                    VALUES (:a, :ip, $bucketSql, 1)
+                    ON DUPLICATE KEY UPDATE hits = hits + 1, ts = NOW()";
+                $ins = $this->pdo->prepare($sql);
+                $ins->execute([':a' => $action, ':ip' => $ip]);
 
-            // Cuenta dentro de la ventana (suma de hits)
-            $sel = $this->pdo->prepare(
-                "SELECT COALESCE(SUM(hits),0)
-             FROM rate_limits
-             WHERE action = :a AND ip = :ip AND ts >= :threshold"
-            );
-            $sel->execute([':a' => $action, ':ip' => $ip, ':threshold' => $threshold]);
-            $count = (int)$sel->fetchColumn();
+                $sel = $this->pdo->prepare(
+                    "SELECT COALESCE(SUM(hits),0)
+                     FROM rate_limits
+                     WHERE action = :a AND ip = :ip AND ts >= :threshold"
+                );
+                $sel->execute([':a' => $action, ':ip' => $ip, ':threshold' => $threshold]);
+                $count = (int)$sel->fetchColumn();
 
-            if ($count >= $maxAttempts) {
-                http_response_code(429);
-                exit('Demasiadas solicitudes. Intenta más tarde.');
+                if ($count >= $maxAttempts) {
+                    http_response_code(429);
+                    exit('Demasiadas solicitudes. Intenta más tarde.');
+                }
+                return;
+            } catch (PDOException $e) {
+                // Si la tabla no existe, usar fallback en sesión
             }
-            return;
         }
 
-        // Fallback en sesión (tu bloque actual está bien)
-        $key    = sprintf('rl_%s_%s', $action, bin2hex($ip));
+        // Fallback en sesión
+        $key    = sprintf('rl_%s_%s', $action, md5($ip));
         $bucket = $_SESSION[$key] ?? [];
         $now    = time();
         $bucket = array_filter($bucket, fn($ts) => ($now - (int)$ts) < $windowSeconds);
@@ -370,7 +359,8 @@ final class SecurityManager
     {
         if (class_exists(\HTMLPurifier::class)) {
             $config = \HTMLPurifier_Config::createDefault();
-            $config->set('Cache.SerializerPath', __DIR__ . '/cache');
+            $cachePath = defined('BASE_PATH') ? BASE_PATH . '/storage/cache' : sys_get_temp_dir();
+            $config->set('Cache.SerializerPath', $cachePath);
             $config->set('URI.AllowedSchemes', ['http' => true, 'https' => true, 'mailto' => true, 'data' => true]);
             $config->set(
                 'HTML.Allowed',
@@ -412,7 +402,6 @@ final class SecurityManager
        Uploads
        ========= */
 
-    /** @param array $file uno de $_FILES[...] */
     public function validateUpload(array $file): void
     {
         if (!isset($file['error']) || is_array($file['error'])) {
@@ -463,7 +452,6 @@ final class SecurityManager
        Logging y helpers
        ========= */
 
-    /** @param 'info'|'warning'|'error'|'security' $level */
     public function logEvent(string $level, string $event, array $details = []): void
     {
         $ip = $this->clientIP();
@@ -471,32 +459,37 @@ final class SecurityManager
         $uid = $this->userId();
 
         if ($this->pdo) {
-            $stmt = $this->pdo->prepare(
-                "INSERT INTO app_logs (ip,user_id,level,event,details,user_agent)
-                 VALUES (:ip,:uid,:lvl,:ev,:det,:ua)"
-            );
-            $stmt->execute([
-                ':ip'  => $ip,
-                ':uid' => $uid,
-                ':lvl' => $level,
-                ':ev'  => $event,
-                ':det' => json_encode($details, JSON_UNESCAPED_UNICODE),
-                ':ua'  => $ua,
-            ]);
-        } else {
-            error_log('APP_LOG ' . json_encode([
-                'ts' => date('c'),
-                'ip' => bin2hex($ip),
-                'user_id' => $uid,
-                'level' => $level,
-                'event' => $event,
-                'details' => $details,
-                'ua' => $ua
-            ], JSON_UNESCAPED_UNICODE));
+            try {
+                $stmt = $this->pdo->prepare(
+                    "INSERT INTO app_logs (ip,user_id,level,event,details,user_agent)
+                     VALUES (:ip,:uid,:lvl,:ev,:det,:ua)"
+                );
+                $stmt->execute([
+                    ':ip'  => $ip,
+                    ':uid' => $uid,
+                    ':lvl' => $level,
+                    ':ev'  => $event,
+                    ':det' => json_encode($details, JSON_UNESCAPED_UNICODE),
+                    ':ua'  => $ua,
+                ]);
+                return;
+            } catch (PDOException $e) {
+                // Si la tabla no existe, usar error_log
+            }
         }
+
+        error_log('APP_LOG ' . json_encode([
+            'ts' => date('c'),
+            'ip' => $ip,
+            'user_id' => $uid,
+            'level' => $level,
+            'event' => $event,
+            'details' => $details,
+            'ua' => $ua
+        ], JSON_UNESCAPED_UNICODE));
     }
 
-    public function abort(int $statusCode, string $message = 'Error'): void
+    public function abort(int $statusCode, string $message = 'Error'): never
     {
         http_response_code($statusCode);
         echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');

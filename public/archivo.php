@@ -19,7 +19,7 @@ $mesNombre = $meses[$mes];
 $page_title = "Archivo: {$mesNombre} {$anio}";
 $meta_description = "Entradas publicadas en {$mesNombre} de {$anio}."; // si tu header lo usa
   $categoria = null; // para migas condicionales
-  require_once __DIR__.'/header.php';
+require_once BASE_PATH . '/resources/views/partials/header.php';
 
 // 3) Paginación básica
 $perPage = 10;
@@ -92,4 +92,4 @@ try {
   <?php endif; ?>
 </main>
 
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>

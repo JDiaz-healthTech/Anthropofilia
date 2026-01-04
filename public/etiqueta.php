@@ -26,7 +26,7 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Título dinámico para la página
 $page_title = 'Mostrando posts con la etiqueta: ' . htmlspecialchars($nombre_etiqueta);
-require_once 'header.php';
+require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 
 <main>
@@ -51,6 +51,6 @@ require_once 'header.php';
 
 <?php
 // Incluimos el sidebar y el footer
-require_once 'sidebar.php';
-require_once 'footer.php';
+require_once BASE_PATH . '/resources/views/partials/sidebar.php';
+require_once BASE_PATH . '/resources/views/partials/footer.php';
 ?>

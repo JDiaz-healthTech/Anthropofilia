@@ -64,7 +64,7 @@ if (isset($_GET['msg'])) {
 
 $page_title = 'Gestionar Posts';
   $categoria = null; // para migas condicionales
-  require_once __DIR__.'/header.php';
+require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 <main>
 
@@ -155,4 +155,4 @@ $page_title = 'Gestionar Posts';
     <?php endif; ?>
 </main>
 
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>

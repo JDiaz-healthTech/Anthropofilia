@@ -1,81 +1,74 @@
 <?php
+/**
+ * init.php - Bootstrap de la aplicación
+ * 
+ * Este archivo está en /public y carga recursos de la raíz del proyecto.
+ * PUBLIC_PATH = /var/www/html/public (donde está este archivo)
+ * BASE_PATH   = /var/www/html (raíz del proyecto, un nivel arriba)
+ */
 declare(strict_types=1);
-// Manejo avanzado de errores y excepciones en PHP Durante desarrollo
-// 🔹 Mostrar todos los errores y warnings
+
+// ============================================================
+// CONSTANTES DE RUTAS
+// ============================================================
+define('PUBLIC_PATH', __DIR__);
+define('BASE_PATH', dirname(__DIR__));
+
+// ============================================================
+// MANEJO DE ERRORES (Desarrollo)
+// ============================================================
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
-// 🔹 Forzar salida inmediata si hay error fatal
 register_shutdown_function(function () {
     $error = error_get_last();
-    if ($error !== null) {
+    if ($error !== null && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
         http_response_code(500);
         echo "<h1 style='color:red'>Error fatal en PHP</h1>";
         echo "<pre>" . print_r($error, true) . "</pre>";
     }
 });
 
-// 🔹 Captura de excepciones no controladas
 set_exception_handler(function (Throwable $e) {
     http_response_code(500);
     echo "<h1 style='color:red'>Excepción no capturada</h1>";
-    echo "<p><strong>" . get_class($e) . ":</strong> " . $e->getMessage() . "</p>";
-    echo "<pre>" . $e->getTraceAsString() . "</pre>";
+    echo "<p><strong>" . get_class($e) . ":</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
+    echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
 });
 
-// 🔹 Captura de errores normales convertidos a excepciones
 set_error_handler(function ($severity, $message, $file, $line) {
     if (!(error_reporting() & $severity)) {
-        return false; // Permite que PHP lo maneje si está silenciado
+        return false;
     }
     throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
-// ========================
-// Base URL y funciones de URL 
-// ========================
-
-$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
-
-// Calcula automáticamente la carpeta del proyecto
-$scriptName = $_SERVER['SCRIPT_NAME'] ?? '/';
-$basePath   = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
-
-// Si la raíz es '/', la dejamos vacía
-$basePath = ($basePath === '/') ? '' : $basePath;
-
-// Base URL final
-$baseUrl = $_ENV['APP_URL'] ?? $_ENV['APP_BASE_URL'] ?? ($scheme . '://' . $host . $basePath);
-
-// Función para generar URLs absolutas
-function url(string $path): string {
-    global $baseUrl;
-    $path = ltrim($path, '/');
-    return rtrim($baseUrl, '/') . '/' . $path;
+// ============================================================
+// AUTOLOAD (Composer) - En la RAÍZ del proyecto
+// ============================================================
+$autoloadPath = BASE_PATH . '/vendor/autoload.php';
+if (!file_exists($autoloadPath)) {
+    die('<h1>Error: vendor/autoload.php no encontrado</h1>
+         <p>Ejecuta: <code>composer install</code> en la raíz del proyecto</p>
+         <p>Buscando en: ' . $autoloadPath . '</p>');
 }
+require_once $autoloadPath;
 
-// Función para URL canónica
-function canonical_url(): string {
-    global $baseUrl;
-    $requestPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
-    return rtrim($baseUrl, '/') . $requestPath;
+// ============================================================
+// VARIABLES DE ENTORNO (.env) - En la RAÍZ del proyecto
+// ============================================================
+if (!file_exists(BASE_PATH . '/.env')) {
+    die('<h1>Error: .env no encontrado</h1>
+         <p>Copia .env.example a .env y configúralo</p>
+         <p>Buscando en: ' . BASE_PATH . '/.env</p>');
 }
-
-
-// 1) Autoload (Composer)
-require_once __DIR__ . '/vendor/autoload.php';
-
-
-
-use App\SecurityManager;
-
-// 2) Entorno (.env)
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv = Dotenv\Dotenv::createImmutable(BASE_PATH);
 $dotenv->load();
 
-// 3) Ajustes de runtime según entorno
+// ============================================================
+// CONFIGURACIÓN SEGÚN ENTORNO
+// ============================================================
 $env = $_ENV['APP_ENV'] ?? 'prod';
 if ($env === 'dev') {
     error_reporting(E_ALL);
@@ -84,49 +77,76 @@ if ($env === 'dev') {
     error_reporting(0);
     ini_set('display_errors', '0');
     ini_set('log_errors', '1');
-    ini_set('error_log', __DIR__ . '/logs/php-error.log');
+    ini_set('error_log', BASE_PATH . '/storage/logs/php-error.log');
 }
 
-// Charset / timezone (opcional pero recomendado)
+// Charset y timezone
 ini_set('default_charset', 'UTF-8');
 if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
 }
 date_default_timezone_set($_ENV['APP_TZ'] ?? 'Europe/Madrid');
 
-// 4) Conexión PDO
-$host    = $_ENV['DB_HOST'] ?? '127.0.0.1';
-$port    = (int)($_ENV['DB_PORT'] ?? 3306);
-$db      = $_ENV['DB_NAME'] ?? '';
-$user    = $_ENV['DB_USER'] ?? '';
-$pass    = $_ENV['DB_PASS'] ?? '';
-$charset = $_ENV['DB_CHARSET'] ?? 'utf8mb4';
-$dsn = "mysql:host={$host};port={$port};dbname={$db};charset={$charset}";
+// ============================================================
+// BASE URL (para generar enlaces)
+// ============================================================
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$baseUrl = $_ENV['APP_URL'] ?? ($scheme . '://' . $host);
 
+/**
+ * Genera una URL absoluta
+ */
+function url(string $path = ''): string {
+    global $baseUrl;
+    return rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
+}
 
-$options = [
+/**
+ * Genera la URL canónica de la página actual
+ */
+function canonical_url(): string {
+    global $baseUrl;
+    $requestPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+    return rtrim($baseUrl, '/') . $requestPath;
+}
+
+// ============================================================
+// CONEXIÓN A BASE DE DATOS (PDO)
+// ============================================================
+$dbHost    = $_ENV['DB_HOST'] ?? '127.0.0.1';
+$dbPort    = (int)($_ENV['DB_PORT'] ?? 3306);
+$dbName    = $_ENV['DB_NAME'] ?? '';
+$dbUser    = $_ENV['DB_USER'] ?? '';
+$dbPass    = $_ENV['DB_PASS'] ?? '';
+$dbCharset = $_ENV['DB_CHARSET'] ?? 'utf8mb4';
+
+$dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset={$dbCharset}";
+
+$pdoOptions = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
-    // PDO::ATTR_TIMEOUT         => 5, // si quieres timeout
-    // PDO::MYSQL_ATTR_INIT_COMMAND => "SET sql_mode='STRICT_ALL_TABLES'", // opcional
 ];
 
 try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
+    $pdo = new PDO($dsn, $dbUser, $dbPass, $pdoOptions);
+} catch (PDOException $e) {
     error_log('[DB] Connection failed: ' . $e->getMessage());
     http_response_code(500);
-    exit('Error de conexión. Inténtalo más tarde.');
+    exit('Error de conexión a la base de datos. Inténtalo más tarde.');
 }
 
-// 5) SecurityManager
+// ============================================================
+// SECURITY MANAGER - Namespace corregido: App\Security
+// ============================================================
+use App\Security\SecurityManager;
+
 $security = new SecurityManager(
     [
         'env'         => $env,
-        'trust_proxy' => !empty($_ENV['TRUST_PROXY']),   // si estás detrás de proxy/cdn
+        'trust_proxy' => !empty($_ENV['TRUST_PROXY']),
         'csp' => [
-            // si quieres desactivar inline y usar nonce en tus <script>:
             'allow_unsafe_inline' => ($_ENV['CSP_INLINE'] ?? 'true') === 'true',
             'tinymce_cdn'         => 'https://cdn.tiny.cloud',
             'extra_script_src'    => ['https://cdn.jsdelivr.net'],
@@ -134,15 +154,13 @@ $security = new SecurityManager(
     ],
     $pdo
 );
-
-// Importante: ningún echo/HTML antes de esto
 $security->boot();
 
-// (opcional) URL base para canónicas/links absolutos
-$_APP_BASE_URL = $_ENV['APP_URL'] ?? $_ENV['APP_BASE_URL'] ?? null;
+// ============================================================
+// HELPERS ADICIONALES - En la RAÍZ del proyecto
+// ============================================================
+require_once BASE_PATH . '/admin/lib/settings.php';
 
-
-require_once __DIR__.'/admin/lib/settings.php';
-
-
-// fin init.php
+// ============================================================
+// FIN DE INIT.PHP
+// ============================================================

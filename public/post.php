@@ -74,7 +74,7 @@ $imagen_url     = $post['imagen_destacada_url'] ?? null;
 $contenido_html = $security->sanitizeHTML($post['contenido'] ?? '');
 
   $categoria = null; // para migas condicionales
-  require_once __DIR__.'/header.php';
+require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 <main class="container post">
   <nav class="breadcrumbs" aria-label="Breadcrumbs">
@@ -120,4 +120,4 @@ $contenido_html = $security->sanitizeHTML($post['contenido'] ?? '');
     </section>
   </article>
 </main>
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>
