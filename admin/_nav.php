@@ -16,6 +16,6 @@ function admin_active(string $key): bool {
   <a href="<?= admin_url('post_new') ?>">Nueva</a>
   <a href="<?= admin_url('media') ?>">Medios</a>
   <a href="<?= admin_url('backgrounds') ?>">Fondos</a>
-  <a href="<?= admin_url('design') ?>">Diseño</a>
+  <a href="<?= admin_url('personalizar') ?>">Diseño</a>
   <a href="<?= admin_url('settings') ?>">Ajustes</a>
 </nav>

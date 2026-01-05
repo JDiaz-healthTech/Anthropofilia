@@ -504,12 +504,7 @@ public function sanitizeHTML(string $html): string
         ], JSON_UNESCAPED_UNICODE));
     }
 
-    public function abort(int $statusCode, string $message = 'Error'): never
-    {
-        http_response_code($statusCode);
-        echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
-        exit();
-    }
+
 
     public function cleanInput(mixed $input, string $type = 'string'): string
     {
@@ -533,5 +528,28 @@ public function sanitizeHTML(string $html): string
             }
         }
         return $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+    }
+
+        public function abort(int $code = 404, string $message = ''): never
+    {
+        http_response_code($code);
+        
+        // Usar páginas de error personalizadas
+        if ($code === 404 && file_exists(__DIR__ . '/../../resources/errors/404.php')) {
+            require __DIR__ . '/../../resources/errors/404.php';
+            exit();
+        }
+        
+        if ($code === 500 && file_exists(__DIR__ . '/../../resources/errors/500.php')) {
+            require __DIR__ . '/../../resources/errors/500.php';
+            exit();
+        }
+        
+        // Fallback genérico
+        echo "Error {$code}";
+        if ($message) {
+            echo ": " . htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+        }
+        exit();
     }
 }

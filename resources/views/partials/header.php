@@ -151,10 +151,20 @@ $themeConfig['header_bg_url'] = $headerUrl;
 <body id="top">
     <div class="container">
         <header class="main-header" role="banner">
-            <h1>ANTHROPOFILIA</h1>
-            <p>El blog de Ana López Sampedro</p>
+            <?php if (!empty($themeConfig['header_bg_url'])): ?>
+                <div class="header-image">
+                    <img 
+                        src="<?= htmlspecialchars($themeConfig['header_bg_url'], ENT_QUOTES, 'UTF-8') ?>" 
+                        alt="Cabecera Anthropofilia"
+                        loading="lazy">
+                </div>
+            <?php endif; ?>
+            
+            <div class="header-text">
+                <h1>ANTHROPOFILIA</h1>
+                <p>El blog de Ana López Sampedro</p>
+            </div>
         </header>
-
         <nav class="main-nav" role="navigation" aria-label="Principal">
             <button class="mobile-nav-toggle" aria-controls="main-nav-links" aria-expanded="false">
                 <span class="visually-hidden">Menú</span>

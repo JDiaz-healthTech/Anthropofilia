@@ -1,0 +1,107 @@
+/* ============================================
+   PÁGINAS DE ERROR (404, 500)
+   ============================================ */
+
+.error-page {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+.error-content {
+    max-width: 600px;
+    text-align: center;
+}
+
+.error-code {
+    font-size: 8rem;
+    font-weight: 900;
+    color: var(--theme-primary, #0645ad);
+    opacity: 0.2;
+    line-height: 1;
+    margin-bottom: 1rem;
+}
+
+.error-content h1 {
+    font-size: 2rem;
+    color: #333;
+    margin: 0 0 1rem 0;
+}
+
+.error-message {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0 0 2rem 0;
+    line-height: 1.6;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.error-suggestions {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.error-suggestions h3 {
+    font-size: 1.2rem;
+    margin: 0 0 1rem 0;
+    color: #333;
+}
+
+.error-suggestions ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.error-suggestions li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.error-suggestions li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--theme-primary, #0645ad);
+}
+
+.error-suggestions a {
+    color: var(--theme-primary, #0645ad);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.error-suggestions a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .error-code {
+        font-size: 5rem;
+    }
+    
+    .error-content h1 {
+        font-size: 1.5rem;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+    }
+    
+    .error-actions .btn {
+        width: 100%;
+    }
+}

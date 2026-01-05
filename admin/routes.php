@@ -5,7 +5,7 @@ return [
   'post_new'       => 'post_new.php',
   'media'          => 'media.php',
   'backgrounds'    => 'backgrounds.php',
-  'design'         => 'design.php',
+  'design'         => 'personalizar.php',
   'users'          => 'users.php',
   'settings'       => 'settings.php',
 ];

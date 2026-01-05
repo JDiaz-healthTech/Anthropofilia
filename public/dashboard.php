@@ -107,7 +107,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
             <a href="<?= url('crear_pagina.php') ?>" class="btn" style="display: inline-flex; align-items: center; gap: 0.5rem;">
                 📄 Crear Nueva Página
             </a>
-            <a href="<?= url('admin/design.php') ?>" class="btn" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+            <a href="<?= url('personalizar.php') ?>" class="btn" style="display: inline-flex; align-items: center; gap: 0.5rem;">
                 🎨 Personalizar Diseño
             </a>
         </div>
