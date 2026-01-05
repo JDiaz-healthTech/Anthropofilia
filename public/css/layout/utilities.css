@@ -1,123 +1,249 @@
+/* ==========================================================================
+   UTILITIES - Clases auxiliares y helpers globales
+   ========================================================================== */
 
+/* =============================================
+   ACCESIBILIDAD
+   ============================================= */
 
-/* --- Utilidades ---------------------------------------------------------- */
+/* Ocultar visualmente pero mantener para screen readers */
 .visually-hidden {
-  position: absolute !important;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0,0,0,0);
-  white-space: nowrap;
-  border: 0;
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
+
+/* =============================================
+   CARDS GENÉRICAS (sistema de grid)
+   ============================================= */
 .cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
-  gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
 }
+
 .card {
-  border: 1px solid var(--theme-border); /* <-- FUSIÓN: Usamos theme-border para consistencia */
-  border-radius: .5rem;
-  padding: 1rem;
-  background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    background: var(--card-bg);
+    transition: var(--transition);
 }
+
+.card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
 .card h3 {
-  margin: .25rem 0 .5rem;
-  font-size: 1.1rem;
+    margin: 0.25rem 0 0.5rem;
+    font-size: var(--step-0);
 }
+
 .card .btn {
-  display: inline-block;
-  padding: .4rem .75rem;
-  border: 1px solid currentColor;
-  border-radius: .35rem;
-  text-decoration: none;
+    display: inline-block;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid currentColor;
+    border-radius: var(--radius);
+    text-decoration: none;
 }
+
+/* =============================================
+   BREADCRUMBS (migas de pan)
+   ============================================= */
 .breadcrumbs {
-  font-size: .9rem;
-  opacity: .85;
-  display: flex;
-  gap: .35rem;
-  align-items: center;
-  flex-wrap: wrap;
+    font-size: var(--step--1);
+    opacity: 0.85;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
 }
+
 .breadcrumbs a {
-  text-decoration: none;
+    text-decoration: none;
+    color: var(--brand);
 }
+
+.breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
+/* Separador entre items */
+.breadcrumbs li:not(:last-child)::after {
+    content: "›";
+    margin-left: 0.5rem;
+    color: var(--muted);
+}
+
+/* =============================================
+   PAGINACIÓN
+   ============================================= */
 .pagination {
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  justify-content: center;
-  margin: 2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    justify-content: center;
+    margin: 2rem 0;
 }
-.pagination a {
-  border: 1px solid var(--theme-border);
-  padding: .45rem .7rem;
-  border-radius: 6px;
-  text-decoration: none;
+
+.pagination a,
+.pagination span {
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--fg);
+    min-width: 44px;
+    text-align: center;
+    transition: var(--transition);
 }
+
 .pagination a:hover {
-  border-color: var(--theme-primary);
-  background-color: var(--theme-surface); /* <-- FUSIÓN: Pequeño efecto en hover */
+    border-color: var(--brand);
+    background-color: var(--card-bg);
+    color: var(--brand);
 }
+
+.pagination .current {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+}
+
+/* =============================================
+   ÁRBOL DE ARCHIVO (desplegable jerárquico)
+   ============================================= */
 .archive-tree {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
+
 .archive-tree > li {
-  margin-bottom: .25rem;
+    margin-bottom: 0.25rem;
 }
+
 .archive-tree summary {
-  cursor: pointer;
-  font-weight: 600;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.5rem;
+    border-radius: var(--radius);
+    transition: background 0.2s ease;
 }
+
+.archive-tree summary:hover {
+    background: var(--card-bg);
+}
+
 .archive-tree .count {
-  opacity: .7;
-  font-weight: 400;
+    opacity: 0.7;
+    font-weight: 400;
+    margin-left: 0.5rem;
 }
+
 .archive-tree ul {
-  list-style: none;
-  padding-left: 1rem;
-  margin: .25rem 0 .5rem;
+    list-style: none;
+    padding-left: 1rem;
+    margin: 0.25rem 0 0.5rem;
 }
-/* Responsive para tablas y embeds */
+
+/* =============================================
+   TABLAS RESPONSIVE
+   ============================================= */
 .table-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 1.5rem 0;
 }
+
+.table-wrap table {
+    min-width: 600px;
+}
+
+/* =============================================
+   EMBEDS RESPONSIVE (videos, iframes)
+   ============================================= */
 .embed-responsive {
-  position: relative;
-  padding-bottom: 56.25%;
-  height: 0;
-  overflow: hidden;
+    position: relative;
+    padding-bottom: 56.25%;  /* Ratio 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: var(--radius);
 }
+
 .embed-responsive iframe,
 .embed-responsive video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
-
-
-/* --- Clearfix y Layout Fixes -------------------------------------------- */
-.main::after, .container::after, .content::after {
-  content: "";
-  display: block;
-  clear: both;
+/* Ratios alternativos */
+.embed-responsive-4by3 {
+    padding-bottom: 75%;     /* Ratio 4:3 */
 }
-footer, .site-footer {
-  float: none !important;
-  clear: both !important;
-  display: block;
-  width: 100%;
+
+.embed-responsive-1by1 {
+    padding-bottom: 100%;    /* Ratio 1:1 */
 }
+
+/* =============================================
+   CLEARFIX (para floats antiguos)
+   ============================================= */
+.clearfix::after,
+.main::after,
+.container::after,
+.content::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+/* =============================================
+   LAYOUT FIXES (asegurar estructura)
+   ============================================= */
+footer,
+.site-footer,
+.main-footer {
+    float: none !important;
+    clear: both !important;
+    display: block;
+    width: 100%;
+}
+
 .site {
-  min-height: 100dvh;
-  display: block;
+    min-height: 100dvh;
+    display: block;
 }
+
+/* =============================================
+   SPACING HELPERS
+   ============================================= */
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+/* =============================================
+   TEXT ALIGNMENT
+   ============================================= */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }

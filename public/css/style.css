@@ -1,45 +1,49 @@
 /* ==========================================================================
    ANTHROPOFILIA BLOG — CSS ENTRY POINT
+   Sistema de diseño modular organizado por capas
    ========================================================================== */
 
-/* --------------------------------------------------------------------------
-   BASE — fundamentos del sistema
-   -------------------------------------------------------------------------- */
-@import "base/reset.css";
-@import "base/variables.css";
-@import "base/typography.css";
-@import "base/base.css";
+/* ==========================================================================
+   CAPA 1: BASE — Fundamentos del sistema
+   ========================================================================== */
+@import "base/reset.css";           /* Normalización cross-browser */
+@import "base/variables.css";       /* Tokens de diseño (colores, escalas) */
+@import "base/typography.css";      /* Sistema tipográfico */
+@import "base/base.css";            /* Estilos globales del documento */
 
-/* --------------------------------------------------------------------------
-   UTILITIES — helpers globales (sin layout ni componentes)
-   -------------------------------------------------------------------------- */
-@import "layout/utilities.css";
+/* ==========================================================================
+   CAPA 2: LAYOUT — Estructura macro de la página
+   ========================================================================== */
+@import "layout/grid.css";          /* Sistema de grid (contenido + sidebar) */
+@import "layout/navigation.css";    /* Navegación principal + hamburguesa */
+@import "layout/footer.css";        /* Pie de página */
+@import "layout/responsive.css";    /* Breakpoints y adaptaciones */
+@import "layout/utilities.css";     /* Helpers globales (clearfix, spacing) */
 
-/* --------------------------------------------------------------------------
-   LAYOUT — estructura macro
-   -------------------------------------------------------------------------- */
-@import "layout/grid.css";
-@import "layout/navigation.css";
-@import "layout/footer.css";
-@import "layout/accessibility.css";
-@import "layout/responsive.css";
+/* ==========================================================================
+   CAPA 3: COMPONENTS — Piezas reutilizables
+   ========================================================================== */
+@import "components/header.css";    /* Cabecera del blog */
+@import "components/sidebar.css";   /* Widgets del sidebar */
+@import "components/buttons.css";   /* Sistema de botones */
+@import "components/forms.css";     /* Inputs y formularios */
+@import "components/cards.css";     /* Tarjetas de posts */
+@import "components/media.css";     /* Imágenes y lightbox */
+@import "components/tables.css";    /* Tablas (admin) */
+@import "components/errors.css";    /* Páginas de error (404, 500) */
+@import "components/accesibility.css"; /* Controles de accesibilidad */
 
-/* --------------------------------------------------------------------------
-   COMPONENTS — piezas reutilizables
-   -------------------------------------------------------------------------- */
-@import "components/header.css";
-@import "components/buttons.css";
-@import "components/forms.css";
-@import "components/cards.css";
-@import "components/media.css";
-@import "components/tables.css";
-@import "components/errors.css";
-@import "components/preferences.css";
+/* ==========================================================================
+   CAPA 4: PAGES — Estilos específicos de páginas
+   ========================================================================== */
+@import "pages/post.css";           /* Página individual de post */
 
-/* --------------------------------------------------------------------------
-   PAGES — overrides y casos especiales
-   -------------------------------------------------------------------------- */
-@import "pages/home.css";
-@import "pages/post.css";
-@import "pages/admin.css";
-@import "pages/login.css";
+/* ==========================================================================
+   NOTAS DE ARQUITECTURA
+   
+   - Base: Variables, reset, tipografía → NO tocan layout ni componentes
+   - Layout: Grid, navegación, footer → Estructura macro
+   - Components: Header, sidebar, botones → Piezas modulares reutilizables
+   - Pages: Casos específicos que no encajan en components
+
+   ========================================================================== */

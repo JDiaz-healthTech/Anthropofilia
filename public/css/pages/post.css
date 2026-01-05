@@ -1,6 +1,265 @@
+/* ==========================================================================
+   POST - Página individual de post
+   ========================================================================== */
+
+/* =============================================
+   CONTENEDOR DEL POST
+   ============================================= */
+.single-post {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* =============================================
+   ENCABEZADO DEL POST
+   ============================================= */
+.post-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.post-title {
+    font-size: var(--step-3);
+    margin: 0 0 1rem 0;
+    color: var(--fg);
+}
+
+.post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-family: var(--font-header);
+    font-size: var(--step--1);
+    color: var(--muted);
+}
+
+.post-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* =============================================
+   IMAGEN DESTACADA
+   ============================================= */
+.post-featured-image {
+    margin: 2rem 0;
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.post-featured-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* =============================================
+   CONTENIDO DEL POST
+   ============================================= */
+.post-content {
+    font-size: var(--step-0);
+    line-height: 1.8;
+    color: var(--fg);
+}
+
+.post-content > * + * {
+    margin-top: 1.5rem;
+}
+
+.post-content h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--fg);
+}
+
+.post-content h3 {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--fg);
+}
+
+.post-content a {
+    color: var(--brand);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.2s ease;
+}
+
+.post-content a:hover {
+    text-decoration-color: currentColor;
+}
+
+.post-content ul,
+.post-content ol {
+    padding-left: 1.5em;
+}
+
+.post-content li {
+    margin-bottom: 0.5rem;
+}
+
+.post-content blockquote {
+    margin: 2rem 0;
+    padding-left: 1.5rem;
+    border-left: 4px solid var(--brand);
+    color: var(--muted);
+    font-style: italic;
+}
+
+.post-content code {
+    background: var(--card-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+.post-content pre {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    margin: 2rem 0;
+}
+
+.post-content pre code {
+    background: none;
+    padding: 0;
+}
+
+/* =============================================
+   PIE DEL POST (categorías, tags)
+   ============================================= */
+.post-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+.post-categories,
+.post-tags {
+    margin-bottom: 1rem;
+}
+
+.post-categories-title,
+.post-tags-title {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+}
+
+.post-categories-list,
+.post-tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.category-badge,
+.tag-badge {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    background: var(--card-bg);
+    color: var(--fg);
+    text-decoration: none;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    font-size: var(--step--1);
+    transition: all 0.2s ease;
+}
+
+.category-badge:hover,
+.tag-badge:hover {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+}
+
+/* =============================================
+   NAVEGACIÓN ENTRE POSTS (prev/next)
+   ============================================= */
 .post-navigation {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--theme-border);
-  clear: both;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border);
+    clear: both;
+}
+
+.post-nav-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.post-nav-link {
+    display: block;
+    padding: 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.post-nav-link:hover {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+    transform: translateY(-2px);
+}
+
+.post-nav-link-label {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+}
+
+.post-nav-link:hover .post-nav-link-label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.post-nav-link-title {
+    font-weight: 600;
+    color: var(--fg);
+}
+
+.post-nav-link:hover .post-nav-link-title {
+    color: white;
+}
+
+/* Alineación prev/next */
+.post-nav-prev {
+    text-align: left;
+}
+
+.post-nav-next {
+    text-align: right;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    .post-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .post-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .post-content {
+        font-size: var(--step--1);
+    }
+    
+    .post-nav-links {
+        grid-template-columns: 1fr;
+    }
+    
+    .post-nav-next {
+        text-align: left;
+    }
 }

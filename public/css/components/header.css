@@ -22,9 +22,9 @@
 /* Header CON imagen de fondo */
 .main-header.has-bg-image {
     background-size: cover;
-    background-position: center center;
+    background-position: center 35%;    /* ← Más arriba, muestra más imagen */
     background-repeat: no-repeat;
-    min-height: 350px;            /* ← 30% menos que 500px */
+    min-height: 300px;            /* ← 30% menos que 500px */
 }
 
 /* =============================================
@@ -181,7 +181,7 @@ html.theme-dark .main-header.has-bg-image .header-overlay {
     }
     
     .main-header.has-bg-image {
-        min-height: 308px;        /* ← 30% menos que 440px */
+        min-height: 300px;       
     }
     
     .main-header h1 {

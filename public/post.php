@@ -121,7 +121,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     </section>
   </article>
   <nav class="post-navigation">
-    <a href="<?= url('index.php') ?>" class="btn-volver">&larr; Volver a inicio</a>
+    <a href="<?= url('index.php') ?>" >&larr; Volver a inicio</a>
   </nav>
 </main>
 <?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>

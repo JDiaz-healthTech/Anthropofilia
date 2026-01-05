@@ -44,11 +44,22 @@ if (!preg_match('/^#[a-fA-F0-9]{6}$/', $themeConfig['bg_color'])) {
 
 // Normalizar URL de imagen de cabecera
 $headerPath = trim($themeConfig['header_bg_url']);
-if ($headerPath !== '' && !preg_match('#^https?://#i', $headerPath)) {
-    // Convertir ruta relativa a absoluta
-    $themeConfig['header_bg_url'] = rtrim($baseUrl, '/') . '/' . ltrim($headerPath, '/');
+if ($headerPath !== '') {
+    // Si es una URL absoluta con http/https, reemplazar el host
+    if (preg_match('#^https?://([^/]+)(.*)$#i', $headerPath, $matches)) {
+        $currentHost = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
+        $imagePath = $matches[2]; // La parte después del dominio (ej: /uploads/header.jpg)
+        $themeConfig['header_bg_url'] = $scheme . '://' . $currentHost . $imagePath;
+    } 
+    // Si es una ruta relativa, convertir a absoluta
+    elseif (!preg_match('#^/#', $headerPath)) {
+        $themeConfig['header_bg_url'] = $scheme . '://' . $host . '/' . ltrim($headerPath, '/');
+    }
+    // Si ya empieza con /, está bien (ruta absoluta del servidor)
+    else {
+        $themeConfig['header_bg_url'] = $scheme . '://' . $host . $headerPath;
+    }
 }
-
 // =================================================================
 // SECCIÓN 4: LÓGICA DEL HEADER (ANTES DEL HTML)
 // =================================================================
@@ -134,13 +145,9 @@ function nav_active(string $file, ?string $slug = null): string {
     <link rel="stylesheet" href="<?= url('css/style.css') ?>">
 
     <?php if ($needsTinymce): ?>
-    <!-- TinyMCE -->
-    <link rel="preconnect" href="https://cdn.tiny.cloud" crossorigin>
-    <script
-         src="https://cdn.tiny.cloud/1/55d1aaf8txhz0grsfs3s9dqm214nb4tk0p06h6ydeby0vta1/tinymce/6/tinymce.min.js"
-         referrerpolicy="origin"
-         <?= $nonce ? ' nonce="'.htmlspecialchars($nonce, ENT_QUOTES, 'UTF-8').'"' : '' ?>>
-    </script>
+    <!-- TinyMCE Self-Hosted -->
+    <script src="<?= url('js/tinymce/tinymce.min.js') ?>" 
+            <?= $nonce ? ' nonce="'.htmlspecialchars($nonce, ENT_QUOTES, 'UTF-8').'"' : '' ?>></script>
     <?php endif; ?>
     
     <!-- JavaScript -->

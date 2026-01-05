@@ -7,15 +7,17 @@
    ============================================= */
 .button,
 .btn,
-button,
+button:not(.accessibility-button):not(.mobile-nav-toggle):not(.tox-button):not(.tox-tbtn),
 input[type="submit"],
-input[type="button"] {
+input[type="button"],
+a.button,
+a.btn {
     display: inline-block;
     padding: 0.6rem 1.2rem;
     border: 1px solid var(--brand);
     border-radius: var(--radius);
     background: var(--brand);
-    color: #FFFFFF;
+    color: #FFFFFF !important;
     font-family: var(--font-header);
     font-size: var(--step-0);
     font-weight: 600;
@@ -23,19 +25,22 @@ input[type="button"] {
     text-decoration: none;
     text-align: center;
     transition: var(--transition);
-    min-height: 44px;             /* Mínimo táctil accesible */
+    min-height: 44px;
     line-height: 1.2;
 }
 
 .button:hover,
 .btn:hover,
-button:hover,
+button:not(.accessibility-button):not(.mobile-nav-toggle):not(.tox-button):not(.tox-tbtn):hover,
 input[type="submit"]:hover,
-input[type="button"]:hover {
+input[type="button"]:hover,
+a.button:hover,
+a.btn:hover {
     background: var(--brand-hover);
     border-color: var(--brand-hover);
-    color: #FFFFFF;
+    color: #FFFFFF !important;
     text-decoration: none;
+    transform: translateY(-1px);
 }
 
 .button:focus-visible,
@@ -43,6 +48,28 @@ input[type="button"]:hover {
 button:focus-visible {
     outline: 2px solid var(--brand);
     outline-offset: 2px;
+}
+
+/* Forzar color blanco en enlaces que son botones */
+a.btn,
+a.button {
+    color: #FFFFFF !important;
+}
+
+a.btn:visited,
+a.button:visited {
+    color: #FFFFFF !important;
+}
+
+/* Forzar color blanco en enlaces que son botones */
+a.btn,
+a.button {
+    color: #FFFFFF !important;
+}
+
+a.btn:visited,
+a.button:visited {
+    color: #FFFFFF !important;
 }
 
 /* =============================================

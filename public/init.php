@@ -91,9 +91,16 @@ $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' :
 $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $baseUrl = $_ENV['APP_URL'] ?? ($scheme . '://' . $host);
 
-function url(string $path = ''): string {
-    global $baseUrl;
-    return rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
+function url(string $path = ''): string
+{
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $baseUrl = $protocol . '://' . $host;
+    
+    // Remover "/" inicial si existe
+    $path = ltrim($path, '/');
+    
+    return $baseUrl . '/' . $path;
 }
 
 function canonical_url(): string {

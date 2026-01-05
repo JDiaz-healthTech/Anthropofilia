@@ -2,23 +2,179 @@
    FOOTER - Pie de página
    ========================================================================== */
 
+/* =============================================
+   CONTENEDOR PRINCIPAL
+   ============================================= */
 .main-footer {
     text-align: center;
     padding: 2rem 1rem;
     background: var(--card-bg);
     color: var(--muted);
-    margin-top: 2rem;
-    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+    border-top: 2px solid var(--border);
     font-family: var(--font-header);
     grid-column: 1 / -1;       /* Ocupa todo el ancho del grid */
 }
 
-.main-footer a {
-    color: var(--brand);
-    text-decoration: none;
+/* =============================================
+   CONTENIDO DEL FOOTER
+   ============================================= */
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    gap: 1.5rem;
 }
 
-.main-footer a:hover {
-    text-decoration: underline;
+/* =============================================
+   SECCIÓN DE COPYRIGHT
+   ============================================= */
+.footer-section p {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--muted);
+}
+
+/* =============================================
+   LINKS LEGALES
+   ============================================= */
+.footer-links {
+    text-align: center;
+}
+
+.footer-links nav {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: var(--step--1);
+}
+
+.footer-links a {
+    color: var(--brand);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-links a:hover {
     color: var(--brand-hover);
+    text-decoration: underline;
+}
+
+.footer-links span {
+    color: var(--border);
+}
+
+/* =============================================
+   ADMIN NAV (solo usuarios logueados)
+   ============================================= */
+.admin-nav {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn-admin-link {
+    color: var(--brand);
+    text-decoration: none;
+    font-size: var(--step--1);
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    transition: var(--transition);
+}
+
+.btn-admin-link:hover {
+    color: var(--brand-hover);
+    background: var(--page-bg);
+}
+
+/* Separador vertical */
+.admin-nav > span {
+    color: var(--border);
+}
+
+/* =============================================
+   BOTÓN SCROLL TO TOP
+   ============================================= */
+.btn-scroll-top {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: var(--step--1);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    transition: var(--transition);
+}
+
+.btn-scroll-top:hover {
+    color: var(--brand);
+    background: var(--page-bg);
+}
+
+/* Contenedor de scroll (usuarios no logueados) */
+.footer-scroll {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+/* =============================================
+   BOTÓN LOGOUT
+   ============================================= */
+.btn-logout {
+    padding: 0.5rem 1rem;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: var(--step--1);
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-logout:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+/* Form inline del logout */
+.admin-nav form {
+    display: inline;
+    margin: 0;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    .main-footer {
+        padding: 1.5rem 1rem;
+    }
+    
+    .footer-content {
+        gap: 1rem;
+    }
+    
+    .footer-links nav {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .footer-links span {
+        display: none;  /* Ocultar separadores en móvil */
+    }
+    
+    .admin-nav {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .admin-nav > span {
+        display: none;  /* Ocultar separadores en móvil */
+    }
 }

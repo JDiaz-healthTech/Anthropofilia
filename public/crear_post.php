@@ -111,7 +111,8 @@ $nonceAttr = ($security->cspNonce())
 <script<?= $nonceAttr ?>>
 if (typeof tinymce !== 'undefined') {
     tinymce.init({
-        selector: '#contenido',
+        selector: 'textarea#contenido',
+        base_url: '/js/tinymce',
         plugins: 'code link lists image media table autoresize paste',
         toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | link image media table | code',
         menubar: false,

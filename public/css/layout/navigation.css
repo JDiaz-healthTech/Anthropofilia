@@ -9,27 +9,29 @@
 .main-nav {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
+    justify-content: space-between;   /* ← Espacio entre elementos */
+    gap: 1rem;
     padding: 0.75rem 1rem;
     background: var(--card-bg);
     border-bottom: 1px solid var(--border);
 }
 
 /* =============================================
-   ENLACES DE NAVEGACIÓN
+   ENLACES DE NAVEGACIÓN (Desktop)
    ============================================= */
 .main-nav-links {
     display: flex;
     align-items: center;
     gap: 0.25rem;
+    flex: 1;                          /* ← Ocupa espacio central */
+    justify-content: center;
 }
 
 .main-nav a {
     padding: 0.75rem 1rem;
     font-family: var(--font-header);
     font-weight: 500;
-    font-size: var(--step-0);      /* ← Tamaño igual que <h5> */
+    font-size: var(--step-0);
     text-decoration: none;
     color: var(--fg);
     border-bottom: 3px solid transparent;
@@ -43,6 +45,16 @@
 }
 
 /* =============================================
+   CONTROLES DE ACCESIBILIDAD (Desktop)
+   ============================================= */
+.accessibility-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;                /* ← Empuja a la derecha */
+}
+
+/* =============================================
    BOTÓN HAMBURGUESA (móvil)
    ============================================= */
 .mobile-nav-toggle {
@@ -53,12 +65,13 @@
     --anim: 0.22s ease-in-out;
     
     /* Layout */
-    display: none;                 /* Oculto por defecto (desktop) */
+    display: none;
     align-items: center;
     justify-content: center;
     width: var(--size);
     height: var(--size);
     padding: 0;
+    flex-shrink: 0;               /* ← No encogimiento */
     
     /* Estilos */
     background: transparent;
@@ -72,7 +85,7 @@
 }
 
 .mobile-nav-toggle:hover {
-    background: rgba(139, 69, 19, 0.1);  /* Café transparente */
+    background: rgba(139, 69, 19, 0.1);
     border-color: var(--brand-hover);
 }
 
@@ -98,7 +111,7 @@
     left: 0;
     right: 0;
     height: var(--bar-h);
-    background: currentColor;    /* Usa el color del botón */
+    background: currentColor;
     border-radius: 2px;
     transition:
         transform var(--anim),
@@ -130,43 +143,72 @@
 }
 
 /* =============================================
-   RESPONSIVE
+   RESPONSIVE - MÓVIL
    ============================================= */
-
-/* Móvil - Mostrar hamburguesa */
 @media (max-width: 768px) {
-    .mobile-nav-toggle {
-        display: inline-flex;
+    /* Barra como grid de 2 columnas */
+    .main-nav {
+        display: grid;
+        grid-template-columns: auto 1fr;  /* Hamburguesa | Espacio flexible */
+        grid-template-rows: auto;
+        gap: 0;
+        align-items: center;
+        padding: 0.75rem 1rem;
     }
     
+    /* HAMBURGUESA - Izquierda arriba */
+    .mobile-nav-toggle {
+        display: inline-flex;
+        grid-column: 1;
+        grid-row: 1;
+    }
+    
+    /* ACCESIBILIDAD - Derecha arriba (siempre visible) */
+    .accessibility-controls {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;                /* Alinea a la derecha */
+        gap: 0.4rem;
+    }
+    
+    /* MENÚ DESPLEGABLE - Debajo del hamburguesa (izquierda) */
     .main-nav-links {
         display: none;
-        width: 100%;
+        grid-column: 1;                   /* Solo columna 1 (izquierda) */
+        grid-row: 2;
         flex-direction: column;
         gap: 0;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border);
+        width: auto;                      /* Ancho automático (no 100%) */
+        min-width: 250px;                 /* Ancho mínimo legible */
+        max-width: 80%;                   /* No ocupa todo el ancho */
     }
     
     .main-nav-links.active {
         display: flex;
     }
     
+    /* Links del menú móvil */
     .main-nav a {
         display: block;
-        width: 100%;
         padding: 0.75rem 1rem;
-        border-bottom: 1px solid var(--border);
         border-left: 3px solid transparent;
+        text-align: left;
+        white-space: nowrap;              /* No romper líneas */
     }
     
     .main-nav a:hover,
     .main-nav a.active {
-        border-bottom-color: var(--border);
         border-left-color: var(--brand);
-        background: var(--card-bg);
+        background: var(--page-bg);
     }
 }
 
-/* Desktop - Ocultar hamburguesa */
+/* =============================================
+   DESKTOP - Ocultar hamburguesa
+   ============================================= */
 @media (min-width: 769px) {
     .mobile-nav-toggle {
         display: none;

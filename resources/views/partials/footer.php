@@ -1,8 +1,9 @@
 <?php
 // footer.php
-$year      = (int)date('Y');
-$isLogged  = isset($security) ? (bool)$security->userId() : false;
+$year = (int)date('Y');
+$isLogged = isset($security) ? (bool)$security->userId() : false;
 
+// Cerrar sidebar si existe
 if (empty($noSidebar)):
 ?>
   <aside class="site-sidebar" role="complementary" aria-label="Barra lateral">
@@ -14,27 +15,63 @@ endif;
 </div> <!-- /.main-content-area -->
 
 <footer class="main-footer" role="contentinfo">
-  <p>&copy; <?= $year ?> Ana López Sampedro. Todos los derechos reservados.</p>
+  <div class="footer-content">
+    
+    <!-- COPYRIGHT -->
+    <div class="footer-section">
+      <p>&copy; <?= $year ?> Ana López Sampedro. Todos los derechos reservados.</p>
+    </div>
 
-  <nav class="footer-nav" aria-label="Enlaces legales">
-    <a href="<?= url('aviso-legal.php') ?>">Aviso legal</a>
-    <span aria-hidden="true">·</span>
-    <a href="<?= url('privacidad.php') ?>">Privacidad</a>
-    <span aria-hidden="true">·</span>
-    <a href="<?= url('cookies.php') ?>">Cookies</a>
-  </nav>
+    <!-- LINKS LEGALES -->
+    <div class="footer-links">
+      <nav aria-label="Enlaces legales">
+        <a href="<?= url('aviso-legal.php') ?>">Aviso legal</a>
+        <span aria-hidden="true">·</span>
+        <a href="<?= url('privacidad.php') ?>">Privacidad</a>
+        <span aria-hidden="true">·</span>
+        <a href="<?= url('cookies.php') ?>">Cookies</a>
+      </nav>
+    </div>
 
-  <?php if ($isLogged): ?>
-  <nav class="admin-nav" aria-label="Área de administración">
-    <a href="<?= url('dashboard.php') ?>" class="admin-link">Dashboard</a>
-    <form action="<?= url('logout.php') ?>" method="POST" >
-      <?= isset($security) && method_exists($security, 'csrfField') ? $security->csrfField() : '<input type="hidden" name="csrf_token" value="' . htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') . '">' ?>
-      <button type="submit" class="btn btn-logout">Cerrar sesión</button>
-    </form>
-  </nav>
-  <?php endif; ?>
+    <!-- ADMIN NAV (solo si está logueado) -->
+    <?php if ($isLogged): ?>
+      <div class="admin-nav" role="navigation" aria-label="Área de administración">
+        <a href="<?= url('dashboard.php') ?>" class="btn-admin-link">
+          📊 Dashboard
+        </a>
+        
+        <span aria-hidden="true">|</span>
+        
+        <a href="#top" 
+           onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" 
+           class="btn-scroll-top">
+          ↑ Volver arriba
+        </a>
+        
+        <span aria-hidden="true">|</span>
+        
+        <form method="POST" action="<?= url('logout.php') ?>">
+          <?= isset($security) && method_exists($security, 'csrfField') 
+              ? $security->csrfField() 
+              : '<input type="hidden" name="csrf_token" value="' . htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') . '">' 
+          ?>
+          <button type="submit" class="btn-logout">
+            🚪 Cerrar sesión
+          </button>
+        </form>
+      </div>
+    <?php else: ?>
+      <!-- SCROLL TO TOP (usuarios no logueados) -->
+      <div class="footer-scroll">
+        <a href="#top" 
+           onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" 
+           class="btn-scroll-top">
+          ↑ Volver arriba
+        </a>
+      </div>
+    <?php endif; ?>
 
-  <a href="#top" class="back-to-top">↑ Volver arriba</a>
+  </div>
 </footer>
 
 </div><!-- /.container -->

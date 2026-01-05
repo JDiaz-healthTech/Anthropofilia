@@ -15,7 +15,7 @@ declare(strict_types=1);
       <input 
         type="search" 
         name="q" 
-        placeholder="Buscar en el blog..." 
+        placeholder="Buscar en blog" 
         required
         value="<?= htmlspecialchars((string)($_GET['q'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
       <button type="submit">Buscar</button>
