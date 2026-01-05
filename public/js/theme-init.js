@@ -1,38 +1,46 @@
-// === INICIO SNIPPET theme-init.js (reemplazar entero) ===
+// theme-init.js - Sistema unificado de temas
 (function(){
   'use strict';
   var root = document.documentElement;
 
-  // Leer preferencias persistidas
-  var theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  var hc    = localStorage.getItem('a11y_hc') === '1';
+  // =================================================================
+  // 1. CARGAR PREFERENCIAS
+  // =================================================================
+  var savedTheme = localStorage.getItem('theme');
+  var prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+  var theme = savedTheme || (prefersDark ? 'dark' : 'light');
+  var hc = localStorage.getItem('a11y_hc') === '1';
 
-  // Aplicar clases sin FOUC (independientes)
+  // =================================================================
+  // 2. APLICAR CLASES (esto define TODO el tema via CSS)
+  // =================================================================
   root.classList.toggle('theme-dark', theme === 'dark');
-  // Si quisieras una clase 'theme-light' podrías activarla aquí, pero no es necesaria si no la usas en CSS
+  root.classList.toggle('theme-light', theme === 'light');
   root.classList.toggle('high-contrast', hc);
 
-  // Font zoom (si existiese de sesiones previas)
-  var rawZoom = parseInt(localStorage.getItem('a11y_zoom') || '100', 10);
-  if (rawZoom && isFinite(rawZoom)) {
-    root.style.setProperty('--font-zoom', String(rawZoom/100));
+  // =================================================================
+  // 3. ZOOM DE FUENTE
+  // =================================================================
+  var zoom = parseInt(localStorage.getItem('a11y_zoom') || '100', 10);
+  if (zoom && isFinite(zoom)) {
+    root.style.setProperty('--font-zoom', String(zoom/100));
   }
 
-  // Valores opcionales por data-* (no afectan HC)
-  if (!hc){
-    var primaryColor = root.dataset.primaryColor || '';
-    var pageBg       = root.dataset.bgColor || '';
-    var headerBg     = root.dataset.headerBg || '';
-    if (primaryColor) root.style.setProperty('--brand', primaryColor);
-    if (pageBg)       root.style.setProperty('--page-bg', pageBg);
-    if (headerBg){
-      var safeUrl = headerBg.replace(/"/g, '\\"').replace(/\s+/g, '%20');
-      var header  = document.querySelector('.main-header');
-      if (header){
-        header.style.setProperty('--header-image', 'url("'+safeUrl+'")');
-        header.classList.add('has-bg-image');
-      }
+  // =================================================================
+  // 4. IMAGEN DE CABECERA (NO tocar colores)
+  // =================================================================
+  var headerBg = root.dataset.headerBg || '';
+  if (headerBg) {
+    var safeUrl = headerBg.replace(/"/g, '\\"').replace(/\s+/g, '%20');
+    var header = document.querySelector('.main-header');
+    if (header) {
+      header.style.backgroundImage = 'url("' + safeUrl + '")';
+      header.classList.add('has-bg-image');
     }
   }
+
+  // =================================================================
+  // NOTA: NO aplicamos data-primary-color ni data-bg-color
+  // El tema se controla 100% desde variables.css
+  // =================================================================
 })();
-// === FIN SNIPPET theme-init.js ===

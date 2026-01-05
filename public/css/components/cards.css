@@ -1,47 +1,79 @@
+/* ==========================================================================
+   CARDS - Tarjetas de posts y contenido
+   ========================================================================== */
+
+/* =============================================
+   TARJETA DE POST (general)
+   ============================================= */
 .post-card {
-  border: 1px solid var(--theme-border);
-  
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-soft);
-  padding: 1.2rem;
-  background: var(--theme-surface);
-  transition: var(--transition); /* <-- FUSIÓN: Añadimos la transición para un hover más suave */
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-soft);
+    padding: 1.2rem;
+    background: var(--card-bg);
+    transition: var(--transition);
 }
+
 .post-card h2 {
-  margin-top: 0;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
 }
+
 .post-card h2 a {
-  text-decoration: none;
+    text-decoration: none;
+    color: var(--fg);
+    transition: color 0.2s ease;
 }
+
+.post-card h2 a:hover {
+    color: var(--brand);
+}
+
+/* Efecto hover en toda la card */
 .post-card:hover {
-  box-shadow: var(--shadow);
-  transform: translateY(-2px); /* <-- FUSIÓN: Pequeño efecto de elevación al pasar el ratón */
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
 }
+
+/* =============================================
+   METADATOS DEL POST (fecha, autor, categoría)
+   ============================================= */
 .post-meta {
-  display: block;
-  font-family: var(--font-header);
-  font-size: 0.9rem;
-  color: var(--theme-text-light);
-  margin-bottom: 2rem;
-  border-bottom: 1px solid var(--theme-border);
-  padding-bottom: 1rem;
+    display: block;
+    font-family: var(--font-header);
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
 }
+
+/* =============================================
+   CONTENIDO DEL POST ÚNICO (single post)
+   ============================================= */
 .single-post-content {
-  max-width: var(--measure);
-  margin-inline: auto;
-  line-height: 1.8;
-  font-size: 1.1rem;
+    max-width: var(--measure);
+    margin-inline: auto;
+    line-height: 1.8;
+    font-size: var(--step-0);
 }
 
-
-/* --- Estilo específico para las tarjetas de la Home --- */
+/* =============================================
+   TARJETAS EN LA HOME (fondo blanco puro)
+   ============================================= */
 .home-list .post-card {
-  background-color: var(--home-card-bg); /* Fondo de las tarjetas de posts del home (usa blanco puro). */
+    background-color: var(--home-card-bg);
 }
-/* Hover en modo alto contraste oscuro para máxima claridad */
-html.theme-dark.high-contrast button:hover,
-html.theme-dark.high-contrast .btn:hover {
-    background-color: var(--brand); /* Fondo amarillo (resalta acción). */
-    color: #121212;                /* Texto en hover: negro profundo, contraste máximo. */
-    border-color: var(--brand);    /* Bordes permanecen amarillos. */
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    .post-card {
+        padding: 1rem;
+    }
+    
+    .single-post-content {
+        font-size: var(--step--1);
+    }
 }

@@ -1,17 +1,24 @@
 /* ==========================================================================
-   RESET
+   RESET CSS
+   Normalización básica para consistencia cross-browser
    ========================================================================== */
 
+/* =============================================
+   BOX-SIZING UNIVERSAL
+   ============================================= */
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+  box-sizing: border-box;  /* Incluye padding y border en el ancho */
   margin: 0;
   padding: 0;
 }
 
+/* =============================================
+   HTML Y BODY
+   ============================================= */
 html {
-  -webkit-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;  /* Previene zoom automático en iOS */
   text-size-adjust: 100%;
 }
 
@@ -19,23 +26,32 @@ body {
   margin: 0;
 }
 
+/* =============================================
+   MEDIA (imágenes, video, canvas, svg)
+   ============================================= */
 img,
 picture,
 video,
 canvas,
 svg {
-  display: block;
-  max-width: 100%;
+  display: block;      /* Elimina espacio inferior por inline */
+  max-width: 100%;     /* Responsive por defecto */
 }
 
+/* =============================================
+   LISTAS
+   ============================================= */
 ul,
 ol {
-  list-style: none;
+  list-style: none;    /* Sin viñetas por defecto (se agregan según necesidad) */
 }
 
+/* =============================================
+   FORMULARIOS
+   ============================================= */
 input,
 button,
 textarea,
 select {
-  font: inherit;
+  font: inherit;       /* Heredan la fuente del body */
 }

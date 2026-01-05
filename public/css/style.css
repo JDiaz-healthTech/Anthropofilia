@@ -1,34 +1,45 @@
 /* ==========================================================================
-   ANTHROPOFILIA BLOG
+   ANTHROPOFILIA BLOG — CSS ENTRY POINT
    ========================================================================== */
 
+/* --------------------------------------------------------------------------
+   BASE — fundamentos del sistema
+   -------------------------------------------------------------------------- */
 @import "base/reset.css";
 @import "base/variables.css";
 @import "base/typography.css";
 @import "base/base.css";
 
-/* Layout */
+/* --------------------------------------------------------------------------
+   UTILITIES — helpers globales (sin layout ni componentes)
+   -------------------------------------------------------------------------- */
 @import "layout/utilities.css";
+
+/* --------------------------------------------------------------------------
+   LAYOUT — estructura macro
+   -------------------------------------------------------------------------- */
 @import "layout/grid.css";
-@import "layout/header.css";
 @import "layout/navigation.css";
 @import "layout/footer.css";
 @import "layout/accessibility.css";
 @import "layout/responsive.css";
 
-/* Components */
+/* --------------------------------------------------------------------------
+   COMPONENTS — piezas reutilizables
+   -------------------------------------------------------------------------- */
+@import "components/header.css";
 @import "components/buttons.css";
 @import "components/forms.css";
 @import "components/cards.css";
 @import "components/media.css";
 @import "components/tables.css";
-@import "components/alerts.css";
+@import "components/errors.css";
 @import "components/preferences.css";
 
-/* Pages */
+/* --------------------------------------------------------------------------
+   PAGES — overrides y casos especiales
+   -------------------------------------------------------------------------- */
 @import "pages/home.css";
 @import "pages/post.css";
 @import "pages/admin.css";
 @import "pages/login.css";
-
-

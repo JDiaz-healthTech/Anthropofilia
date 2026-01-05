@@ -1,13 +1,24 @@
-/* --- Footer -------------------------------------------------------------- */
+/* ==========================================================================
+   FOOTER - Pie de página
+   ========================================================================== */
+
 .main-footer {
-  text-align: center;
-  padding: 2rem 1rem;
-  background: var(--theme-header-bg);
-  color: var(--theme-text-light);
-  margin-top: 2rem;
-  border-top: 1px solid var(--theme-border);
-  font-family: var(--font-header);
+    text-align: center;
+    padding: 2rem 1rem;
+    background: var(--card-bg);
+    color: var(--muted);
+    margin-top: 2rem;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-header);
+    grid-column: 1 / -1;       /* Ocupa todo el ancho del grid */
 }
+
 .main-footer a {
-  color: var(--theme-primary);
+    color: var(--brand);
+    text-decoration: none;
+}
+
+.main-footer a:hover {
+    text-decoration: underline;
+    color: var(--brand-hover);
 }

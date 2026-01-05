@@ -1,5 +1,8 @@
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
 
-/* --- Responsive ---------------------------------------------------------- */
+/* --- Medium screens ----------------------------------------------------- */
 @media (max-width: 1100px) {
   .container {
     margin: 0;
@@ -8,99 +11,56 @@
     border-right: none;
   }
 }
+
+/* --- Tablet ------------------------------------------------------------- */
 @media (max-width: 820px) {
   .link-with-thumb img {
     width: 20px;
     height: 20px;
   }
+
   .post-card {
     padding: 1rem;
   }
 }
+
+/* --- Mobile ------------------------------------------------------------- */
 @media (max-width: 768px) {
   .main-content-area {
     grid-template-columns: 1fr;
     padding: 1rem;
   }
-  aside {
-    border-left: none;
-    padding-left: 0;
+
+  .main-content-area > aside {
     margin-top: 2rem;
     padding-top: 2rem;
+    padding-left: 0;
+    border-left: none;
     border-top: 2px solid var(--theme-border);
   }
-  .main-header h1 {
-    font-size: 2rem;
+
+  /* Navegación */
+  .main-nav-links {
+    display: none;
+  }
+
+  .main-nav-links.active {
+    display: block;
+  }
+
+  .main-nav-links a {
+    display: block;
+    padding: 0.6rem 0;
+  }
+
+  .mobile-nav-toggle {
+    display: inline-flex;
   }
 }
 
-
-
-/* ========================================================================== */
-/* 📱 NOTCH SUPPORT (iOS + Android)                                          */
-/* ========================================================================== */
-/* Asegura que en dispositivos con notch (iPhone, Android modernos),
-   el contenido no quede pegado al borde y respete las áreas seguras.         */
-
-@supports (padding: max(0px)) {
-  body {
-     padding-left:  max(0px, env(safe-area-inset-left));   /* Respeta notch izquierdo. */
-     padding-right: max(0px, env(safe-area-inset-right));  /* Respeta notch derecho. */
-     padding-top:   max(0px, env(safe-area-inset-top));    /* Respeta notch superior (ej. iPhone X). */
-     padding-bottom:max(0px, env(safe-area-inset-bottom)); /* Respeta notch inferior / barra de gestos. */
+/* --- Desktop ------------------------------------------------------------ */
+@media (min-width: 769px) {
+  .mobile-nav-toggle {
+    display: none;
   }
-}
-
-/* --- Elementos Base ------------------------------------------------------ */
-img { 
-  max-width: 100%;  /* Imágenes nunca superan ancho del contenedor. */
-  height: auto;     /* Mantienen proporción. */
-}
-
-hr { 
-  border: 0; 
-  border-top: 1px solid var(--theme-border); /* Línea de separación usa color dinámico de tema. */
-  margin: 2rem 0;   /* Espaciado vertical amplio. */
-}
-
-a {
-  color: var(--brand);              /* Color base de enlace (variable dinámica de marca). */
-  text-decoration: none;            /* Sin subrayado por defecto. */
-  transition: var(--transition);    /* Animación fluida para cambios de color/estado. */
-}
-a:hover {
-  color: var(--theme-primary-hover); /* Hover: color primario más claro. */
-  text-decoration: underline;        /* Añade subrayado en hover para accesibilidad. */
-}
-
-:focus-visible {
-  outline: 3px solid var(--theme-primary); /* Resalta elementos con focus (teclado). */
-  outline-offset: 2px;                     /* Separa visualmente el borde del contenido. */
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-header); /* Usa tipografía de títulos. */
-  font-weight: 600;                /* Semi-negrita para jerarquía. */
-  letter-spacing: -0.01em;         /* Ligero ajuste negativo para legibilidad. */
-}
-h1 { font-size: var(--step-2); line-height: 1.2; }   /* Título principal. */
-h2 { font-size: var(--step-1); line-height: 1.25; }  /* Subtítulo / sección. */
-small, .help-text { font-size: var(--step--1); }     /* Texto auxiliar. */
-
-blockquote {
-  border-left: 4px solid var(--theme-primary); /* Línea lateral en color primario. */
-  padding: .75rem 1rem;                        /* Espaciado interno. */
-  background: rgba(0,0,0,.03);                 /* Fondo tenue para destacar cita. */
-  border-radius: 0 6px 6px 0;                  /* Bordes redondeados en 3 lados. */
-}
-
-/* --- Layout Principal ---------------------------------------------------- */
-.container {
-  max-width: 1100px;                          /* Ancho máximo del contenido. */
-  margin: 2rem auto;                          /* Centrado con margen vertical. */
-  background-color: var(--theme-surface);     /* Fondo de contenedor, dinámico. */
-  border: 1px solid var(--theme-border);      /* Borde adaptable al tema. */
-  box-shadow: var(--shadow);                  /* Sombra estándar. */
-  border-radius: var(--radius);               /* Bordes redondeados (variable). */
-  overflow: hidden;                           /* Evita que elementos sobresalgan. */
 }

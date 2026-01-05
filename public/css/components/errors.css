@@ -1,7 +1,11 @@
-/* ============================================
+/* ==========================================================================
    PÁGINAS DE ERROR (404, 500)
-   ============================================ */
+   Sistema de mensajes de error amigables
+   ========================================================================== */
 
+/* =============================================
+   CONTENEDOR PRINCIPAL
+   ============================================= */
 .error-page {
     min-height: 60vh;
     display: flex;
@@ -15,24 +19,30 @@
     text-align: center;
 }
 
+/* =============================================
+   CÓDIGO DE ERROR (404, 500)
+   ============================================= */
 .error-code {
     font-size: 8rem;
     font-weight: 900;
-    color: var(--theme-primary, #0645ad);
+    color: var(--brand);          /* ← Café en lugar de azul hardcoded */
     opacity: 0.2;
     line-height: 1;
     margin-bottom: 1rem;
 }
 
 .error-content h1 {
-    font-size: 2rem;
-    color: #333;
+    font-size: var(--step-2);     /* ← Usar escala tipográfica */
+    color: var(--fg);             /* ← Usar variable */
     margin: 0 0 1rem 0;
 }
 
+/* =============================================
+   MENSAJE Y ACCIONES
+   ============================================= */
 .error-message {
-    font-size: 1.1rem;
-    color: #666;
+    font-size: var(--step-0);
+    color: var(--muted);          /* ← Usar variable */
     margin: 0 0 2rem 0;
     line-height: 1.6;
 }
@@ -45,17 +55,20 @@
     flex-wrap: wrap;
 }
 
+/* =============================================
+   SUGERENCIAS
+   ============================================= */
 .error-suggestions {
-    background: #f8f9fa;
+    background: var(--card-bg);   /* ← Usar variable */
     padding: 2rem;
-    border-radius: 8px;
+    border-radius: var(--radius);
     text-align: left;
 }
 
 .error-suggestions h3 {
-    font-size: 1.2rem;
+    font-size: var(--step-1);
     margin: 0 0 1rem 0;
-    color: #333;
+    color: var(--fg);
 }
 
 .error-suggestions ul {
@@ -74,27 +87,30 @@
     content: "→";
     position: absolute;
     left: 0;
-    color: var(--theme-primary, #0645ad);
+    color: var(--brand);          /* ← Usar variable */
 }
 
 .error-suggestions a {
-    color: var(--theme-primary, #0645ad);
+    color: var(--brand);
     text-decoration: none;
     font-weight: 600;
 }
 
 .error-suggestions a:hover {
     text-decoration: underline;
+    color: var(--brand-hover);
 }
 
-/* Responsive */
+/* =============================================
+   RESPONSIVE
+   ============================================= */
 @media (max-width: 768px) {
     .error-code {
         font-size: 5rem;
     }
     
     .error-content h1 {
-        font-size: 1.5rem;
+        font-size: var(--step-1);
     }
     
     .error-actions {
