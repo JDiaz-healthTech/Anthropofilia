@@ -1,0 +1,55 @@
+services:
+  # --- Aplicación Web (PHP + Apache) ---
+  web:
+    build:
+      context: ..
+      dockerfile: ops/docker/Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      # Monta todo el proyecto
+      - ..:/var/www/html
+    depends_on:
+      - db
+    environment:
+      # Las variables se cargan del .env, pero podemos setear algunas aquí
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
+    networks:
+      - anthropo-net
+
+  # --- Base de Datos (MariaDB) ---
+  db:
+    image: mariadb:10.4
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: blogdb
+      MYSQL_USER: blogmaster
+      MYSQL_PASSWORD: juliusDev2025
+    volumes:
+      - db_data:/var/lib/mysql
+      - ../database/blogdb.sql:/docker-entrypoint-initdb.d/init.sql
+      # Si tienes un SQL de inicialización:
+      # - ../database/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - anthropo-net
+
+  # --- phpMyAdmin ---
+  pma:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+      UPLOAD_LIMIT: 64M
+    depends_on:
+      - db
+    networks:
+      - anthropo-net
+
+volumes:
+  db_data:
+
+networks:
+  anthropo-net:
