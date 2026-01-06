@@ -107,12 +107,21 @@ $nonceAttr = ($security->cspNonce())
     : '';
 ?>
 
-<!-- Configuración de TinyMCE -->
-<script<?= $nonceAttr ?>>
+<script src="js/tinymce/tinymce.min.js"></script>
+
+<script>
+// Obtenemos el token CSRF de la sesión de PHP para usarlo en JS
+const csrfToken = "<?php echo $_SESSION['csrf_token']; ?>";
+
 if (typeof tinymce !== 'undefined') {
     tinymce.init({
         selector: 'textarea#contenido',
-        base_url: '/js/tinymce',
+        
+        // --- CORRECCIÓN DE RUTAS DE LOS ICONOS ---
+        base_url: 'js/tinymce', // Importante: Sin barra inicial
+        suffix: '.min',         // Optimización
+        // ----------------------------------------
+
         plugins: 'code link lists image media table autoresize paste',
         toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | link image media table | code',
         menubar: false,
@@ -132,7 +141,9 @@ if (typeof tinymce !== 'undefined') {
         ],
         default_link_target: '_blank',
 
-        images_upload_url: '<?= url("upload_image.php") ?>',
+        // --- GESTIÓN DE SUBIDA DE IMÁGENES ---
+        // Nota: Debes crear el archivo 'upload_image.php' para que esto funcione
+        images_upload_url: 'upload_image.php', 
         images_upload_credentials: true,
         automatic_uploads: true,
         image_caption: true,
@@ -142,12 +153,15 @@ if (typeof tinymce !== 'undefined') {
             { title: 'Ancho completo', value: 'img-wide' }
         ],
 
+        // Handler personalizado para subidas AJAX con seguridad CSRF
         images_upload_handler: function (blobInfo, progress) {
             return new Promise(function(resolve, reject) {
                 var xhr = new XMLHttpRequest();
-                xhr.open('POST', '<?= url("upload_image.php") ?>');
+                xhr.open('POST', 'upload_image.php'); // Asegúrate de crear este archivo
                 xhr.withCredentials = true;
-                xhr.setRequestHeader('X-CSRF-Token', '<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>');
+                
+                // Inyectamos el token CSRF en la cabecera
+                xhr.setRequestHeader('X-CSRF-Token', csrfToken);
                 
                 xhr.upload.onprogress = function (e) { 
                     if (e.lengthComputable) progress(e.loaded / e.total * 100); 
@@ -161,12 +175,12 @@ if (typeof tinymce !== 'undefined') {
                     try {
                         var json = JSON.parse(xhr.responseText);
                         if (!json || typeof json.location !== 'string') { 
-                            reject('Respuesta inválida'); 
+                            reject('Respuesta inválida: ' + xhr.responseText); 
                             return; 
                         }
                         resolve(json.location);
                     } catch (err) { 
-                        reject('JSON inválido'); 
+                        reject('JSON inválido: ' + err.message); 
                     }
                 };
                 
@@ -174,35 +188,40 @@ if (typeof tinymce !== 'undefined') {
                 
                 var formData = new FormData();
                 formData.append('file', blobInfo.blob(), blobInfo.filename());
+                // También enviamos el token por POST por si acaso
+                formData.append('csrf_token', csrfToken);
+                
                 xhr.send(formData);
             });
         },
 
         paste_data_images: false,
 
-        content_css: ['<?= url("css/style.css") ?>'],
+        // --- ESTILOS DENTRO DEL EDITOR ---
+        // Usamos style.css que ya tienes subido
+        content_css: ['style.css'], 
         content_style: `
-            body { max-width: 760px; margin: 1rem auto; line-height: 1.7; }
+            body { max-width: 760px; margin: 1rem auto; line-height: 1.7; font-family: Helvetica, Arial, sans-serif; color: #333; }
             figure { margin: 1.2rem 0; }
             figcaption { font-size: .9rem; opacity: .8; text-align: center; }
-            img { border-radius: 6px; }
-            blockquote { border-left: 4px solid var(--theme-primary, #8a4); padding:.6rem 1rem; background:rgba(0,0,0,.03); }
+            img { border-radius: 6px; max-width: 100%; height: auto; }
+            blockquote { border-left: 4px solid #8a4; padding:.6rem 1rem; background:rgba(0,0,0,.03); font-style: italic; }
             table { border-collapse: collapse; width: 100%; }
             table, th, td { border: 1px solid #ddd; }
             th, td { padding: .5rem; }
             ul, ol { margin-left: 1.2rem; }
-            pre, code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+            pre, code { font-family: monospace; background-color: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
         `,
 
         browser_spellcheck: true,
         contextmenu: false,
         
         init_instance_callback: function (editor) {
-            console.log('TinyMCE iniciado correctamente');
+            console.log('TinyMCE iniciado correctamente con configuración completa');
         }
     });
 } else {
-    console.error('TinyMCE no está cargado');
+    console.error('TinyMCE no está cargado. Revisa la ruta src del script.');
 }
 </script>
 
