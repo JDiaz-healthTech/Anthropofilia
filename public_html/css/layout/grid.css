@@ -1,0 +1,92 @@
+/* ==========================================================================
+   LAYOUT PRINCIPAL - Grid contenido + sidebar
+   ========================================================================== */
+
+/* =============================================
+   CONTENEDOR PRINCIPAL
+   ============================================= */
+.main-content-area {
+    display: grid;
+    grid-template-columns: 1fr;    /* Mobile-first: 1 columna */
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* =============================================
+   DESKTOP - 2 columnas (contenido + sidebar)
+   ============================================= */
+@media (min-width: 768px) {
+    .main-content-area {
+        grid-template-columns: 2.5fr 1fr;  /* Contenido más ancho */
+        align-items: start;
+        gap: 2.5rem; 
+    }
+}
+
+/* =============================================
+   ELEMENTOS PRINCIPALES
+   ============================================= */
+.main-content-area > main,
+.main-content-area > .home-list {
+    min-width: 0;                 /* Previene overflow en grid */
+}
+
+/* Sidebar en desktop */
+.main-content-area > aside {
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--border);
+}
+
+/* =============================================
+   LINKS CON MINIATURAS (sidebar)
+   ============================================= */
+.link-thumbs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.link-thumbs li + li {
+    margin-top: 0.35rem;
+}
+
+.link-with-thumb {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    line-height: 1.2;
+    text-decoration: none;
+    color: var(--fg);
+}
+
+.link-with-thumb:hover {
+    color: var(--brand);
+}
+
+.link-with-thumb img {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    border-radius: var(--radius);
+    object-fit: cover;
+    box-shadow: var(--shadow-soft);
+}
+
+.link-with-thumb span {
+    display: inline-block;
+}
+
+/* =============================================
+   RESPONSIVE - Sidebar en móvil
+   ============================================= */
+@media (max-width: 768px) {
+    .main-content-area > aside {
+        padding-left: 0;
+        border-left: none;
+        border-top: 2px solid var(--border);
+        padding-top: 2rem;
+        margin-top: 2rem;
+    }
+}

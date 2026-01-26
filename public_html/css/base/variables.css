@@ -1,0 +1,177 @@
+/* ==========================================================================
+   SISTEMA DE VARIABLES - UNIFICADO
+   ========================================================================== */
+
+:root {
+  /* =============================================
+     ZOOM DE FUENTE (Accesibilidad)
+     ============================================= */
+  --font-zoom: 1;
+
+  /* =============================================
+     TEMA CLARO (DEFAULT) - PALETA CAFÉ/TIERRA
+     ============================================= */
+  
+  /* Colores de fondo */
+  --page-bg: #FEFAE0;         /* Crema cálido - fondo general */
+  --bg: #FEFAE0;              /* Alias para compatibilidad */
+  --card-bg: #FAF3E0;         /* Crema más claro - cards */
+  --home-card-bg: #FFFFFF;    /* Blanco puro - cards del home */
+  
+  /* Colores de texto */
+  --fg: #2C1810;              /* Marrón oscuro casi negro - texto principal */
+  --muted: #6B5D4F;           /* Gris-café - texto secundario */
+  
+  /* Bordes */
+  --border: #D4C4B0;          /* Beige - bordes generales */
+  --card-border: var(--border);
+
+  /* =============================================
+     COLOR PRINCIPAL - CAFÉ PROFESIONAL
+     ============================================= */
+  --brand: #8B4513;           /* SaddleBrown - café oscuro */
+  --brand-hover: #6B4423;     /* Café más oscuro al hover */
+  --link: var(--brand);       /* Enlaces usan el color de marca */
+  --link-visited: #6B4423;    /* Enlaces visitados más oscuros */
+
+  /* =============================================
+     FORMULARIOS
+     ============================================= */
+  --input-bg: #FFFFFF;
+  --input-fg: var(--fg);
+
+  /* =============================================
+     TIPOGRAFÍA
+     ============================================= */
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+               "Helvetica Neue", Arial, sans-serif;
+  --font-header: Georgia, 'Times New Roman', serif;
+
+  /* Escala tipográfica fluida (Utopia) */
+  --step--1: clamp(0.83rem, 0.81rem + 0.11vw, 0.89rem);  /* Pequeño */
+  --step-0:  clamp(1.00rem, 0.96rem + 0.20vw, 1.13rem);  /* Base (p, body) */
+  --step-1:  clamp(1.20rem, 1.14rem + 0.32vw, 1.41rem);  /* h5, h4 */
+  --step-2:  clamp(1.44rem, 1.35rem + 0.47vw, 1.76rem);  /* h3 */
+  --step-3:  clamp(1.73rem, 1.60rem + 0.65vw, 2.20rem);  /* h2, h1 */
+
+  /* =============================================
+     UI TOKENS
+     ============================================= */
+  --radius: 6px;                                 /* Radio de bordes redondeados */
+  --transition: all 0.25s ease;                  /* Transición estándar */
+  --shadow: 0 2px 6px rgba(0,0,0,0.08);         /* Sombra normal */
+  --shadow-soft: 0 1px 3px rgba(0,0,0,0.05);    /* Sombra suave */
+  --measure: 65ch;                               /* Ancho máximo de texto legible */
+}
+
+/* ==========================================================================
+   TEMA OSCURO - GRIS PROFESIONAL CON ACENTOS CAFÉ
+   ========================================================================== */
+html.theme-dark {
+  /* Colores de fondo */
+  --page-bg: #1a1a1a;         /* Negro suave */
+  --bg: #1a1a1a;
+  --card-bg: #252525;         /* Gris carbón */
+  --home-card-bg: #2a2a2a;
+  
+  /* Colores de texto */
+  --fg: #E5E5E5;              /* Gris muy claro */
+  --muted: #A0A0A0;           /* Gris medio */
+  
+  /* Bordes */
+  --border: #3a3a3a;          /* Gris oscuro */
+  --card-border: var(--border);
+
+  /* Color principal - Café claro para contraste */
+  --brand: #C89B6D;           /* Café claro/dorado */
+  --brand-hover: #D4A574;     /* Café dorado más claro */
+  --link: var(--brand);
+  --link-visited: #B8956A;
+
+  /* Formularios */
+  --input-bg: #2a2a2a;
+  --input-fg: var(--fg);
+}
+
+/* ==========================================================================
+   ALTO CONTRASTE CLARO - CAFÉ OSCURO SOBRE BLANCO
+   ========================================================================== */
+html.high-contrast:not(.theme-dark) {
+  /* Fondo blanco puro */
+  --page-bg: #FFFFFF;
+  --bg: #FFFFFF;
+  --card-bg: #FFFFFF;
+  
+  /* Texto negro puro */
+  --fg: #000000;
+  --muted: #2C1810;           /* Marrón oscuro (para contraste) */
+  
+  /* Bordes café */
+  --border: #8B4513;
+  --card-border: #8B4513;
+
+  /* Color principal - Café muy oscuro */
+  --brand: #6B4423;
+  --brand-hover: #4A2F17;     /* Café casi negro */
+  --link: var(--brand);
+  --link-visited: var(--brand);
+
+  /* Formularios */
+  --input-bg: #FFFFFF;
+  --input-fg: #000000;
+}
+
+/* ==========================================================================
+   ALTO CONTRASTE OSCURO - AMARILLO SOBRE NEGRO
+   ========================================================================== */
+html.theme-dark.high-contrast {
+  /* Fondo negro puro */
+  --page-bg: #000000;
+  --bg: #000000;
+  --card-bg: #000000;
+  
+  /* Texto amarillo brillante */
+  --fg: #FFFF00;
+  --muted: #FFFF00;
+  
+  /* Bordes amarillos */
+  --border: #FFFF00;
+  --card-border: #FFFF00;
+
+  /* Color principal - Amarillo */
+  --brand: #FFFF00;
+  --brand-hover: #FFFF66;     /* Amarillo más claro */
+  --link: var(--brand);
+  --link-visited: var(--brand);
+
+  /* Formularios */
+  --input-bg: #000000;
+  --input-fg: #FFFF00;
+}
+
+/* ==========================================================================
+   ALIASES PARA COMPATIBILIDAD CON CÓDIGO ANTIGUO
+   (Eventualmente eliminar cuando todo use las nuevas variables)
+   ========================================================================== */
+:root,
+html.theme-dark,
+html.high-contrast,
+html.theme-dark.high-contrast {
+  /* Sistema antiguo theme-* */
+  --theme-bg-color: var(--bg);
+  --theme-text: var(--fg);
+  --theme-text-light: var(--muted);
+  --theme-primary: var(--brand);
+  --theme-primary-hover: var(--brand-hover);
+  --theme-border: var(--card-border);
+  --theme-surface: var(--card-bg);
+  --theme-header-bg: var(--card-bg);
+  
+  /* Sistema antiguo color-* */
+  --color-primary: var(--brand);
+  --color-primary-hover: var(--brand-hover);
+  --color-bg: var(--bg);
+  --color-text: var(--fg);
+  --color-link: var(--link);
+  --color-link-visited: var(--link-visited);
+}

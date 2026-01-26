@@ -1,0 +1,31 @@
+
+
+
+/* --- Tabla: acciones de gestión de posts --- */
+td.actions {
+  display: flex;
+  gap: 0.5rem;         /* espacio entre botones */
+  justify-content: flex-start;
+  align-items: center;
+}
+
+td.actions .button {
+  padding: 0.25rem 0.6rem;  /* más compacto */
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+td.actions .button.danger {
+  background-color: #c0392b;
+  color: #fff;
+}
+
+td.actions .button.danger:hover {
+  background-color: #a93226;
+}
+
+/* El form no debe romper el flexbox */
+td.actions .inline-form {
+  display: inline;
+  margin: 0;
+}

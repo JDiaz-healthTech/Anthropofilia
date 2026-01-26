@@ -1,0 +1,324 @@
+/* ==========================================================================
+   SIDEBAR - Widgets laterales del blog
+   ========================================================================== */
+
+/* =============================================
+   CONTENEDOR PRINCIPAL
+   ============================================= */
+.site-sidebar {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+}
+
+/* =============================================
+   WIDGETS GENERALES
+   ============================================= */
+.sidebar-widget {
+    background: var(--bg);
+    padding: 1.5rem;
+    margin-bottom: 2rem;        /* ← Más espacio entre widgets */
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.sidebar-widget:last-child {
+    margin-bottom: 0;
+}
+
+/* Título de widget */
+.sidebar-widget h3,
+.sidebar-widget h4 {
+    font-size: var(--step-0);
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--brand);
+    color: var(--fg);
+}
+
+/* Mensaje de widget vacío */
+.sidebar-empty {
+    color: var(--muted);
+    font-size: var(--step--1);
+    font-style: italic;
+    margin: 0;
+}
+
+/* =============================================
+   BUSCADOR
+   ============================================= */
+.search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;               /* ← Espacio entre input y botón */
+    align-items: stretch;       /* ← Misma altura */
+}
+
+.search-form input[type="search"] {
+    flex: 1;
+    padding: 0.7rem 0.8rem;     /* ← Más padding */
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: var(--step--1);
+    background: var(--input-bg);
+    color: var(--input-fg);
+    min-width: 0;               /* ← Permite encogimiento */
+}
+
+.search-form input[type="search"]:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+    outline: none;
+}
+
+.search-form button {
+    padding: 0.7rem 1.2rem;     /* ← Más padding horizontal */
+    background: var(--brand);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: var(--step--1);
+    font-weight: 600;
+    white-space: nowrap;
+    transition: var(--transition);
+    flex-shrink: 0;             /* ← No encogimiento */
+}
+
+.search-form button:hover {
+    background: var(--brand-hover);
+    transform: translateY(-1px);
+}
+
+/* =============================================
+   ACERCA DE MÍ
+   ============================================= */
+.about-card {
+    text-align: center;
+}
+
+.about-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 1rem;
+    display: block;
+    border: 3px solid var(--brand);
+}
+
+.about-text {
+    font-size: var(--step--1);
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0 0 1rem 0;
+}
+
+.about-link {
+    display: inline-block;
+    font-size: var(--step--1);
+    color: var(--brand);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.about-link:hover {
+    text-decoration: underline;
+    color: var(--brand-hover);
+}
+
+/* =============================================
+   NUBE DE ETIQUETAS
+   ============================================= */
+.tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    line-height: 1.8;
+}
+
+.tag-item {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    background: var(--card-bg);
+    color: var(--fg);
+    text-decoration: none;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+    font-weight: 500;
+    font-size: var(--step--1);
+}
+
+.tag-item:hover {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+    transform: translateY(-2px);
+}
+
+/* =============================================
+   CATEGORÍAS
+   ============================================= */
+.category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-list li {
+    margin-bottom: 0.5rem;
+}
+
+.category-list a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    text-decoration: none;
+    color: var(--fg);
+    border-radius: var(--radius);
+    transition: background 0.2s ease;
+}
+
+.category-list a:hover {
+    background: var(--card-bg);
+}
+
+.category-list .count {
+    font-size: var(--step--1);
+    color: var(--muted);
+}
+
+/* =============================================
+   ARCHIVO TEMPORAL
+   ============================================= */
+.archive-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.archive-list > li {
+    margin-bottom: 0.5rem;
+}
+
+.archive-list details {
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.archive-list summary {
+    padding: 0.6rem;
+    cursor: pointer;
+    background: var(--card-bg);
+    font-weight: 600;
+    color: var(--fg);
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s ease;
+}
+
+.archive-list summary:hover {
+    background: var(--border);
+}
+
+.archive-list details[open] summary {
+    background: var(--brand);
+    color: white;
+}
+
+.archive-list details[open] summary .count {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.archive-list details ul {
+    list-style: none;
+    padding: 0.5rem 0 0.5rem 1rem;
+    margin: 0;
+    background: var(--bg);
+}
+
+.archive-list details ul li {
+    margin-bottom: 0.3rem;
+}
+
+.archive-list details ul a {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3rem 0.5rem;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: var(--step--1);
+    border-radius: var(--radius);
+    transition: background 0.2s ease;
+}
+
+.archive-list details ul a:hover {
+    background: var(--card-bg);
+    color: var(--brand);
+}
+
+.archive-list .count {
+    font-size: var(--step--1);
+    color: var(--muted);
+}
+
+/* =============================================
+   SITIOS DE INTERÉS
+   ============================================= */
+.link-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.link-list li {
+    margin-bottom: 0.5rem;
+}
+
+.link-list a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    text-decoration: none;
+    color: var(--fg);
+    border-radius: var(--radius);
+    transition: background 0.2s ease;
+    font-size: var(--step--1);
+}
+
+.link-list a:hover {
+    background: var(--card-bg);
+}
+
+.link-list img {
+    flex-shrink: 0;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    .site-sidebar {
+        margin-top: 2rem;
+        padding: 1rem;
+    }
+    
+    .sidebar-widget {
+        padding: 1.2rem;
+        margin-bottom: 1.5rem;  /* ← Espacio entre widgets en móvil */
+    }
+    
+    .search-form {
+        gap: 0.6rem;            /* ← Gap ligeramente menor en móvil */
+    }
+    
+    .search-form button {
+        padding: 0.7rem 1rem;   /* ← Botón más compacto */
+    }
+}

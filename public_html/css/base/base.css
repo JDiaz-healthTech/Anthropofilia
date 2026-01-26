@@ -1,0 +1,71 @@
+/* ==========================================================================
+   BASE
+   Estilos globales del documento
+   ========================================================================== */
+
+/* =============================================
+   DOCUMENTO HTML
+   ============================================= */
+html {
+  scroll-behavior: smooth;                       /* Scroll suave en anclas */
+  font-size: calc(100% * var(--font-zoom, 1)); /* Zoom accesible */
+}
+
+body {
+  background: var(--page-bg);
+  color: var(--fg);
+  min-height: 100vh;                            /* Mínimo altura completa */
+  margin: 0;
+  padding: 0;
+}
+
+/* =============================================
+   ELEMENTOS HTML BÁSICOS
+   ============================================= */
+
+/* Separadores horizontales */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* Imágenes y media */
+img,
+picture {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* =============================================
+   ACCESIBILIDAD
+   ============================================= */
+
+/* Indicador de foco visible */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Selección de texto */
+::selection {
+  background: var(--brand);
+  color: var(--page-bg);
+}
+
+/* =============================================
+   PREFERENCIAS DE USUARIO
+   ============================================= */
+
+/* Reducir movimiento si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

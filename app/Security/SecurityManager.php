@@ -1,0 +1,555 @@
+<?php
+/**
+ * SecurityManager.php
+ * Gestor de seguridad para Anthropofilia
+ *
+ * Requisitos:
+ * - PHP 8.0+
+ * - PDO configurado (MySQL/MariaDB)
+ * - Composer autoload (opcional: HTMLPurifier)
+ */
+declare(strict_types=1);
+
+namespace App\Security;
+
+use PDO;
+use PDOException;
+use RuntimeException;
+
+final class SecurityManager
+{
+    private ?PDO $pdo = null;
+
+    /** @var array<string,mixed> */
+    private array $config = [
+        'env' => 'prod',
+
+        // Sesión
+        'session_name'         => 'anth_session',
+        'session_idle_timeout' => 1800, // 30 min
+        'session_rotate_every' => 600,  // 10 min
+        'trust_proxy'          => false,
+
+        // Rate limit
+        'rate_limit' => [
+            'enabled' => true,
+            'general' => ['max' => 120, 'window' => 3600],
+            'post'    => ['max' => 30,  'window' => 3600],
+        ],
+
+        // CSP
+        'csp' => [
+            'tinymce_cdn'         => 'https://cdn.tiny.cloud',
+            'extra_script_src'    => ['https://cdn.jsdelivr.net'],
+            'allow_unsafe_inline' => false,
+        ],
+
+        // Uploads
+        'uploads' => [
+            'max_size_bytes' => 2 * 1024 * 1024,
+            'allowed_mime'   => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+            'max_pixels'     => 1600,
+        ],
+    ];
+
+    private ?string $cspNonce = null;
+
+    public function __construct(array $config = [], ?PDO $pdo = null)
+    {
+        $this->config = array_replace_recursive($this->config, $config);
+        $this->pdo    = $pdo;
+    }
+
+    /** Llamar una vez por request */
+    public function boot(): void
+    {
+        $this->startSecureSession();
+        $this->applySecurityHeaders();
+        $this->enforceRateLimits();
+    }
+
+    /* ======================
+       Autenticación / Roles
+       ====================== */
+
+    public function requireLogin(): void
+    {
+        $this->startSecureSession();
+        if (empty($_SESSION['id_usuario'])) {
+            header('Location: login.php');
+            exit();
+        }
+    }
+
+    public function userId(): ?int
+    {
+        $this->startSecureSession();
+        return isset($_SESSION['id_usuario']) ? (int)$_SESSION['id_usuario'] : null;
+    }
+
+    public function roles(): array
+    {
+        $this->startSecureSession();
+        if (isset($_SESSION['roles']) && is_array($_SESSION['roles'])) return $_SESSION['roles'];
+        if (isset($_SESSION['rol'])) return [$_SESSION['rol']];
+        return [];
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->roles(), true);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    public function requireOwnershipOrRole(?int $ownerId, array $allowedRoles = ['admin']): void
+    {
+        $uid = $this->userId();
+        if ($ownerId !== null && $uid === $ownerId) return;
+        foreach ($allowedRoles as $r) if ($this->hasRole($r)) return;
+        $this->abort(403, 'Acceso denegado.');
+    }
+
+    /* ==============
+       CSRF
+       ============== */
+
+    public function csrfToken(): string
+    {
+        $this->startSecureSession();
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+
+    public function csrfField(): string
+    {
+        return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars($this->csrfToken(), ENT_QUOTES, 'UTF-8') . '">';
+    }
+
+    public function verifyCsrf(?string $token = null): bool
+    {
+        $token = $token ?? $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+        return hash_equals($this->csrfToken(), $token);
+    }
+
+    public function requireValidCsrf(): void
+    {
+        if (!$this->verifyCsrf()) {
+            $this->abort(403, 'Token CSRF inválido.');
+        }
+    }
+
+    /**
+     * Valida el token y lanza excepción si falla.
+     * Es necesario porque tus archivos actualizar_pagina.php, etc. lo están llamando.
+     */
+    public function csrfValidate(?string $token = null): void
+    {
+        // Reutiliza la lógica de verificación que ya tienes
+        if (!$this->verifyCsrf($token)) {
+            // Lanza excepción para que la capturen tus try/catch
+            throw new \RuntimeException('Error de seguridad: Token CSRF inválido o expirado.');
+        }
+    }
+
+    /* ==============
+       Sesión segura
+       ============== */
+
+    private function startSecureSession(): void
+    {
+        if (session_status() !== PHP_SESSION_NONE) return;
+
+        $secure = $this->isHttps();
+        $params = [
+            'lifetime' => 0,
+            'path'     => '/',
+            'secure'   => $secure,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ];
+        if (!empty($this->config['cookie_domain'])) {
+            $params['domain'] = (string)$this->config['cookie_domain'];
+        }
+
+        session_name((string)$this->config['session_name']);
+        session_set_cookie_params($params);
+        session_start();
+
+        $_SESSION['__created_at'] = $_SESSION['__created_at'] ?? time();
+        $_SESSION['__last_seen']  = $_SESSION['__last_seen']  ?? time();
+
+        // Rotación de ID
+        if (time() - (int)$_SESSION['__created_at'] > (int)$this->config['session_rotate_every']) {
+            session_regenerate_id(true);
+            $_SESSION['__created_at'] = time();
+        }
+        // Expiración por inactividad
+        if (time() - (int)$_SESSION['__last_seen'] > (int)$this->config['session_idle_timeout']) {
+            $this->destroySession();
+            session_start();
+            $_SESSION['__created_at'] = time();
+        }
+        $_SESSION['__last_seen'] = time();
+    }
+
+    private function destroySession(): void
+    {
+        $_SESSION = [];
+        if (ini_get('session.use_cookies')) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params['path'],
+                $params['domain'] ?? '',
+                (bool)$params['secure'],
+                (bool)$params['httponly']
+            );
+        }
+        session_destroy();
+    }
+
+    private function isHttps(): bool
+    {
+        if (!empty($this->config['trust_proxy'])) {
+            $proto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
+            if (strtolower($proto) === 'https') return true;
+        }
+        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (isset($_SERVER['SERVER_PORT']) && (string)$_SERVER['SERVER_PORT'] === '443');
+    }
+
+    /* =========
+       Cabeceras / CSP
+       ========= */
+
+    public function cspNonce(): string
+    {
+        if ($this->cspNonce === null) {
+            $this->cspNonce = base64_encode(random_bytes(16));
+        }
+        return $this->cspNonce;
+    }
+
+    public function applySecurityHeaders(): void
+    {
+        header('X-Content-Type-Options: nosniff');
+        header('Referrer-Policy: strict-origin-when-cross-origin');
+        header('X-Frame-Options: SAMEORIGIN');
+
+        if (($this->config['env'] ?? 'prod') === 'prod' && $this->isHttps()) {
+            header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+        }
+
+        $scriptSrc  = ["'self'"];
+        $styleSrc   = ["'self'"];
+        $imgSrc     = ["'self'", "data:", "blob:", "https:"];
+        $fontSrc    = ["'self'", "data:", "https:"];
+        $connectSrc = ["'self'"];
+        $frameAnc   = ["'self'"];
+
+        if (!empty($this->config['csp']['tinymce_cdn'])) {
+            $cdn = (string)$this->config['csp']['tinymce_cdn'];
+            $scriptSrc[]  = $cdn;
+            $styleSrc[]   = $cdn;
+            $connectSrc[] = $cdn;
+            $fontSrc[]    = $cdn;
+        }
+
+        if (!empty($this->config['csp']['extra_script_src'])) {
+            foreach ((array)$this->config['csp']['extra_script_src'] as $src) {
+                $scriptSrc[] = $src;
+            }
+        }
+
+        $allowInline = !empty($this->config['csp']['allow_unsafe_inline']);
+        if ($allowInline) {
+            $scriptSrc[] = "'unsafe-inline'";
+            $styleSrc[]  = "'unsafe-inline'";
+        } else {
+            $nonce = $this->cspNonce();
+            $scriptSrc[] = "'nonce-{$nonce}'";
+            $styleSrc[]  = "'nonce-{$nonce}'";
+        }
+
+        $csp = sprintf(
+            "default-src 'self'; script-src %s; style-src %s; img-src %s; font-src %s; connect-src %s; frame-ancestors %s; base-uri 'self'; form-action 'self'",
+            implode(' ', $scriptSrc),
+            implode(' ', $styleSrc),
+            implode(' ', $imgSrc),
+            implode(' ', $fontSrc),
+            implode(' ', $connectSrc),
+            implode(' ', $frameAnc)
+        );
+
+        header('Content-Security-Policy: ' . $csp);
+    }
+
+    /* =========
+       Rate Limiting
+       ========= */
+
+    public function enforceRateLimits(): void
+    {
+        if (empty($this->config['rate_limit']['enabled'])) return;
+
+        $this->checkRateLimit(
+            'general',
+            (int)$this->config['rate_limit']['general']['max'],
+            (int)$this->config['rate_limit']['general']['window']
+        );
+
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+            $this->checkRateLimit(
+                'post_form',
+                (int)$this->config['rate_limit']['post']['max'],
+                (int)$this->config['rate_limit']['post']['window']
+            );
+        }
+    }
+
+    public function checkRateLimit(string $action, int $maxAttempts, int $windowSeconds): void
+    {
+        $ip = $this->clientIP();
+
+        if ($this->pdo) {
+            try {
+                $threshold = date('Y-m-d H:i:s', time() - $windowSeconds);
+                $del = $this->pdo->prepare("DELETE FROM rate_limits WHERE ts < :threshold");
+                $del->execute([':threshold' => $threshold]);
+
+                $bucketSql = "FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(NOW())/60)*60)";
+
+                $sql = "INSERT INTO rate_limits (action, ip, bucket_start, hits)
+                    VALUES (:a, :ip, $bucketSql, 1)
+                    ON DUPLICATE KEY UPDATE hits = hits + 1, ts = NOW()";
+                $ins = $this->pdo->prepare($sql);
+                $ins->execute([':a' => $action, ':ip' => $ip]);
+
+                $sel = $this->pdo->prepare(
+                    "SELECT COALESCE(SUM(hits),0)
+                     FROM rate_limits
+                     WHERE action = :a AND ip = :ip AND ts >= :threshold"
+                );
+                $sel->execute([':a' => $action, ':ip' => $ip, ':threshold' => $threshold]);
+                $count = (int)$sel->fetchColumn();
+
+                if ($count >= $maxAttempts) {
+                    http_response_code(429);
+                    exit('Demasiadas solicitudes. Intenta más tarde.');
+                }
+                return;
+            } catch (PDOException $e) {
+                // Si la tabla no existe, usar fallback en sesión
+            }
+        }
+
+        // Fallback en sesión
+        $key    = sprintf('rl_%s_%s', $action, md5($ip));
+        $bucket = $_SESSION[$key] ?? [];
+        $now    = time();
+        $bucket = array_filter($bucket, fn($ts) => ($now - (int)$ts) < $windowSeconds);
+        if (count($bucket) >= $maxAttempts) {
+            http_response_code(429);
+            exit('Demasiadas solicitudes. Intenta más tarde.');
+        }
+        $bucket[]       = $now;
+        $_SESSION[$key] = $bucket;
+    }
+
+    /* =========
+       Sanitización HTML
+       ========= */
+public function sanitizeHTML(string $html): string
+    {
+        // Al haber instalado la librería con Composer, esto siempre será true
+        if (class_exists(\HTMLPurifier::class)) {
+            
+            // 1. Configuración base
+            $config = \HTMLPurifier_Config::createDefault();
+
+            // 2. Caché (Vital para el rendimiento)
+            $cachePath = defined('BASE_PATH') ? BASE_PATH . '/storage/cache' : sys_get_temp_dir();
+            if (!is_dir($cachePath)) {
+                mkdir($cachePath, 0755, true);
+            }
+            $config->set('Cache.SerializerPath', $cachePath);
+
+            // 3. TUS PREFERENCIAS (Aquí recuperamos lo que tenías)
+            
+            // Permitir 'data' para imágenes en base64 y mailto
+            $config->set('URI.AllowedSchemes', [
+                'http' => true, 
+                'https' => true, 
+                'mailto' => true, 
+                'data' => true
+            ]);
+
+            // Tu lista exacta de etiquetas permitidas (tablas, código, citas, etc.)
+            $config->set(
+                'HTML.Allowed',
+                'p,br,strong,em,ul,ol,li,blockquote,a[href|title|target|rel],img[src|alt|title|width|height],h2,h3,code,pre,table,thead,tbody,tr,th,td'
+            );
+
+            // Permitir que los enlaces se abran en nueva pestaña
+            $config->set('Attr.AllowedFrameTargets', ['_blank']);
+            
+            // Opcional: Si quieres FORZAR que todos los enlaces externos se abran en _blank
+            // $config->set('HTML.TargetBlank', true); 
+
+            // 4. Limpieza y retorno
+            $purifier = new \HTMLPurifier($config);
+            return $purifier->purify($html);
+        }
+
+        // Si llegamos aquí, es que Composer falló o se borró la carpeta vendor.
+        // Lanzamos error para no guardar datos inseguros sin darnos cuenta.
+        throw new \RuntimeException('HTMLPurifier no está instalado. Ejecuta: docker compose run --rm composer install');
+    }
+    /* =========
+       Uploads
+       ========= */
+
+    public function validateUpload(array $file): void
+    {
+        if (!isset($file['error']) || is_array($file['error'])) {
+            throw new RuntimeException('Parámetros de subida inválidos.');
+        }
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            throw new RuntimeException('Error en la subida: ' . $file['error']);
+        }
+
+        $maxSize = (int)$this->config['uploads']['max_size_bytes'];
+        if ((int)$file['size'] > $maxSize) {
+            throw new RuntimeException('Archivo demasiado grande (máx ' . round($maxSize / 1024 / 1024, 2) . 'MB).');
+        }
+
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mime  = $finfo->file($file['tmp_name']);
+        $allowed = $this->config['uploads']['allowed_mime'];
+        if (!in_array($mime, $allowed, true)) {
+            throw new RuntimeException('Tipo no permitido: ' . $mime);
+        }
+
+        if (str_starts_with((string)$mime, 'image/')) {
+            $info = getimagesize($file['tmp_name']);
+            if ($info === false) throw new RuntimeException('Imagen inválida.');
+            [$w, $h] = $info;
+            if ($w < 1 || $h < 1) throw new RuntimeException('Dimensiones inválidas.');
+        }
+    }
+
+    public function extensionFromMime(string $mime): string
+    {
+        return match ($mime) {
+            'image/jpeg' => '.jpg',
+            'image/png'  => '.png',
+            'image/gif'  => '.gif',
+            'image/webp' => '.webp',
+            default      => '.bin',
+        };
+    }
+
+    public function secureFilename(string $originalName, string $mime): string
+    {
+        return hash('sha256', $originalName . microtime(true) . random_bytes(16))
+            . $this->extensionFromMime($mime);
+    }
+
+    /* =========
+       Logging y helpers
+       ========= */
+
+    public function logEvent(string $level, string $event, array $details = []): void
+    {
+        $ip = $this->clientIP();
+        $ua = $_SERVER['HTTP_USER_AGENT'] ?? null;
+        $uid = $this->userId();
+
+        if ($this->pdo) {
+            try {
+                $stmt = $this->pdo->prepare(
+                    "INSERT INTO app_logs (ip,user_id,level,event,details,user_agent)
+                     VALUES (:ip,:uid,:lvl,:ev,:det,:ua)"
+                );
+                $stmt->execute([
+                    ':ip'  => $ip,
+                    ':uid' => $uid,
+                    ':lvl' => $level,
+                    ':ev'  => $event,
+                    ':det' => json_encode($details, JSON_UNESCAPED_UNICODE),
+                    ':ua'  => $ua,
+                ]);
+                return;
+            } catch (PDOException $e) {
+                // Si la tabla no existe, usar error_log
+            }
+        }
+
+        error_log('APP_LOG ' . json_encode([
+            'ts' => date('c'),
+            'ip' => $ip,
+            'user_id' => $uid,
+            'level' => $level,
+            'event' => $event,
+            'details' => $details,
+            'ua' => $ua
+        ], JSON_UNESCAPED_UNICODE));
+    }
+
+
+
+    public function cleanInput(mixed $input, string $type = 'string'): string
+    {
+        if (is_array($input)) $input = implode(',', $input);
+        $input = trim((string)$input);
+        return match ($type) {
+            'email' => filter_var($input, FILTER_SANITIZE_EMAIL) ?: '',
+            'int'   => (string)filter_var($input, FILTER_SANITIZE_NUMBER_INT),
+            'url'   => filter_var($input, FILTER_SANITIZE_URL) ?: '',
+            default => htmlspecialchars($input, ENT_QUOTES, 'UTF-8'),
+        };
+    }
+
+    public function clientIP(): string
+    {
+        if (!empty($this->config['trust_proxy'])) {
+            $xff = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
+            if ($xff) {
+                $parts = array_map('trim', explode(',', $xff));
+                if ($parts[0] !== '') return $parts[0];
+            }
+        }
+        return $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+    }
+
+        public function abort(int $code = 404, string $message = ''): never
+    {
+        http_response_code($code);
+        
+        // Usar páginas de error personalizadas
+        if ($code === 404 && file_exists(__DIR__ . '/../../resources/errors/404.php')) {
+            require __DIR__ . '/../../resources/errors/404.php';
+            exit();
+        }
+        
+        if ($code === 500 && file_exists(__DIR__ . '/../../resources/errors/500.php')) {
+            require __DIR__ . '/../../resources/errors/500.php';
+            exit();
+        }
+        
+        // Fallback genérico
+        echo "Error {$code}";
+        if ($message) {
+            echo ": " . htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+        }
+        exit();
+    }
+}
