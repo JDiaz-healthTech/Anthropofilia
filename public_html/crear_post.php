@@ -45,7 +45,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 
     <h1>Crear nuevo post</h1>
 
-    <form action="<?= url('guardar_post.php') ?>" method="post" enctype="multipart/form-data" class="form-container">
+    <form action="<?= url('guardar_post.php') ?>" method="post" enctype="multipart/form-data" class="form-container" novalidate id="formCrearPost">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
 
         <div>
@@ -80,7 +80,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                 name="contenido" 
                 rows="20" 
                 required 
-                maxlength="100000"><?= htmlspecialchars($old['contenido'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+                maxlength="200000"><?= htmlspecialchars($old['contenido'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
         </div>
 
         <div>
@@ -110,8 +110,26 @@ $nonceAttr = ($security->cspNonce())
 <script src="js/tinymce/tinymce.min.js"></script>
 
 <script>
+document.getElementById('formCrearPost').addEventListener('submit', function(e) {
+    // 1. OBLIGATORIO: Volcar datos de TinyMCE al textarea real
+    if (typeof tinymce !== 'undefined') {
+        tinymce.triggerSave();
+    }
+
+    // 2. VALIDAR: Comprobar que no esté vacío
+    var contenido = document.getElementById('contenido').value.trim();
+    
+    if (contenido === '') {
+        e.preventDefault(); // Frenar el envío
+        alert('El contenido no puede estar vacío.');
+        return false;
+    }
+});
+</script>
+
+<script>
 // Obtenemos el token CSRF de la sesión de PHP para usarlo en JS
-const csrfToken = "<?php echo $_SESSION['csrf_token']; ?>";
+const csrfToken = "<?php echo htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8'); ?>"; 
 
 if (typeof tinymce !== 'undefined') {
     tinymce.init({
