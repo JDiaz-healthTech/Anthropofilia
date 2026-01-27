@@ -122,8 +122,8 @@ if (typeof tinymce !== 'undefined') {
         suffix: '.min',         // Optimización
         // ----------------------------------------
 
-        plugins: 'code link lists image media table autoresize paste',
-        toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | link image media table | code',
+        plugins: 'code link lists image media table autoresize paste advlist',
+        toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code',
         menubar: false,
         height: 540,
         branding: false,
@@ -140,6 +140,46 @@ if (typeof tinymce !== 'undefined') {
             { title: 'nofollow', value: 'nofollow' }
         ],
         default_link_target: '_blank',
+
+                // --- CONFIGURACIÓN DE VÍDEOS EMBEBIDOS ---
+        media_live_embeds: true,  // Preview en tiempo real
+        media_alt_source: false,  // Simplifica el diálogo
+        media_poster: false,      // Sin póster, más simple
+        media_dimensions: false,  // Responsive por defecto
+
+        // Filtros de URL para seguridad
+        media_url_resolver: function (data, resolve) {
+            // Detectar YouTube
+            if (data.url.indexOf('youtube.com/watch') !== -1 || data.url.indexOf('youtu.be/') !== -1) {
+                var videoId = '';
+                if (data.url.indexOf('youtu.be/') !== -1) {
+                    videoId = data.url.split('youtu.be/')[1].split(/[?&]/)[0];
+                } else {
+                    var match = data.url.match(/[?&]v=([^&]+)/);
+                    videoId = match ? match[1] : '';
+                }
+                if (videoId) {
+                    resolve({
+                        html: '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + videoId + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+                    });
+                    return;
+                }
+            }
+            
+            // Detectar Vimeo
+            if (data.url.indexOf('vimeo.com/') !== -1) {
+                var vimeoId = data.url.split('vimeo.com/')[1].split(/[?&]/)[0];
+                if (vimeoId) {
+                    resolve({
+                        html: '<iframe src="https://player.vimeo.com/video/' + vimeoId + '" width="560" height="315" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>'
+                    });
+                    return;
+                }
+            }
+            
+            // Si no es YouTube ni Vimeo, dejar que TinyMCE lo maneje
+            resolve({ html: '' });
+        },
 
         // --- GESTIÓN DE SUBIDA DE IMÁGENES ---
         // Nota: Debes crear el archivo 'upload_image.php' para que esto funcione
@@ -197,6 +237,15 @@ if (typeof tinymce !== 'undefined') {
 
         paste_data_images: false,
 
+        // --- INSTRUCCIONES PARA IMÁGENES CON ENLACES ---
+        // Las imágenes con enlaces ya funcionan nativamente en TinyMCE:
+        // 1. Sube o inserta una imagen
+        // 2. Selecciona la imagen en el editor
+        // 3. Haz clic en el botón "link" (icono de cadena) en la toolbar
+        // 4. Pega la URL (ej: https://calameo.com/tu-documento)
+        // 5. Elige si abrir en nueva pestaña
+        // La imagen quedará clicable automáticamente
+
         // --- ESTILOS DENTRO DEL EDITOR ---
         // Usamos style.css que ya tienes subido
         content_css: ['style.css'], 
@@ -211,6 +260,24 @@ if (typeof tinymce !== 'undefined') {
             th, td { padding: .5rem; }
             ul, ol { margin-left: 1.2rem; }
             pre, code { font-family: monospace; background-color: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+                /* Vídeos responsive */
+            iframe {
+                max-width: 100%;
+                height: auto;
+                aspect-ratio: 16/9;
+                border-radius: 8px;
+                margin: 1.5rem 0;
+            }
+            
+            /* Imágenes con enlaces - efecto hover */
+            a img {
+                transition: opacity 0.2s ease, transform 0.2s ease;
+            }
+            
+            a:hover img {
+                opacity: 0.85;
+                transform: scale(1.02);
+            }
         `,
 
         browser_spellcheck: true,

@@ -144,6 +144,11 @@ function nav_active(string $file, ?string $slug = null): string {
     <!-- CSS Principal -->
     <link rel="stylesheet" href="<?= url('css/style.css') ?>">
 
+    <!-- CSS específico por página -->
+    <?php if (in_array($current_page, ['post.php'], true)): ?>
+    <link rel="stylesheet" href="<?= url('css/pages/post.css') ?>">
+    <?php endif; ?>
+
     <?php if ($needsTinymce): ?>
     <!-- TinyMCE Self-Hosted -->
     <script src="<?= url('js/tinymce/tinymce.min.js') ?>" 

@@ -104,14 +104,12 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
       </span>
       <?php if (!empty($imagen_url)): ?>
         <figure class="imagen-destacada">
-          <!-- Alt vacío intencionadamente; la imagen es decorativa 
-          <img src="<?= htmlspecialchars($imagen_url, ENT_QUOTES, 'UTF-8') ?>" alt="Imagen destacada">
-          a continuacion propuesta para mejorar la presetacion de la imagen -->
-          <img src="<?= htmlspecialchars($imagen_url, ENT_QUOTES, 'UTF-8') ?>"
-              alt="Imagen destacada"
-              loading="lazy" decoding="async"
-              sizes="(min-width: 800px) 720px, 100vw">
-
+      <!-- Imagen destacada con lazy loading -->
+      <img src="<?= htmlspecialchars($imagen_url, ENT_QUOTES, 'UTF-8') ?>"
+          alt="Imagen destacada del artículo"
+          loading="lazy" 
+          decoding="async"
+          sizes="(min-width: 800px) 720px, 100vw">
         </figure>
       <?php endif; ?>
     </header>
@@ -125,3 +123,4 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
   </nav>
 </main>
 <?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>
+
