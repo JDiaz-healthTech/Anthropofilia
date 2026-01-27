@@ -15,7 +15,7 @@ $message = '';
 $messageType = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $security->validateCSRF($_POST['csrf_token'] ?? '');
+    $security->csrfValidate($_POST['csrf_token'] ?? '');
     
     $action = $_POST['action'] ?? '';
     
