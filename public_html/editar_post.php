@@ -49,8 +49,8 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
   </nav>
  
     <h2>Editar Post</h2>
-    <form action="actualizar_post.php" method="POST" class="form-container">
-        <?php echo $security->csrfField(); ?>
+    <form action="actualizar_post.php" method="POST" enctype="multipart/form-data" class="form-container">
+            <?php echo $security->csrfField(); ?>
         <input type="hidden" name="id_post" value="<?php echo (int)$post['id_post']; ?>">
 
         <div>
@@ -89,6 +89,14 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
             <label for="imagen_url">URL de la Imagen Destacada:</label>
             <input type="url" id="imagen_url" name="imagen_url"
                    value="<?php echo htmlspecialchars($post['imagen_destacada_url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+        </div>
+        <div>
+            <label for="imagen">O subir nueva imagen:</label>
+            <input type="file" 
+                   id="imagen" 
+                   name="imagen"
+                   accept="image/jpeg,image/png,image/gif,image/webp">
+            <small>Máximo 2MB. Si subes un archivo nuevo, reemplazará la URL anterior.</small>
         </div>
 
         <button type="submit">Actualizar Post</button>
