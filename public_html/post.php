@@ -114,9 +114,45 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
       <?php endif; ?>
     </header>
 
-    <section class="contenido">
-      <?= $contenido_html ?>
-    </section>
+<section class="contenido">
+    <?php
+    // Detectar si el contenido viene de Blogger (tiene clases características)
+    $es_contenido_blogger = (
+        strpos($contenido_html, 'post-title') !== false ||
+        strpos($contenido_html, 'entry-title') !== false ||
+        strpos($contenido_html, 'Apple-style-span') !== false ||
+        strpos($contenido_html, 'post-header') !== false ||
+        strpos($contenido_html, 'post-body') !== false
+    );
+    
+    if ($es_contenido_blogger) {
+        // SOLO para posts antiguos de Blogger: limpiar
+        $contenido_limpio = $contenido_html;
+        
+        // Remover clases específicas de Blogger
+        $contenido_limpio = preg_replace('/class="[^"]*(?:post-|entry-|Apple-style-|separator)[^"]*"/', '', $contenido_limpio);
+        
+        // Remover divs vacíos
+        $contenido_limpio = preg_replace('/<div[^>]*>\s*&nbsp;\s*<\/div>/', '', $contenido_limpio);
+        $contenido_limpio = preg_replace('/<div[^>]*>\s*<\/div>/', '', $contenido_limpio);
+        
+        // Limpiar estilos inline de Blogger
+        $contenido_limpio = preg_replace('/<div[^>]*style="[^"]*text-align:\s*center[^"]*"[^>]*>/', '<div style="text-align: center;">', $contenido_limpio);
+        
+        // Actualizar iframes de YouTube antiguos
+        $contenido_limpio = preg_replace(
+            '/<iframe[^>]*src="https:\/\/www\.youtube\.com\/embed\/([^"?]+)[^"]*"[^>]*>.*?<\/iframe>/is',
+            '<iframe width="560" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+            $contenido_limpio
+        );
+        
+        echo $contenido_limpio;
+    } else {
+        // Para posts nuevos de TinyMCE: mostrar tal cual
+        echo $contenido_html;
+    }
+    ?>
+</section>
   </article>
   <nav class="post-navigation">
     <a href="<?= url('index.php') ?>" >&larr; Volver a inicio</a>

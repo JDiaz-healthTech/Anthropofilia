@@ -14,12 +14,12 @@ $offset  = ($page - 1) * $perPage;
 try {
     $totalPosts = Post::countAll();
     $posts      = Post::getPaginated($perPage, $offset);
-    $totalPages = max(1, (int)ceil($totalPosts / $perPage));
+    $totalPagesCount = max(1, (int)ceil($totalPosts / $perPage));
     
 } catch (Exception $e) {
     error_log("Error cargando portada: " . $e->getMessage());
     $posts = [];
-    $totalPages = 1;
+    $totalPagesCount = 1;
 }
 
 $page_title = 'Página de inicio';
@@ -52,15 +52,15 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
             <p class="no-posts">No hay publicaciones disponibles.</p>
         <?php endif; ?>
 
-        <?php if ($totalPages > 1): ?>
+        <?php if ($totalPagesCount > 1): ?>
             <nav class="pagination" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
                 <?php if ($page > 1): ?>
                     <a href="<?= url('index.php?page=' . ($page - 1)) ?>" class="btn-pag">&laquo; Anterior</a>
                 <?php endif; ?>
 
-                <span class="current-page" style="align-self: center;">Página <?= $page ?> de <?= $totalPages ?></span>
+                <span class="current-page" style="align-self: center;">Página <?= $page ?> de <?= $totalPagesCount ?></span>
 
-                <?php if ($page < $totalPages): ?>
+                <?php if ($page < $totalPagesCount): ?>
                     <a href="<?= url('index.php?page=' . ($page + 1)) ?>" class="btn-pag">Siguiente &raquo;</a>
                 <?php endif; ?>
             </nav>

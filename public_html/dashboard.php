@@ -46,10 +46,22 @@ if (!$isLoggedIn) {
 // SI ESTÁ LOGUEADO: Cargar estadísticas y mostrar dashboard
 // ============================================================
 
+// Mensaje flash
+$flash = '';
+if (isset($_GET['msg'])) {
+    $flashMap = [
+        'deleted' => 'Entrada eliminada correctamente.',
+        'created' => 'Entrada creada correctamente.',
+        'updated' => 'Entrada actualizada correctamente.',
+    ];
+    $key = (string)$_GET['msg'];
+    $flash = $flashMap[$key] ?? '';
+}
+
 try {
     // Estadísticas básicas
     $totalPosts = Post::countAll();
-    $totalPages = Page::countAll(); // Método que crearemos
+    $totalPagesCount = Page::countAll(); // Método que crearemos
     $totalCategories = Category::countAll(); // Método que crearemos
     
     // Posts paginados para la tabla
@@ -57,12 +69,12 @@ try {
     $perPage = 10;
     $offset = ($page - 1) * $perPage;
     $posts = Post::getPaginated($perPage, $offset);
-    $totalPages = max(1, (int)ceil($totalPosts / $perPage));
+    $$totalPagesCount = max(1, (int)ceil($totalPosts / $perPage));
     
 } catch (Exception $e) {
     error_log("Error cargando dashboard: " . $e->getMessage());
     $totalPosts = 0;
-    $totalPages = 0;
+    $$totalPagesCount = 0;
     $totalCategories = 0;
     $posts = [];
 }
@@ -76,6 +88,11 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <h1>Dashboard</h1>
         <p style="color: #666;">¡Bienvenido, <?= htmlspecialchars($userName) ?>!</p>
     </div>
+<?php if ($flash): ?>
+    <div class="alert success" style="padding: 1rem; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; margin-bottom: 1.5rem;">
+        <?= htmlspecialchars($flash, ENT_QUOTES, 'UTF-8') ?>
+    </div>
+<?php endif; ?>
 
     <!-- ESTADÍSTICAS BÁSICAS -->
     <section class="stats-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
@@ -86,7 +103,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         </div>
         
         <div class="stat-card" style="padding: 1.5rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <div style="font-size: 2rem; font-weight: bold;"><?= $totalPages ?></div>
+            <div style="font-size: 2rem; font-weight: bold;"><?= $$totalPagesCount ?></div>
             <div style="opacity: 0.9;">Páginas creadas</div>
         </div>
         
@@ -167,7 +184,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                                       style="display: inline; margin: 0;"
                                       onsubmit="return confirm('¿Seguro que deseas eliminar esta entrada?');">
                                     <?= $security->csrfField() ?>
-                                    <input type="hidden" name="id_post" value="<?= $post['id_post'] ?>">
+                                    <input type="hidden" name="id" value="<?= $post['id_post'] ?>">
                                     <button type="submit" 
                                             class="btn btn-sm" 
                                             style="padding: 0.5rem 1rem; font-size: 0.9rem; background: #dc3545; color: white; border: none; cursor: pointer; border-radius: var(--radius); font-weight: 600; white-space: nowrap;">
@@ -183,7 +200,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     </div>
 
             <!-- PAGINACIÓN -->
-            <?php if ($totalPages > 1): ?>
+            <?php if ($$totalPagesCount > 1): ?>
                 <nav class="pagination" style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center;">
                     <?php if ($page > 1): ?>
                         <a href="<?= url('dashboard.php?page=' . ($page - 1)) ?>" class="btn">« Anterior</a>
@@ -193,7 +210,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                         Página <?= $page ?> de <?= $totalPages ?>
                     </span>
                     
-                    <?php if ($page < $totalPages): ?>
+                    <?php if ($page < $totalPagesCount): ?>
                         <a href="<?= url('dashboard.php?page=' . ($page + 1)) ?>" class="btn">Siguiente »</a>
                     <?php endif; ?>
                 </nav>
@@ -218,7 +235,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         </div>
         <div style="padding: 1rem; background: #f8f9fa; border-radius: 8px; text-align: center;">
             <p style="color: #666; margin-bottom: 0.5rem;">
-                📄 Tienes <strong><?= $totalPages ?> páginas</strong> creadas
+                📄 Tienes <strong><?= $totalPagesCount ?> páginas</strong> creadas
             </p>
             <a href="<?= url('gestionar_paginas.php') ?>" 
             class="btn btn-sm" 

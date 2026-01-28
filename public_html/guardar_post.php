@@ -25,7 +25,7 @@ $id_usuario    = (int)$security->userId();
 
 // 4) Validaciones básicas
 if ($titulo === '' || $contenido_raw === '' || $id_categoria <= 0) {
-    $_SESSION['form_data'] = $_POST;
+    $_SESSION['form_post'] = $_POST;
     header('Location: crear_post.php?status=invalid');
     exit();
 }
@@ -34,7 +34,7 @@ if ($titulo === '' || $contenido_raw === '' || $id_categoria <= 0) {
 $catStmt = $pdo->prepare('SELECT 1 FROM categorias WHERE id_categoria = ?');
 $catStmt->execute([$id_categoria]);
 if (!$catStmt->fetchColumn()) {
-    $_SESSION['form_data'] = $_POST;
+    $_SESSION['form_post'] = $_POST;
     header('Location: crear_post.php?status=invalid_category');
     exit();
 }
@@ -47,6 +47,23 @@ $imagen_path = null;
 
 // A) archivo subido
 if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FILE) {
+    // Verificar si hubo error en la subida
+    if ($_FILES['imagen']['error'] !== UPLOAD_ERR_OK) {
+        $errorMessages = [
+            UPLOAD_ERR_INI_SIZE   => 'El archivo supera el tamaño máximo permitido por el servidor',
+            UPLOAD_ERR_FORM_SIZE  => 'El archivo supera el tamaño máximo del formulario',
+            UPLOAD_ERR_PARTIAL    => 'El archivo se subió parcialmente',
+            UPLOAD_ERR_NO_TMP_DIR => 'Falta el directorio temporal',
+            UPLOAD_ERR_CANT_WRITE => 'Error al escribir el archivo en disco',
+            UPLOAD_ERR_EXTENSION  => 'Una extensión de PHP detuvo la subida'
+        ];
+        
+        $_SESSION['form_post'] = $_POST;
+        $_SESSION['upload_error'] = $errorMessages[$_FILES['imagen']['error']] ?? 'Error desconocido al subir la imagen';
+        header('Location: crear_post.php?status=upload_error');
+        exit();
+    }
+    
     try {
         $security->validateUpload($_FILES['imagen']);
 
@@ -67,8 +84,10 @@ if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FIL
         }
 
         $imagen_path = $base_dir_url . $nombre; // ruta relativa servible
-    } catch (\Throwable $e) {
-        $_SESSION['form_data'] = $_POST;
+        } catch (\Throwable $e) {
+        $_SESSION['form_post'] = $_POST;
+        $_SESSION['upload_error'] = $e->getMessage();
+        error_log("Error al subir imagen: " . $e->getMessage());
         header('Location: crear_post.php?status=upload_error');
         exit();
     }
@@ -141,13 +160,29 @@ try {
     }
 
     $pdo->commit();
-    header('Location: dashboard.php?msg=created');
-    exit();
+        
+        // Limpiar datos del formulario
+        unset($_SESSION['form_post']);
+        unset($_SESSION['upload_error']);
+        
+        header('Location: dashboard.php?msg=created');
+        exit();
 
-} catch (\PDOException $e) {
-    $pdo->rollBack();
-    $security->logEvent('error', 'post_create_failed', ['error' => $e->getMessage()]);
-    $_SESSION['form_data'] = $_POST;
-    header('Location: crear_post.php?status=db_error');
-    exit();
-}
+    } catch (\PDOException $e) {
+        $pdo->rollBack();
+        
+        // Si hay una imagen subida y falla la BD, eliminarla
+        if ($imagen_path && !filter_var($imagen_path, FILTER_VALIDATE_URL)) {
+            $imagen_fisica = __DIR__ . '/' . $imagen_path;
+            if (file_exists($imagen_fisica)) {
+                @unlink($imagen_fisica);
+            }
+        }
+        
+        $security->logEvent('error', 'post_create_failed', ['error' => $e->getMessage()]);
+        $_SESSION['form_post'] = $_POST;
+        $_SESSION['db_error'] = $e->getMessage();
+        error_log("Error al crear post: " . $e->getMessage());
+        header('Location: crear_post.php?status=db_error');
+        exit();
+    }
