@@ -90,10 +90,10 @@ try {
 
     // 9) Insertar post principal
     $sqlPost = 'INSERT INTO posts
-        (titulo, contenido, id_categoria, imagen_destacada_url, id_usuario, etiquetas)
+        (titulo, contenido, id_categoria, imagen_destacada_url, id_usuario)
         VALUES (?, ?, ?, ?, ?, ?)';
     $stmt = $pdo->prepare($sqlPost);
-    $stmt->execute([$titulo, $contenido, $id_categoria, $imagen_path, $id_usuario, $tags_for_column]);
+    $stmt->execute([$titulo, $contenido, $id_categoria, $imagen_path, $id_usuario]);
     $id_post = (int)$pdo->lastInsertId();
 
     // 10) Upsert de etiquetas + vinculación
