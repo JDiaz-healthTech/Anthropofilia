@@ -140,7 +140,7 @@ if (typeof tinymce !== 'undefined') {
         suffix: '.min',         // Optimización
         // ----------------------------------------
 
-        plugins: 'code link lists image media table autoresize paste advlist',
+        plugins: 'code link lists image media table autoresize advlist',
         toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code',
         menubar: false,
         height: 540,
