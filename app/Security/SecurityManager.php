@@ -393,8 +393,7 @@ public function sanitizeHTML(string $html): string
         // 4. ===== IFRAMES SEGUROS (NUEVA FUNCIONALIDAD) =====
         // Permitir iframes SOLO de YouTube y Vimeo
         $config->set('HTML.SafeIframe', true);
-        $config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube(-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%');
-
+        $config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube(-nocookie)?\.com/embed/|player\.vimeo\.com/video/|view\.genially\.com/)%');
         // 5. ETIQUETAS Y ATRIBUTOS PERMITIDOS (tu lista + iframes)
         $config->set(
             'HTML.Allowed',
