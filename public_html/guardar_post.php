@@ -151,11 +151,3 @@ try {
     header('Location: crear_post.php?status=db_error');
     exit();
 }
-
-} catch (\PDOException $e) {
-    $pdo->rollBack();
-    $security->logEvent('error', 'post_create_failed', ['error' => $e->getMessage()]);
-    $_SESSION['form_data'] = $_POST;
-    header('Location: crear_post.php?status=db_error');
-    exit();
-}
