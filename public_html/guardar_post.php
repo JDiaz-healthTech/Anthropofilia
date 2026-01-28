@@ -88,17 +88,40 @@ $tags_for_column = implode(', ', $tags); // compat con columna posts.etiquetas
 try {
     $pdo->beginTransaction();
 
-    // 9) Insertar post principal
+    // 1) Generar slug automático desde el título
+    $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $titulo), '-'));
+    
+    // Si el slug queda vacío o es muy corto, generar uno único
+    if (strlen($slug) < 3) {
+        $slug = 'post-' . time();
+    }
+    
+    // Verificar unicidad del slug (opcional pero recomendado)
+    $slugOriginal = $slug;
+    $contador = 1;
+    $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM posts WHERE slug = ?");
+    
+    while (true) {
+        $stmtCheck->execute([$slug]);
+        if ($stmtCheck->fetchColumn() == 0) {
+            break; // Slug disponible
+        }
+        // Slug duplicado, añadir contador
+        $slug = $slugOriginal . '-' . $contador;
+        $contador++;
+    }
+
+    // 2) Insertar post principal CON slug
     $sqlPost = 'INSERT INTO posts
-        (titulo, contenido, id_categoria, imagen_destacada_url, id_usuario)
+        (titulo, slug, contenido, id_categoria, imagen_destacada_url, id_usuario)
         VALUES (?, ?, ?, ?, ?, ?)';
+    
     $stmt = $pdo->prepare($sqlPost);
-    $stmt->execute([$titulo, $contenido, $id_categoria, $imagen_path, $id_usuario]);
+    $stmt->execute([$titulo, $slug, $contenido, $id_categoria, $imagen_path, $id_usuario]);
     $id_post = (int)$pdo->lastInsertId();
 
-    // 10) Upsert de etiquetas + vinculación
+    // 3) Upsert de etiquetas + vinculación
     if ($tags) {
-        // upsert: si existe, devuelve su id via LAST_INSERT_ID()
         $stmtUpsert = $pdo->prepare(
             "INSERT INTO etiquetas (nombre_etiqueta)
              VALUES (?)
@@ -120,6 +143,14 @@ try {
     $pdo->commit();
     header('Location: dashboard.php?msg=created');
     exit();
+
+} catch (\PDOException $e) {
+    $pdo->rollBack();
+    $security->logEvent('error', 'post_create_failed', ['error' => $e->getMessage()]);
+    $_SESSION['form_data'] = $_POST;
+    header('Location: crear_post.php?status=db_error');
+    exit();
+}
 
 } catch (\PDOException $e) {
     $pdo->rollBack();
