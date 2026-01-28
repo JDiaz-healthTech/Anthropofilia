@@ -368,51 +368,54 @@ final class SecurityManager
        Sanitización HTML
        ========= */
 public function sanitizeHTML(string $html): string
-    {
-        // Al haber instalado la librería con Composer, esto siempre será true
-        if (class_exists(\HTMLPurifier::class)) {
-            
-            // 1. Configuración base
-            $config = \HTMLPurifier_Config::createDefault();
+{
+    // Al haber instalado la librería con Composer, esto siempre será true
+    if (class_exists(\HTMLPurifier::class)) {
+        
+        // 1. Configuración base
+        $config = \HTMLPurifier_Config::createDefault();
 
-            // 2. Caché (Vital para el rendimiento)
-            $cachePath = defined('BASE_PATH') ? BASE_PATH . '/storage/cache' : sys_get_temp_dir();
-            if (!is_dir($cachePath)) {
-                mkdir($cachePath, 0755, true);
-            }
-            $config->set('Cache.SerializerPath', $cachePath);
-
-            // 3. TUS PREFERENCIAS (Aquí recuperamos lo que tenías)
-            
-            // Permitir 'data' para imágenes en base64 y mailto
-            $config->set('URI.AllowedSchemes', [
-                'http' => true, 
-                'https' => true, 
-                'mailto' => true, 
-                'data' => true
-            ]);
-
-            // Tu lista exacta de etiquetas permitidas (tablas, código, citas, etc.)
-            $config->set(
-                'HTML.Allowed',
-                'p,br,strong,em,ul,ol,li,blockquote,a[href|title|target|rel],img[src|alt|title|width|height],h2,h3,code,pre,table,thead,tbody,tr,th,td'
-            );
-
-            // Permitir que los enlaces se abran en nueva pestaña
-            $config->set('Attr.AllowedFrameTargets', ['_blank']);
-            
-            // Opcional: Si quieres FORZAR que todos los enlaces externos se abran en _blank
-            // $config->set('HTML.TargetBlank', true); 
-
-            // 4. Limpieza y retorno
-            $purifier = new \HTMLPurifier($config);
-            return $purifier->purify($html);
+        // 2. Caché (Vital para el rendimiento)
+        $cachePath = defined('BASE_PATH') ? BASE_PATH . '/storage/cache' : sys_get_temp_dir();
+        if (!is_dir($cachePath)) {
+            mkdir($cachePath, 0755, true);
         }
+        $config->set('Cache.SerializerPath', $cachePath);
 
-        // Si llegamos aquí, es que Composer falló o se borró la carpeta vendor.
-        // Lanzamos error para no guardar datos inseguros sin darnos cuenta.
-        throw new \RuntimeException('HTMLPurifier no está instalado. Ejecuta: docker compose run --rm composer install');
+        // 3. ESQUEMAS URI PERMITIDOS (data para base64, mailto para emails)
+        $config->set('URI.AllowedSchemes', [
+            'http' => true, 
+            'https' => true, 
+            'mailto' => true, 
+            'data' => true
+        ]);
+
+        // 4. ===== IFRAMES SEGUROS (NUEVA FUNCIONALIDAD) =====
+        // Permitir iframes SOLO de YouTube y Vimeo
+        $config->set('HTML.SafeIframe', true);
+        $config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube(-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%');
+
+        // 5. ETIQUETAS Y ATRIBUTOS PERMITIDOS (tu lista + iframes)
+        $config->set(
+            'HTML.Allowed',
+            'p,br,strong,em,ul,ol,li,blockquote,a[href|title|target|rel],img[src|alt|title|width|height],h2,h3,code,pre,table,thead,tbody,tr,th,td,iframe[src|width|height|frameborder|allowfullscreen|title|allow]'
+        );
+
+        // 6. Permitir que los enlaces se abran en nueva pestaña
+        $config->set('Attr.AllowedFrameTargets', ['_blank']);
+        
+        // Opcional: Si quieres FORZAR que todos los enlaces externos se abran en _blank
+        // $config->set('HTML.TargetBlank', true); 
+
+        // 7. Limpieza y retorno
+        $purifier = new \HTMLPurifier($config);
+        return $purifier->purify($html);
     }
+
+    // Si llegamos aquí, es que Composer falló o se borró la carpeta vendor.
+    // Lanzamos error para no guardar datos inseguros sin darnos cuenta.
+    throw new \RuntimeException('HTMLPurifier no está instalado. Ejecuta: docker compose run --rm composer install');
+}
     /* =========
        Uploads
        ========= */
