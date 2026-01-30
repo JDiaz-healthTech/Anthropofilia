@@ -31,13 +31,20 @@
 @import "components/media.css";     /* Imágenes y lightbox */
 @import "components/tables.css";    /* Tablas (admin) */
 @import "components/errors.css";    /* Páginas de error (404, 500) */
-@import "components/accesibility.css"; /* Controles de accesibilidad */
+@import "components/accessibility.css"; /* Controles de accesibilidad */
 
 /* ==========================================================================
    CAPA 4: PAGES — Estilos específicos de páginas
    ========================================================================== */
 @import "pages/post.css";           /* Página individual de post */
 @import "pages/acerca_de_mi.css";   /* Página individual de acerca de mí */
+
+/* ========================================
+   ADMIN
+   ======================================== */
+@import 'css/05-admin/_admin-layout.css';
+@import 'css/05-admin/_admin-stats.css';
+@import 'css/05-admin/_admin-tables.css';
 
 /* ==========================================================================
    NOTAS DE ARQUITECTURA

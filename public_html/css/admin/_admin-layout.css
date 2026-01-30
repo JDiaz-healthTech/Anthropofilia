@@ -1,0 +1,199 @@
+/* ========================================
+   ADMIN LAYOUT
+   ======================================== */
+
+/* Contenedor principal del dashboard */
+.admin-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Cabecera del admin */
+.admin-header {
+  margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.admin-header p {
+  color: #666;
+  margin: 0;
+}
+
+/* Alertas y mensajes flash */
+.alert {
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.alert.success {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.alert.error {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.alert.warning {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+}
+
+.alert.info {
+  background: #d1ecf1;
+  border: 1px solid #bee5eb;
+  color: #0c5460;
+}
+
+/* Secciones del dashboard */
+.quick-actions,
+.manage-posts,
+.manage-pages,
+.manage-categories {
+  margin-bottom: 3rem;
+}
+
+.quick-actions h2,
+.manage-posts h2,
+.manage-pages h2,
+.manage-categories h2 {
+  margin-bottom: 1rem;
+}
+
+/* Cabeceras de sección con botones */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Grid de acciones rápidas */
+.quick-actions__grid {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Botón de acción rápida */
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--brand);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.action-btn:hover {
+  opacity: 0.85;
+}
+
+.action-btn__icon {
+  font-size: 1.2rem;
+}
+
+/* Mini-card informativa */
+.info-card {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.info-card p {
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.info-card strong {
+  color: var(--fg);
+}
+
+/* Paginación */
+.pagination {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination__info {
+  padding: 0 1rem;
+  color: var(--fg);
+}
+
+/* Mensaje cuando no hay contenido */
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+/* Mensaje de acceso denegado */
+.access-denied {
+  max-width: 600px;
+  margin: 4rem auto;
+  text-align: center;
+}
+
+.access-denied__card {
+  padding: 2rem;
+  border: 2px solid #f0f0f0;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.access-denied h1 {
+  margin-bottom: 1rem;
+}
+
+.access-denied p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: #666;
+}
+
+.access-denied__note {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #999;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 1rem 0.5rem;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .quick-actions__grid {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

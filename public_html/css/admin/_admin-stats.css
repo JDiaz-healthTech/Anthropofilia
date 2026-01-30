@@ -1,0 +1,51 @@
+/* ========================================
+   ADMIN STATS CARDS
+   ======================================== */
+
+/* Contenedor de las tarjetas */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Tarjeta base */
+.stat-card {
+  padding: 1.5rem;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Número grande */
+.stat-card__value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/* Etiqueta descriptiva */
+.stat-card__label {
+  opacity: 0.9;
+  font-size: 0.95rem;
+}
+
+/* Variantes con gradientes */
+.stat-card--posts {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.stat-card--pages {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.stat-card--categories {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}

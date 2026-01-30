@@ -20,23 +20,20 @@ if (!$isLoggedIn) {
     require_once BASE_PATH . '/resources/views/partials/header.php';
     ?>
     
-    <main class="container" style="max-width: 600px; margin: 4rem auto; text-align: center;">
-        <div style="padding: 2rem; border: 2px solid #f0f0f0; border-radius: 8px; background: #fafafa;">
-            <h1 style="margin-bottom: 1rem;">🔒 Dashboard de Administración</h1>
-            <p style="font-size: 1.1rem; margin-bottom: 2rem; color: #666;">
-                Para acceder al panel de administración necesitas iniciar sesión.
-            </p>
-            
-            <a href="<?= url('login.php') ?>" class="btn" style="display: inline-block; padding: 0.75rem 2rem; background: #0645ad; color: white; text-decoration: none; border-radius: 4px; font-size: 1rem;">
-                🔑 Iniciar Sesión
-            </a>
-            
-            <p style="margin-top: 2rem; font-size: 0.9rem; color: #999;">
-                💡 <em>Próximamente: Registro de usuarios para funciones colaborativas</em>
-            </p>
-        </div>
-    </main>
-    
+<main class="access-denied">
+    <div class="access-denied__card">
+        <h1>🔒 Dashboard de Administración</h1>
+        <p>Para acceder al panel de administración necesitas iniciar sesión.</p>
+        
+        <a href="<?= url('login.php') ?>" class="btn action-btn">
+            🔑 Iniciar Sesión
+        </a>
+        
+        <p class="access-denied__note">
+            💡 <em>Próximamente: Registro de usuarios para funciones colaborativas</em>
+        </p>
+    </div>
+</main>
     <?php
     require_once BASE_PATH . '/resources/views/partials/footer.php';
     exit();
@@ -84,129 +81,117 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 
 <main class="admin-dashboard">
-    <div class="admin-header" style="margin-bottom: 2rem;">
-        <h1>Dashboard</h1>
-        <p style="color: #666;">¡Bienvenido, <?= htmlspecialchars($userName) ?>!</p>
-    </div>
-<?php if ($flash): ?>
-    <div class="alert success" style="padding: 1rem; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; margin-bottom: 1.5rem;">
-        <?= htmlspecialchars($flash, ENT_QUOTES, 'UTF-8') ?>
-    </div>
-<?php endif; ?>
+        <div class="admin-header">
+            <h1>Dashboard</h1>
+            <p>¡Bienvenido, <?= htmlspecialchars($userName) ?>!</p>
+        </div>
+        <?php if ($flash): ?>
+            <div class="alert success">
+                <?= htmlspecialchars($flash, ENT_QUOTES, 'UTF-8') ?>
+            </div>
+        <?php endif; ?>
 
     <!-- ESTADÍSTICAS BÁSICAS -->
-    <section class="stats-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <section class="stats-cards">
         
-        <div class="stat-card" style="padding: 1.5rem; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <div style="font-size: 2rem; font-weight: bold;"><?= $totalPosts ?></div>
-            <div style="opacity: 0.9;">Entradas publicadas</div>
+        <div class="stat-card stat-card--posts">
+            <div class="stat-card__value"><?= $totalPosts ?></div>
+            <div class="stat-card__label">Entradas publicadas</div>
         </div>
         
-        <div class="stat-card" style="padding: 1.5rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <div style="font-size: 2rem; font-weight: bold;"><?= $$totalPagesCount ?></div>
-            <div style="opacity: 0.9;">Páginas creadas</div>
+        <div class="stat-card stat-card--pages">
+            <div class="stat-card__value"><?= $totalPagesCount ?></div>
+            <div class="stat-card__label">Páginas creadas</div>
         </div>
         
-        <div class="stat-card" style="padding: 1.5rem; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <div style="font-size: 2rem; font-weight: bold;"><?= $totalCategories ?></div>
-            <div style="opacity: 0.9;">Categorías activas</div>
+        <div class="stat-card stat-card--categories">
+            <div class="stat-card__value"><?= $totalCategories ?></div>
+            <div class="stat-card__label">Categorías activas</div>
         </div>
         
     </section>
 
 <!-- ACCIONES RÁPIDAS -->
-<section class="quick-actions" style="margin-bottom: 3rem;">
-    <h2 style="margin-bottom: 1rem;">Acciones Rápidas</h2>
-    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-        <a href="<?= url('crear_post.php') ?>" 
-           class="btn" 
-           style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: var(--brand); color: white; text-decoration: none; border-radius: var(--radius); font-weight: 600;">
-            <span style="font-size: 1.2rem;">+</span>
+<section class="quick-actions">
+    <h2>Acciones Rápidas</h2>
+    <div class="quick-actions__grid">
+        <a href="<?= url('crear_post.php') ?>" class="action-btn">
+            <span class="action-btn__icon">+</span>
             <span>Crear Nueva Entrada</span>
         </a>
-        <a href="<?= url('crear_pagina.php') ?>" 
-           class="btn" 
-           style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: var(--brand); color: white; text-decoration: none; border-radius: var(--radius); font-weight: 600;">
-            <span style="font-size: 1.2rem;">📄</span>
+        <a href="<?= url('crear_pagina.php') ?>" class="action-btn">
+            <span class="action-btn__icon">📄</span>
             <span>Crear Nueva Página</span>
         </a>
-        <a href="<?= url('personalizar.php') ?>" 
-           class="btn" 
-           style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: var(--brand); color: white; text-decoration: none; border-radius: var(--radius); font-weight: 600;">
-            <span style="font-size: 1.2rem;">🎨</span>
+        <a href="<?= url('personalizar.php') ?>" class="action-btn">
+            <span class="action-btn__icon">🎨</span>
             <span>Personalizar Diseño</span>
         </a>
     </div>
 </section>
 
 <!-- GESTIÓN DE ENTRADAS -->
-<section class="manage-posts">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <h2>Gestionar Entradas</h2>
-        <a href="<?= url('crear_post.php') ?>" 
-           class="btn" 
-           style="padding: 0.6rem 1.2rem; background: var(--brand); color: white; text-decoration: none; border-radius: var(--radius); font-weight: 600;">
-            <span style="font-size: 1.1rem;">+</span> Nueva Entrada
-        </a>
-    </div>
+ <section class="manage-posts">
 
+<div class="section-header">
+    <h2>Gestionar Entradas</h2>
+    <a href="<?= url('crear_post.php') ?>" class="action-btn">
+        <span class="action-btn__icon">+</span> Nueva Entrada
+    </a>
+</div>
   <?php if (!empty($posts)): ?>
-    <div class="table-responsive" style="overflow-x: auto;">
-        <table class="admin-table" style="width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);">
-            <thead style="background: var(--page-bg); border-bottom: 2px solid var(--border);">
-                <tr>
-                    <th style="padding: 1rem; text-align: left; color: var(--fg); font-weight: 600;">Título</th>
-                    <th style="padding: 1rem; text-align: left; color: var(--fg); font-weight: 600;">Fecha de Publicación</th>
-                    <th style="padding: 1rem; text-align: center; color: var(--fg); font-weight: 600;">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($posts as $post): ?>
-                    <tr style="border-bottom: 1px solid var(--border);">
-                        <td style="padding: 1rem; color: var(--fg);">
-                            <strong><?= htmlspecialchars($post['titulo']) ?></strong>
-                        </td>
-                        <td style="padding: 1rem; color: var(--muted);">
-                            <?php 
-                                $fecha = strtotime($post['fecha_publicacion']);
-                                echo $fecha ? date('d/m/Y', $fecha) : 'N/A'; 
-                            ?>
-                        </td>
-                        <td style="padding: 1rem;">
-                            <div style="display: flex; gap: 0.5rem; justify-content: center; align-items: center;">
-                                <a href="<?= url('editar_post.php?id=' . $post['id_post']) ?>" 
-                                   class="btn btn-sm" 
-                                   style="padding: 0.5rem 1rem; font-size: 0.9rem; background: #ffc107; color: #000; text-decoration: none; border-radius: var(--radius); font-weight: 600; white-space: nowrap;">
-                                    ✏️ Editar
-                                </a>
-                                <form method="POST" 
-                                      action="<?= url('eliminar_post.php') ?>" 
-                                      style="display: inline; margin: 0;"
-                                      onsubmit="return confirm('¿Seguro que deseas eliminar esta entrada?');">
-                                    <?= $security->csrfField() ?>
-                                    <input type="hidden" name="id" value="<?= $post['id_post'] ?>">
-                                    <button type="submit" 
-                                            class="btn btn-sm" 
-                                            style="padding: 0.5rem 1rem; font-size: 0.9rem; background: #dc3545; color: white; border: none; cursor: pointer; border-radius: var(--radius); font-weight: 600; white-space: nowrap;">
-                                        🗑️ Eliminar
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Fecha de Publicación</th>
+                        <th class="text-center">Acciones</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-
+                </thead>
+                <tbody>
+                    <?php foreach ($posts as $post): ?>
+                        <tr>
+                            <td>
+                                <strong><?= htmlspecialchars($post['titulo']) ?></strong>
+                            </td>
+                            <td class="admin-table__date">
+                                <?php 
+                                    $fecha = strtotime($post['fecha_publicacion']);
+                                    echo $fecha ? date('d/m/Y', $fecha) : 'N/A'; 
+                                ?>
+                            </td>
+                            <td>
+                                <div class="admin-table__actions">
+                                    <a href="<?= url('editar_post.php?id=' . $post['id_post']) ?>" 
+                                    class="btn-sm btn-sm--edit">
+                                        ✏️ Editar
+                                    </a>
+                                    <form method="POST" 
+                                        action="<?= url('eliminar_post.php') ?>" 
+                                        onsubmit="return confirm('¿Seguro que deseas eliminar esta entrada?');">
+                                        <?= $security->csrfField() ?>
+                                        <input type="hidden" name="id" value="<?= $post['id_post'] ?>">
+                                        <button type="submit" class="btn-sm btn-sm--delete">
+                                            🗑️ Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+                    </section>
             <!-- PAGINACIÓN -->
             <?php if ($$totalPagesCount > 1): ?>
-                <nav class="pagination" style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center;">
+                <nav class="pagination">
                     <?php if ($page > 1): ?>
                         <a href="<?= url('dashboard.php?page=' . ($page - 1)) ?>" class="btn">« Anterior</a>
                     <?php endif; ?>
                     
-                    <span style="align-self: center; padding: 0 1rem;">
+                    <span class="pagination__info">
                         Página <?= $page ?> de <?= $totalPages ?>
                     </span>
                     
@@ -217,51 +202,39 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
             <?php endif; ?>
 
         <?php else: ?>
-            <p style="padding: 2rem; text-align: center; color: #666; background: #f8f9fa; border-radius: 8px;">
-                No hay entradas publicadas todavía. ¡Crea tu primera entrada!
-            </p>
+        <p class="empty-state">
+            No hay entradas publicadas todavía. ¡Crea tu primera entrada!
+        </p>
         <?php endif; ?>
     </section>
 
     <!-- GESTIÓN DE PÁGINAS (Sección simplificada) -->
-    <section class="manage-pages" style="margin-top: 3rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h2>Gestionar Páginas</h2>
-            <a href="<?= url('crear_pagina.php') ?>" 
-            class="btn" 
-            style="padding: 0.6rem 1.2rem; background: var(--brand); color: white; text-decoration: none; border-radius: var(--radius); font-weight: 600;">
-                <span style="font-size: 1.1rem;">+</span> Nueva Página
-            </a>
-        </div>
-        <div style="padding: 1rem; background: #f8f9fa; border-radius: 8px; text-align: center;">
-            <p style="color: #666; margin-bottom: 0.5rem;">
-                📄 Tienes <strong><?= $totalPagesCount ?> páginas</strong> creadas
-            </p>
-            <a href="<?= url('gestionar_paginas.php') ?>" 
-            class="btn btn-sm" 
-            style="padding: 0.5rem 1rem; font-size: 0.9rem; background: var(--brand); color: white; text-decoration: none; border-radius: var(--radius); font-weight: 600;">
+<section class="manage-pages">
+    <div class="section-header">
+        <h2>Gestionar Páginas</h2>
+        <a href="<?= url('crear_pagina.php') ?>" class="action-btn">
+            <span class="action-btn__icon">+</span> Nueva Página
+        </a>
+    </div>
+        <div class="info-card">
+            <p>📄 Tienes <strong><?= $totalPagesCount ?> páginas</strong> creadas</p>
+            <a href="<?= url('gestionar_paginas.php') ?>" class="btn-sm">
                 Ver todas las páginas →
             </a>
         </div>
     </section>
 
     <!-- GESTIÓN DE CATEGORÍAS -->
-<section class="manage-categories" style="margin-top: 3rem;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+<section class="manage-categories">
+    <div class="section-header">
         <h2>Gestionar Categorías</h2>
-        <a href="<?= url('gestionar_categorias.php') ?>" 
-           class="btn" 
-           style="padding: 0.6rem 1.2rem; background: var(--brand); color: white; text-decoration: none; border-radius: var(--radius); font-weight: 600;">
-            + Nueva Categoría
+        <a href="<?= url('gestionar_categorias.php') ?>" class="action-btn">
+            <span class="action-btn__icon">+</span> Nueva Categoría
         </a>
     </div>
-    <div style="padding: 1rem; background: #f8f9fa; border-radius: 8px; text-align: center;">
-        <p style="color: #666; margin-bottom: 0.5rem;">
-            📁 Tienes <strong><?= $totalCategories ?> categorías</strong> activas
-        </p>
-        <a href="<?= url('gestionar_categorias.php') ?>" 
-           class="btn btn-sm" 
-           style="padding: 0.4rem 0.8rem; font-size: 0.9rem; background: var(--brand); color: white; text-decoration: none; border-radius: var(--radius);">
+    <div class="info-card">
+        <p>📁 Tienes <strong><?= $totalCategories ?> categorías</strong> activas</p>
+        <a href="<?= url('gestionar_categorias.php') ?>" class="btn-sm">
             Ver todas las categorías →
         </a>
     </div>
