@@ -28,17 +28,13 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     </header>
 
     <figure class="about__photo">
-      <picture>
-        <!-- Sirve formatos modernos si los tienes en /assets/img/ -->
-        <source srcset="/assets/img/ana.avif" type="image/avif">
-        <source srcset="/assets/img/ana.webp" type="image/webp">
         <img
-          src="<?= url('assets/img/ana.png') ?>"          
+          src="<?= url('assets/img/MiFoto.jpg') ?>" 
           alt="Retrato de Ana Sampedro"
           width="200" height="200"             
           loading="lazy" decoding="async">
-      </picture>
-      <figcaption>Ana López Sampedro</figcaption>
+          
+        <figcaption>Ana López Sampedro</figcaption>
     </figure>
 
     <section class="about__bio">
