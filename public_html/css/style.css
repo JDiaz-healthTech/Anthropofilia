@@ -6,49 +6,49 @@
 /* ==========================================================================
    CAPA 1: BASE — Fundamentos del sistema
    ========================================================================== */
-@import "base/reset.css";           /* Normalización cross-browser */
-@import "base/variables.css";       /* Tokens de diseño (colores, escalas) */
-@import "base/typography.css";      /* Sistema tipográfico */
-@import "base/base.css";            /* Estilos globales del documento */
+@import 'base/reset.css'; /* Normalización cross-browser */
+@import 'base/variables.css'; /* Tokens de diseño (colores, escalas) */
+@import 'base/typography.css'; /* Sistema tipográfico */
+@import 'base/base.css'; /* Estilos globales del documento */
 
 /* ==========================================================================
    CAPA 2: LAYOUT — Estructura macro de la página
    ========================================================================== */
-@import "layout/grid.css";          /* Sistema de grid (contenido + sidebar) */
-@import "layout/navigation.css";    /* Navegación principal + hamburguesa */
-@import "layout/footer.css";        /* Pie de página */
-@import "layout/responsive.css";    /* Breakpoints y adaptaciones */
-@import "layout/utilities.css";     /* Helpers globales (clearfix, spacing) */
+@import 'layout/grid.css'; /* Sistema de grid (contenido + sidebar) */
+@import 'layout/navigation.css'; /* Navegación principal + hamburguesa */
+@import 'layout/footer.css'; /* Pie de página */
+@import 'layout/responsive.css'; /* Breakpoints y adaptaciones */
+@import 'layout/utilities.css'; /* Helpers globales (clearfix, spacing) */
 
 /* ==========================================================================
    CAPA 3: COMPONENTS — Piezas reutilizables
    ========================================================================== */
-@import "components/header.css";    /* Cabecera del blog */
-@import "components/sidebar.css";   /* Widgets del sidebar */
-@import "components/buttons.css";   /* Sistema de botones */
-@import "components/forms.css";     /* Inputs y formularios */
-@import "components/cards.css";     /* Tarjetas de posts */
-@import "components/media.css";     /* Imágenes y lightbox */
-@import "components/tables.css";    /* Tablas (admin) */
-@import "components/errors.css";    /* Páginas de error (404, 500) */
-@import "components/accessibility.css"; /* Controles de accesibilidad */
+@import 'components/header.css'; /* Cabecera del blog */
+@import 'components/sidebar.css'; /* Widgets del sidebar */
+@import 'components/buttons.css'; /* Sistema de botones */
+@import 'components/forms.css'; /* Inputs y formularios */
+@import 'components/cards.css'; /* Tarjetas de posts */
+@import 'components/media.css'; /* Imágenes y lightbox */
+@import 'components/tables.css'; /* Tablas (admin) */
+@import 'components/errors.css'; /* Páginas de error (404, 500) */
+@import 'components/accessibility.css'; /* Controles de accesibilidad */
 
 /* ==========================================================================
    CAPA 4: PAGES — Estilos específicos de páginas
    ========================================================================== */
-@import "pages/post.css";           /* Página individual de post */
-@import "pages/acerca_de_mi.css";   /* Página individual de acerca de mí */
+@import 'pages/post.css'; /* Página individual de post */
+@import 'pages/acerca_de_mi.css'; /* Página individual de acerca de mí */
 
 /* ========================================
    ADMIN
    ======================================== */
-@import 'css/05-admin/_admin-layout.css';
-@import 'css/05-admin/_admin-stats.css';
-@import 'css/05-admin/_admin-tables.css';
+@import 'css/admin/_admin-layout.css';
+@import 'css/admin/_admin-stats.css';
+@import 'css/admin/_admin-tables.css';
 
 /* ==========================================================================
    NOTAS DE ARQUITECTURA
-   
+
    - Base: Variables, reset, tipografía → NO tocan layout ni componentes
    - Layout: Grid, navegación, footer → Estructura macro
    - Components: Header, sidebar, botones → Piezas modulares reutilizables
