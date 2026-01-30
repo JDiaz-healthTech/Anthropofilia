@@ -31,7 +31,7 @@
 @import 'components/media.css'; /* Imágenes y lightbox */
 @import 'components/tables.css'; /* Tablas (admin) */
 @import 'components/errors.css'; /* Páginas de error (404, 500) */
-@import 'components/accessibility.css'; /* Controles de accesibilidad */
+@import 'layout/accessibility.css'; /* Controles de accesibilidad */
 
 /* ==========================================================================
    CAPA 4: PAGES — Estilos específicos de páginas
@@ -42,9 +42,9 @@
 /* ========================================
    ADMIN
    ======================================== */
-@import 'css/admin/_admin-layout.css';
-@import 'css/admin/_admin-stats.css';
-@import 'css/admin/_admin-tables.css';
+@import 'admin/_admin-layout.css';
+@import 'admin/_admin-stats.css';
+@import 'admin/_admin-tables.css';
 
 /* ==========================================================================
    NOTAS DE ARQUITECTURA
