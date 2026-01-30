@@ -25,3 +25,8 @@ DirectoryIndex index.php index.html
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.php [L]
 </IfModule>
+
+<IfModule mod_headers.c>
+    # Permitir iframes de Genially
+    Header set Content-Security-Policy "frame-src 'self' https://view.genially.com https://*.genially.com; frame-ancestors 'self';"
+</IfModule>

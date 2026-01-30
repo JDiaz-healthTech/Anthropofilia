@@ -42,7 +42,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     </figure>
 
     <section class="about__bio">
-      <p>Mi nombre es Ana y soy licenciada en Filosofía por la Universidad de Santiago de Compostela y doctora en Biología por la Universidad de Vigo.</p>
+      <p>Mi nombre es Ana y soy licenciada en Filosofía por la Universidad de Santiago de Compostela.</p>
       <p>Mis intereses se centran en la evolución del comportamiento humano, la ecología del comportamiento y la evolución cultural...</p>
     </section>
   </article>
