@@ -1,85 +1,100 @@
 /* ==========================================================================
-   PAGE: ACERCA DE MÍ
-   Estilos específicos para el perfil personal
+   PAGE: ACERCA DE MÍ (Diseño Editorial Mejorado)
    Ruta: /css/pages/acerca_de_mi.css
    ========================================================================== */
 
 .about-article {
-    max-width: 900px;
+    max-width: 1100px; /* Más ancho para dar aire */
     margin: 0 auto;
-    padding: 2rem 0;
+    padding: 4rem 0;
 }
 
-/* Cabecera interna del artículo */
-.about-header {
-    text-align: center;
-    margin-bottom: 3rem;
+/* Ocultamos visualmente el título "Acerca de mí" si preferimos 
+   que el nombre sea el protagonista, pero lo dejamos accesible */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
 }
 
-.about-header h1 {
-    /* Si tienes una variable de fuente serif, úsala aquí. Ej: var(--font-serif) */
-    font-family: 'Playfair Display', Georgia, serif; 
-    font-size: 2.5rem;
-    color: #2c3e50; 
-    border-bottom: 2px solid #e0e0e0;
-    display: inline-block;
-    padding-bottom: 10px;
-}
-
-/* Grid Layout: Imagen izquierda / Texto derecha */
+/* Grid Layout: Más separación */
 .about-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem;
-    align-items: start;
+    gap: 3rem; /* Espacio en móvil */
+    align-items: center; /* Centrado verticalmente */
 }
 
-/* Breakpoint para tablets y escritorio */
-@media (min-width: 768px) {
+/* Breakpoint Escritorio */
+@media (min-width: 900px) {
     .about-grid {
-        grid-template-columns: 300px 1fr;
-        gap: 3rem;
+        grid-template-columns: 400px 1fr; /* Foto más grande */
+        gap: 6rem; /* MUCHA más distancia entre foto y texto */
     }
 }
 
-/* Estilos de la fotografía */
+/* --- FOTO --- */
 .about__photo {
     margin: 0;
-    text-align: center;
+    position: relative;
 }
 
 .about__photo img {
     width: 100%;
-    max-width: 300px;
     height: auto;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1); /* Efecto flotante */
+    border-radius: 4px;
+    /* Sombra suave y difusa */
+    box-shadow: 20px 20px 60px rgba(0,0,0,0.05); 
     object-fit: cover;
-    aspect-ratio: 1 / 1; /* Forzar cuadrado. Cambiar a 3/4 si prefieres vertical */
+    aspect-ratio: 3/4; /* Formato retrato elegante */
 }
 
-.about__photo figcaption {
-    margin-top: 1rem;
-    font-family: Georgia, serif;
-    font-style: italic;
-    color: #666;
-    font-size: 0.9rem;
+/* --- TEXTO Y TIPOGRAFÍA --- */
+.about__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-/* Tipografía y lectura */
-.about__bio {
-    font-size: 1.1rem;
-    line-height: 1.8; /* Mejor legibilidad */
-    color: #333;
+/* El Nombre: Grande y con autoridad */
+.about__name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 3.5rem; /* Tamaño muy grande */
+    line-height: 1.1;
+    color: #1a1a1a;
+    margin: 0;
 }
 
-.about__bio p {
-    margin-bottom: 1.5rem;
+/* Subtítulo / Profesión */
+.about__role {
+    font-family: system-ui, -apple-system, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 3px; /* Letras separadas estilo editorial */
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #888;
+    margin-bottom: 1rem;
+    border-left: 3px solid #d4a373; /* Un detalle de color (opcional) */
+    padding-left: 1rem;
 }
 
-/* Párrafo destacado (Lead) */
+/* Texto de introducción (Lead) */
 .lead-text {
-    font-size: 1.25rem;
+    font-size: 1.4rem; /* Más grande para lectura fácil */
+    line-height: 1.6;
     color: #2c3e50;
-    font-weight: 500;
+    font-weight: 400;
+}
+
+/* Texto normal */
+.about__bio p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #4a4a4a;
+    margin-bottom: 1.5rem;
 }

@@ -1,50 +1,57 @@
 <?php 
 $page_title = 'Acerca de mí';
-$meta_description = 'Perfil de Ana López Sampedro: filosofía, biología y líneas de investigación en evolución del comportamiento.'; 
-require_once __DIR__ . '/init.php';   // define $baseUrl y url()
-$categoria = null; // para migas condicionales
+$meta_description = 'Perfil de Ana López Sampedro: filosofía, biología y líneas de investigación.'; 
+require_once __DIR__ . '/init.php'; 
+$categoria = null; 
 require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 
 <div class="main-content-area container about">
 
     <main>
-
-        <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <nav class="breadcrumbs" aria-label="Breadcrumbs" style="margin-bottom: 3rem;">
             <a href="<?= url('index.php') ?>">Inicio</a> <span aria-hidden="true">›</span>
-            <?php if (!empty($categoria)): ?>
-                <a href="<?= url('categoria.php?slug=' . urlencode($categoria['slug'])) ?>">
-                    <?= htmlspecialchars($categoria['nombre_categoria'], ENT_QUOTES, 'UTF-8') ?>
-                </a> <span aria-hidden="true">›</span>
-            <?php endif; ?>
-            <span aria-current="page"><?= htmlspecialchars($page_title ?? 'Actual', ENT_QUOTES, 'UTF-8') ?></span>
+            <span aria-current="page">Perfil</span>
         </nav>
  
-        <article class="about-article" aria-labelledby="about-title">
+        <article class="about-article">
             
-            <header class="about-header">
-                <h1 id="about-title">Acerca de mí</h1>
-            </header>
+            <h1 class="visually-hidden">Acerca de Ana López Sampedro</h1>
 
             <div class="about-grid">
                 
                 <figure class="about__photo">
                     <img
                         src="<?= url('assets/img/MiFoto.jpg') ?>" 
-                        alt="Retrato de Ana Sampedro"
+                        alt="Retrato de Ana López Sampedro"
                         loading="lazy" 
                         decoding="async">
-                    <figcaption>Ana López Sampedro</figcaption>
                 </figure>
 
-                <section class="about__bio">
-                    <p class="lead-text">Mi nombre es Ana y soy licenciada en Filosofía por la Universidad de Santiago de Compostela.</p>
+                <div class="about__content">
                     
-                    <p>Mis intereses se centran en la evolución del comportamiento humano, la ecología del comportamiento y la evolución cultural...</p>
-                    
-                    </section>
+                    <header>
+                        <p class="about__role">Filosofía & Biología</p>
+                        <h2 class="about__name">Ana López Sampedro</h2>
+                    </header>
 
-            </div> </article>
+                    <div class="about__bio">
+                        <p class="lead-text">
+                            Mi nombre es Ana y soy licenciada en Filosofía por la Universidad de Santiago de Compostela.
+                        </p>
+                        
+                        <p>
+                            Mis intereses se centran en la evolución del comportamiento humano, la ecología del comportamiento y la evolución cultural. A través de la intersección entre la biología y la filosofía, busco comprender los mecanismos que han moldeado nuestra naturaleza social.
+                        </p>
+                        
+                        <p>
+                            Actualmente, mi investigación explora cómo los patrones culturales influyen en la adaptación biológica...
+                        </p>
+                    </div>
+
+                </div> </div> </article>
 
     </main>
-</div> <?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>
+</div>
+
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>
