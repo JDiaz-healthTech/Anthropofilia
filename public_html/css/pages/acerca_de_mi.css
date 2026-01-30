@@ -1,0 +1,85 @@
+/* ==========================================================================
+   PAGE: ACERCA DE MÍ
+   Estilos específicos para el perfil personal
+   Ruta: /css/pages/acerca_de_mi.css
+   ========================================================================== */
+
+.about-article {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+/* Cabecera interna del artículo */
+.about-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.about-header h1 {
+    /* Si tienes una variable de fuente serif, úsala aquí. Ej: var(--font-serif) */
+    font-family: 'Playfair Display', Georgia, serif; 
+    font-size: 2.5rem;
+    color: #2c3e50; 
+    border-bottom: 2px solid #e0e0e0;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+/* Grid Layout: Imagen izquierda / Texto derecha */
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+/* Breakpoint para tablets y escritorio */
+@media (min-width: 768px) {
+    .about-grid {
+        grid-template-columns: 300px 1fr;
+        gap: 3rem;
+    }
+}
+
+/* Estilos de la fotografía */
+.about__photo {
+    margin: 0;
+    text-align: center;
+}
+
+.about__photo img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); /* Efecto flotante */
+    object-fit: cover;
+    aspect-ratio: 1 / 1; /* Forzar cuadrado. Cambiar a 3/4 si prefieres vertical */
+}
+
+.about__photo figcaption {
+    margin-top: 1rem;
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Tipografía y lectura */
+.about__bio {
+    font-size: 1.1rem;
+    line-height: 1.8; /* Mejor legibilidad */
+    color: #333;
+}
+
+.about__bio p {
+    margin-bottom: 1.5rem;
+}
+
+/* Párrafo destacado (Lead) */
+.lead-text {
+    font-size: 1.25rem;
+    color: #2c3e50;
+    font-weight: 500;
+}
