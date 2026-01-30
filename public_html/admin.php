@@ -73,7 +73,11 @@ $current_header  = get_setting($pdo, 'header_bg_url', '');
 
 // 3) CSRF para logout por POST
 if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    if (function_exists('random_bytes')) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    } else {
+        $_SESSION['csrf_token'] = bin2hex(openssl_random_pseudo_bytes(32));
+    }
 }
 $csrf = $_SESSION['csrf_token'];
 
