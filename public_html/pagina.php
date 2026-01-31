@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/init.php';
 
+require_once __DIR__ . '/app/Models/PaginaPost.php';
+
 use App\Models\PaginaPost;
 
 // 1) Obtener y validar slug (solo a-z, 0-9 y guiones)
