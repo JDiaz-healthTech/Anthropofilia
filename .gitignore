@@ -1,7 +1,22 @@
 # .gitignore
 
-# Ignorar el archivo de variables de entorno
+# Variables de entorno
 .env
 
-# Ignorar la carpeta de dependencias de Composer
+# Dependencias
 vendor/
+node_modules/
+
+# --- ESPECÍFICO DE ANTHROPOFILIA ---
+# Ignorar subidas de usuarios (¡importante!)
+public_html/uploads/
+
+# Ignorar caché y logs
+storage/cache/
+storage/logs/
+*.ser
+*.log
+
+# Archivos de sistema/IDE
+.DS_Store
+.vscode/
