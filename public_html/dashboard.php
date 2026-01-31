@@ -19,16 +19,16 @@ if (!$isLoggedIn) {
     $page_title = 'Dashboard - Acceso Requerido';
     require_once BASE_PATH . '/resources/views/partials/header.php';
     ?>
-    
+
 <main class="access-denied">
     <div class="access-denied__card">
         <h1>🔒 Dashboard de Administración</h1>
         <p>Para acceder al panel de administración necesitas iniciar sesión.</p>
-        
+
         <a href="<?= url('login.php') ?>" class="btn action-btn">
             🔑 Iniciar Sesión
         </a>
-        
+
         <p class="access-denied__note">
             💡 <em>Próximamente: Registro de usuarios para funciones colaborativas</em>
         </p>
@@ -60,14 +60,14 @@ try {
     $totalPosts = Post::countAll();
     $totalPagesCount = Page::countAll(); // Método que crearemos
     $totalCategories = Category::countAll(); // Método que crearemos
-    
+
     // Posts paginados para la tabla
     $page = max(1, (int)($_GET['page'] ?? 1));
     $perPage = 10;
     $offset = ($page - 1) * $perPage;
     $posts = Post::getPaginated($perPage, $offset);
     $$totalPagesCount = max(1, (int)ceil($totalPosts / $perPage));
-    
+
 } catch (Exception $e) {
     error_log("Error cargando dashboard: " . $e->getMessage());
     $totalPosts = 0;
@@ -93,22 +93,22 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 
     <!-- ESTADÍSTICAS BÁSICAS -->
     <section class="stats-cards">
-        
+
         <div class="stat-card stat-card--posts">
             <div class="stat-card__value"><?= $totalPosts ?></div>
             <div class="stat-card__label">Entradas publicadas</div>
         </div>
-        
+
         <div class="stat-card stat-card--pages">
             <div class="stat-card__value"><?= $totalPagesCount ?></div>
             <div class="stat-card__label">Páginas creadas</div>
         </div>
-        
+
         <div class="stat-card stat-card--categories">
             <div class="stat-card__value"><?= $totalCategories ?></div>
             <div class="stat-card__label">Categorías activas</div>
         </div>
-        
+
     </section>
 
 <!-- ACCIONES RÁPIDAS -->
@@ -156,26 +156,27 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                                 <strong><?= htmlspecialchars($post['titulo']) ?></strong>
                             </td>
                             <td class="admin-table__date">
-                                <?php 
+                                <?php
                                     $fecha = strtotime($post['fecha_publicacion']);
-                                    echo $fecha ? date('d/m/Y', $fecha) : 'N/A'; 
+                                    echo $fecha ? date('d/m/Y', $fecha) : 'N/A';
                                 ?>
                             </td>
                             <td>
                                 <div class="admin-table__actions">
-                                    <a href="<?= url('editar_post.php?id=' . $post['id_post']) ?>" 
+                                    <a href="<?= url('editar_post.php?id=' . $post['id_post']) ?>"
                                     class="btn-sm btn-sm--edit">
                                         ✏️ Editar
                                     </a>
-                                    <form method="POST" 
-                                        action="<?= url('eliminar_post.php') ?>" 
-                                        onsubmit="return confirm('¿Seguro que deseas eliminar esta entrada?');">
-                                        <?= $security->csrfField() ?>
-                                        <input type="hidden" name="id" value="<?= $post['id_post'] ?>">
-                                        <button type="submit" class="btn-sm btn-sm--delete">
-                                            🗑️ Eliminar
-                                        </button>
-                                    </form>
+                                        <form method="POST" action="<?= url('eliminar_post.php') ?>"
+                                            style="display: inline;"
+                                            onsubmit="return confirm('¿Seguro que deseas eliminar este post?');">
+                                            <?= $security->csrfField() ?>
+                                            <input type="hidden" name="id" value="<?= (int)$post['id_post'] ?>">
+                                            <input type="hidden" name="origen" value="dashboard"> <!-- o "gestionar_posts" -->
+                                            <button type="submit" class="btn btn-sm" style="background: #dc3545; color: white;">
+                                                🗑️ Eliminar
+                                            </button>
+                                        </form>
                                 </div>
                             </td>
                         </tr>
@@ -190,11 +191,11 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                     <?php if ($page > 1): ?>
                         <a href="<?= url('dashboard.php?page=' . ($page - 1)) ?>" class="btn">« Anterior</a>
                     <?php endif; ?>
-                    
+
                     <span class="pagination__info">
                         Página <?= $page ?> de <?= $totalPages ?>
                     </span>
-                    
+
                     <?php if ($page < $totalPagesCount): ?>
                         <a href="<?= url('dashboard.php?page=' . ($page + 1)) ?>" class="btn">Siguiente »</a>
                     <?php endif; ?>

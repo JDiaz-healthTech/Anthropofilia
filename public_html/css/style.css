@@ -38,6 +38,7 @@
    ========================================================================== */
 @import 'pages/post.css'; /* Página individual de post */
 @import 'pages/acerca_de_mi.css'; /* Página individual de acerca de mí */
+@import 'pages/_pagina-posts.css'; /* Página individual gestora de paginas con post */
 
 /* ========================================
    ADMIN
@@ -45,6 +46,7 @@
 @import 'admin/_admin-layout.css';
 @import 'admin/_admin-stats.css';
 @import 'admin/_admin-tables.css';
+@import 'admin/_admin-paginas.css';
 
 /* ==========================================================================
    NOTAS DE ARQUITECTURA

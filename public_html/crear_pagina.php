@@ -35,7 +35,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     <?php endif; ?>
     <span aria-current="page"><?= htmlspecialchars($page_title ?? 'Actual', ENT_QUOTES, 'UTF-8') ?></span>
   </nav>
- 
+
   <h1>Crear nueva página estática</h1>
 
   <div aria-live="polite">
@@ -46,7 +46,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     <?php endif; ?>
   </div>
 
-  <form action="/guardar_pagina.php" method="post" class="form-container" accept-charset="UTF-8">
+<form action="<?= url('guardar_pagina.php') ?>" method="post" class="form-container" accept-charset="UTF-8">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($token, ENT_QUOTES, 'UTF-8') ?>">
 
     <div>
