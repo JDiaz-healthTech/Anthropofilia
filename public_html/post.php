@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/init.php';
 
+$showSidebar = true;
+
 // 1) Entrada: id (int) o slug (string). Debe llegar al menos uno
 $id   = isset($_GET['id'])   ? filter_var($_GET['id'], FILTER_VALIDATE_INT) : null;
 $slug = isset($_GET['slug']) ? trim((string)$_GET['slug']) : null;
@@ -107,7 +109,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
       <!-- Imagen destacada con lazy loading -->
       <img src="<?= htmlspecialchars($imagen_url, ENT_QUOTES, 'UTF-8') ?>"
           alt="Imagen destacada del artículo"
-          loading="lazy" 
+          loading="lazy"
           decoding="async"
           sizes="(min-width: 800px) 720px, 100vw">
         </figure>
@@ -124,28 +126,28 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         strpos($contenido_html, 'post-header') !== false ||
         strpos($contenido_html, 'post-body') !== false
     );
-    
+
     if ($es_contenido_blogger) {
         // SOLO para posts antiguos de Blogger: limpiar
         $contenido_limpio = $contenido_html;
-        
+
         // Remover clases específicas de Blogger
         $contenido_limpio = preg_replace('/class="[^"]*(?:post-|entry-|Apple-style-|separator)[^"]*"/', '', $contenido_limpio);
-        
+
         // Remover divs vacíos
         $contenido_limpio = preg_replace('/<div[^>]*>\s*&nbsp;\s*<\/div>/', '', $contenido_limpio);
         $contenido_limpio = preg_replace('/<div[^>]*>\s*<\/div>/', '', $contenido_limpio);
-        
+
         // Limpiar estilos inline de Blogger
         $contenido_limpio = preg_replace('/<div[^>]*style="[^"]*text-align:\s*center[^"]*"[^>]*>/', '<div style="text-align: center;">', $contenido_limpio);
-        
+
         // Actualizar iframes de YouTube antiguos
         $contenido_limpio = preg_replace(
             '/<iframe[^>]*src="https:\/\/www\.youtube\.com\/embed\/([^"?]+)[^"]*"[^>]*>.*?<\/iframe>/is',
             '<iframe width="560" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
             $contenido_limpio
         );
-        
+
         echo $contenido_limpio;
     } else {
         // Para posts nuevos de TinyMCE: mostrar tal cual

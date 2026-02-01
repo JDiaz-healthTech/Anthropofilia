@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/init.php';
 
+$showSidebar = true;
+
 require_once __DIR__ . '/app/Models/PaginaPost.php';
 
 use App\Models\PaginaPost;

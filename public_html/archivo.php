@@ -1,5 +1,8 @@
 <?php
+
 require_once __DIR__ . '/init.php';
+
+$showSidebar = true;
 
 // 1) Obtener y validar año/mes
 $anio = (int)$security->cleanInput($_GET['anio'] ?? '', 'int');

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/init.php';
+$showSidebar = true;
 //enviar_contacto.php
 // Recuperar datos del formulario si existen (patrón PRG)
 $form_data = $_SESSION['form_data'] ?? [];
@@ -30,7 +31,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     <?php endif; ?>
     <span aria-current="page"><?= htmlspecialchars($page_title ?? 'Actual', ENT_QUOTES, 'UTF-8') ?></span>
   </nav>
- 
+
   <h1>Contacto</h1>
 
   <div aria-live="polite">

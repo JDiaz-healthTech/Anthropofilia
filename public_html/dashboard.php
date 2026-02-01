@@ -58,20 +58,21 @@ if (isset($_GET['msg'])) {
 try {
     // Estadísticas básicas
     $totalPosts = Post::countAll();
-    $totalPagesCount = Page::countAll(); // Método que crearemos
-    $totalCategories = Category::countAll(); // Método que crearemos
+    $totalPagesCount = Page::countAll();
+    $totalCategories = Category::countAll();
 
     // Posts paginados para la tabla
     $page = max(1, (int)($_GET['page'] ?? 1));
     $perPage = 10;
     $offset = ($page - 1) * $perPage;
     $posts = Post::getPaginated($perPage, $offset);
-    $$totalPagesCount = max(1, (int)ceil($totalPosts / $perPage));
+    $totalPages = max(1, (int)ceil($totalPosts / $perPage)); // ← CORREGIDO
 
 } catch (Exception $e) {
     error_log("Error cargando dashboard: " . $e->getMessage());
     $totalPosts = 0;
-    $$totalPagesCount = 0;
+    $totalPages = 1; // ← CORREGIDO
+    $totalPagesCount = 0;
     $totalCategories = 0;
     $posts = [];
 }
@@ -184,9 +185,9 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                 </tbody>
             </table>
         </div>
-                    </section>
+
             <!-- PAGINACIÓN -->
-            <?php if ($$totalPagesCount > 1): ?>
+            <?php if ($$totalPages > 1): ?>
                 <nav class="pagination">
                     <?php if ($page > 1): ?>
                         <a href="<?= url('dashboard.php?page=' . ($page - 1)) ?>" class="btn">« Anterior</a>
@@ -196,7 +197,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                         Página <?= $page ?> de <?= $totalPages ?>
                     </span>
 
-                    <?php if ($page < $totalPagesCount): ?>
+                    <?php if ($page < $totalPages): ?>
                         <a href="<?= url('dashboard.php?page=' . ($page + 1)) ?>" class="btn">Siguiente »</a>
                     <?php endif; ?>
                 </nav>

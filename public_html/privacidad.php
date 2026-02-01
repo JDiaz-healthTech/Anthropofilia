@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/init.php';
+$showSidebar = true;
 $page_title = 'Política de Privacidad';
   $categoria = null; // para migas condicionales
 require_once BASE_PATH . '/resources/views/partials/header.php';
@@ -16,7 +17,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     <?php endif; ?>
     <span aria-current="page"><?= htmlspecialchars($page_title ?? 'Actual', ENT_QUOTES, 'UTF-8') ?></span>
   </nav>
-  
+
   <h1>Política de Privacidad</h1>
 
   <p>En <strong>Anthropofilia</strong> nos tomamos en serio tu privacidad. Esta página describe cómo recopilamos, usamos y protegemos la información personal que nos proporcionas.</p>

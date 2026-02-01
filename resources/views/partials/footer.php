@@ -3,8 +3,8 @@
 $year = (int)date('Y');
 $isLogged = isset($security) ? (bool)$security->userId() : false;
 
-// Cerrar sidebar si existe
-if (empty($noSidebar)):
+// Incluir sidebar si está habilitado
+if (!empty($showSidebar)):
 ?>
   <aside class="site-sidebar" role="complementary" aria-label="Barra lateral">
     <?php include __DIR__ . '/sidebar.php'; ?>
@@ -16,7 +16,7 @@ endif;
 
 <footer class="main-footer" role="contentinfo">
   <div class="footer-content">
-    
+
     <!-- COPYRIGHT -->
     <div class="footer-section">
       <p>&copy; <?= $year ?> Ana López Sampedro. Todos los derechos reservados.</p>
@@ -39,21 +39,21 @@ endif;
         <a href="<?= url('dashboard.php') ?>" class="btn-admin-link">
           📊 Dashboard
         </a>
-        
+
         <span aria-hidden="true">|</span>
-        
-        <a href="#top" 
-           onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" 
+
+        <a href="#top"
+           onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"
            class="btn-scroll-top">
           ↑ Volver arriba
         </a>
-        
+
         <span aria-hidden="true">|</span>
-        
+
         <form method="POST" action="<?= url('logout.php') ?>">
-          <?= isset($security) && method_exists($security, 'csrfField') 
-              ? $security->csrfField() 
-              : '<input type="hidden" name="csrf_token" value="' . htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') . '">' 
+          <?= isset($security) && method_exists($security, 'csrfField')
+              ? $security->csrfField()
+              : '<input type="hidden" name="csrf_token" value="' . htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') . '">'
           ?>
           <button type="submit" class="btn-logout">
             🚪 Cerrar sesión
@@ -63,8 +63,8 @@ endif;
     <?php else: ?>
       <!-- SCROLL TO TOP (usuarios no logueados) -->
       <div class="footer-scroll">
-        <a href="#top" 
-           onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" 
+        <a href="#top"
+           onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"
            class="btn-scroll-top">
           ↑ Volver arriba
         </a>

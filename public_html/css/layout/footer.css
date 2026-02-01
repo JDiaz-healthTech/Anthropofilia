@@ -13,7 +13,7 @@
     margin-top: 3rem;
     border-top: 2px solid var(--border);
     font-family: var(--font-header);
-    grid-column: 1 / -1;       /* Ocupa todo el ancho del grid */
+    grid-column: 1 / -1; /* Ocupa todo el ancho del grid */
 }
 
 /* =============================================
@@ -155,26 +155,26 @@
     .main-footer {
         padding: 1.5rem 1rem;
     }
-    
+
     .footer-content {
         gap: 1rem;
     }
-    
+
     .footer-links nav {
         flex-direction: column;
         gap: 0.5rem;
     }
-    
+
     .footer-links span {
-        display: none;  /* Ocultar separadores en móvil */
+        display: none; /* Ocultar separadores en móvil */
     }
-    
+
     .admin-nav {
         flex-direction: column;
         gap: 0.75rem;
     }
-    
+
     .admin-nav > span {
-        display: none;  /* Ocultar separadores en móvil */
+        display: none; /* Ocultar separadores en móvil */
     }
 }

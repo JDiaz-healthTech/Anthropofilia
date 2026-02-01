@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/init.php';
 
+$showSidebar = true;
+
 // 1) Capturar y validar término
 $q = trim((string)($_GET['q'] ?? ''));
 if ($q === '') {
@@ -94,7 +96,7 @@ function post_link(array $p): string {
     <?php endif; ?>
     <span aria-current="page"><?= htmlspecialchars($page_title ?? 'Actual', ENT_QUOTES, 'UTF-8') ?></span>
   </nav>
- 
+
 
   <h2>Resultados de búsqueda para: "<?= htmlspecialchars($q, ENT_QUOTES, 'UTF-8'); ?>"</h2>
   <hr>
