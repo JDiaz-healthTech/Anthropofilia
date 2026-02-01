@@ -24,6 +24,10 @@
     margin: 0 auto;
     display: grid;
     gap: 1.5rem;
+    text-align: center;
+    align-items: center;
+    justify-items: center;
+    width: 100%;
 }
 
 /* =============================================
@@ -33,6 +37,8 @@
     margin: 0;
     font-size: var(--step--1);
     color: var(--muted);
+    text-align: center;
+    width: 100%;
 }
 
 /* =============================================
@@ -144,10 +150,13 @@
 
 /* Form inline del logout */
 .admin-nav form {
-    display: inline;
+    display: flex; /* Usamos flex para mejor control que inline */
     margin: 0;
+    padding: 0; /* Quitamos el relleno que engorda la caja */
+    border: none; /* Quitamos el borde del recuadro */
+    background: none; /* Quitamos el fondo blanco */
+    align-items: center; /* Alineamos verticalmente el botón */
 }
-
 /* =============================================
    RESPONSIVE
    ============================================= */

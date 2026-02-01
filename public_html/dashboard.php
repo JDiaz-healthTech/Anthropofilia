@@ -187,7 +187,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         </div>
 
             <!-- PAGINACIÓN -->
-            <?php if ($$totalPages > 1): ?>
+            <?php if ($totalPages > 1): ?>
                 <nav class="pagination">
                     <?php if ($page > 1): ?>
                         <a href="<?= url('dashboard.php?page=' . ($page - 1)) ?>" class="btn">« Anterior</a>

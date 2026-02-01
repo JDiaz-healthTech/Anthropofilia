@@ -371,7 +371,7 @@ public function sanitizeHTML(string $html): string
 {
     // Al haber instalado la librería con Composer, esto siempre será true
     if (class_exists(\HTMLPurifier::class)) {
-        
+
         // 1. Configuración base
         $config = \HTMLPurifier_Config::createDefault();
 
@@ -384,9 +384,9 @@ public function sanitizeHTML(string $html): string
 
         // 3. ESQUEMAS URI PERMITIDOS (data para base64, mailto para emails)
         $config->set('URI.AllowedSchemes', [
-            'http' => true, 
-            'https' => true, 
-            'mailto' => true, 
+            'http' => true,
+            'https' => true,
+            'mailto' => true,
             'data' => true
         ]);
 
@@ -402,15 +402,30 @@ public function sanitizeHTML(string $html): string
 
         // 6. Permitir que los enlaces se abran en nueva pestaña
         $config->set('Attr.AllowedFrameTargets', ['_blank']);
-        
-        // Opcional: Si quieres FORZAR que todos los enlaces externos se abran en _blank
-        // $config->set('HTML.TargetBlank', true); 
 
-        // 7. Limpieza y retorno
-        $purifier = new \HTMLPurifier($config);
-        return $purifier->purify($html);
-    }
+// Damos un ID único a esta configuración personalizada
+            $config->set('HTML.DefinitionID', 'anthropofilia-iframe-fix');
+            $config->set('HTML.DefinitionRev', 1);
 
+            // Intentamos obtener la definición "cruda" para editarla
+            if ($def = $config->maybeGetRawHTMLDefinition()) {
+                // Enseñamos a la librería que 'allowfullscreen' es un atributo booleano válido en iframes
+                $def->addAttribute('iframe', 'allowfullscreen', 'Bool');
+
+                // También enseñamos el atributo 'allow' (usado por políticas modernas de navegadores)
+                $def->addAttribute('iframe', 'allow', 'Text');
+            }
+            // ============================================================
+
+            // 8. Limpieza y retorno
+            try {
+                $purifier = new \HTMLPurifier($config);
+                return $purifier->purify($html);
+            } catch (\Exception $e) {
+                // Fallback de seguridad por si algo explota: limpiar todo el HTML
+                return htmlspecialchars($html, ENT_QUOTES, 'UTF-8');
+            }
+        }
     // Si llegamos aquí, es que Composer falló o se borró la carpeta vendor.
     // Lanzamos error para no guardar datos inseguros sin darnos cuenta.
     throw new \RuntimeException('HTMLPurifier no está instalado. Ejecuta: docker compose run --rm composer install');
@@ -535,18 +550,18 @@ public function sanitizeHTML(string $html): string
         public function abort(int $code = 404, string $message = ''): never
     {
         http_response_code($code);
-        
+
         // Usar páginas de error personalizadas
         if ($code === 404 && file_exists(__DIR__ . '/../../resources/errors/404.php')) {
             require __DIR__ . '/../../resources/errors/404.php';
             exit();
         }
-        
+
         if ($code === 500 && file_exists(__DIR__ . '/../../resources/errors/500.php')) {
             require __DIR__ . '/../../resources/errors/500.php';
             exit();
         }
-        
+
         // Fallback genérico
         echo "Error {$code}";
         if ($message) {
