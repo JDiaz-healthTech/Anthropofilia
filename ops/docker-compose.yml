@@ -13,7 +13,7 @@ services:
       - db
     environment:
       # Las variables se cargan del .env, pero podemos setear algunas aquí
-      - APACHE_DOCUMENT_ROOT=/var/www/html/public
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public_html
     networks:
       - anthropo-net
 

@@ -26,13 +26,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN a2enmod rewrite
 
 # 3. Cambiar DocumentRoot de Apache a /var/www/html/public
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public_html
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # 4. Permitir .htaccess (AllowOverride All)
-RUN echo '<Directory /var/www/html/public>\n\
+RUN echo '<Directory /var/www/html/public_html>\n\
     Options Indexes FollowSymLinks\n\
     AllowOverride All\n\
     Require all granted\n\
@@ -46,7 +46,7 @@ WORKDIR /var/www/html
 COPY . /var/www/html/
 
 # 7. Crear carpetas necesarias y permisos
-RUN mkdir -p storage/cache storage/logs public/uploads \
+RUN mkdir -p storage/cache storage/logs public_html/uploads \
     && chown -R www-data:www-data /var/www/html
 
 # 8. Exponer puerto
