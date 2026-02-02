@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/init.php';
 
+$showSidebar = true;
+
 // 1) Capturar y validar término
 $q = trim((string)($_GET['q'] ?? ''));
 if ($q === '') {
@@ -17,11 +19,10 @@ if (mb_strlen($q) > 120) { // límite defensivo
 // Título y meta
 $page_title = 'Resultados para: ' . $q;
 $meta_description = 'Resultados de búsqueda para "' . $q . '" en Anthropofilia.';
-require_once __DIR__ . '/header.php';
+$categoria = null;
 
 // 2) Preparar LIKE escapando comodines (% y _)
-$like = '%' . str_replace(['\\','%','_'], ['\\\\','\\%','\\_'], $q) . '%';
-
+$like = '%' . addcslashes($q, '%_') . '%';
 // 3) Paginación
 $page    = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 10;
@@ -29,38 +30,35 @@ $offset  = ($page - 1) * $perPage;
 try {
   // Normaliza término y escapa comodines para LIKE
   $raw = $q; // ya viene recortado/validado arriba
-  $like = '%' . strtr($raw, [
-    '\\' => '\\\\',
-    '%'  => '\%',
-    '_'  => '\_',
-  ]) . '%';
 
   // COUNT
-  $sqlCount = "SELECT COUNT(*)
-               FROM posts
-               WHERE (titulo LIKE :q ESCAPE '\\' OR contenido LIKE :q ESCAPE '\\')";
+$sqlCount = "SELECT COUNT(*)
+             FROM posts
+             WHERE titulo LIKE :q OR contenido LIKE :q";
   $stmt = $pdo->prepare($sqlCount);
   $stmt->bindValue(':q', $like, PDO::PARAM_STR);
   $stmt->execute(); // <- FALTABA
   $total = (int)$stmt->fetchColumn();
 
   // LISTADO
-  $sql = "SELECT id_post, slug, titulo, contenido, fecha_publicacion
-          FROM posts
-          WHERE (titulo LIKE :q ESCAPE '\\' OR contenido LIKE :q ESCAPE '\\')
-          ORDER BY fecha_publicacion DESC, id_post DESC
-          LIMIT :limit OFFSET :offset";
+$sql = "SELECT id_post, slug, titulo, contenido, fecha_publicacion
+        FROM posts
+        WHERE titulo LIKE :q OR contenido LIKE :q
+        ORDER BY fecha_publicacion DESC, id_post DESC
+        LIMIT :limit OFFSET :offset";
   $stmt = $pdo->prepare($sql);
   $stmt->bindValue(':q', $like, PDO::PARAM_STR);
   $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
   $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
   $stmt->execute();
-  $results = $stmt->fetchAll(); // <- usa $results (antes era $rows)
+  $results = $stmt->fetchAll(PDO::FETCH_ASSOC); // <- usa $results (antes era $rows)
 } catch (PDOException $e) {
   $security->logEvent('error', 'search_failed', ['q' => $q, 'error' => $e->getMessage()]);
   $results = [];
   $total   = 0;
 }
+
+require_once BASE_PATH . '/resources/views/partials/header.php';
 
 $pages = max(1, (int)ceil($total / $perPage));
 
@@ -94,7 +92,7 @@ function post_link(array $p): string {
     <?php endif; ?>
     <span aria-current="page"><?= htmlspecialchars($page_title ?? 'Actual', ENT_QUOTES, 'UTF-8') ?></span>
   </nav>
- 
+
 
   <h2>Resultados de búsqueda para: "<?= htmlspecialchars($q, ENT_QUOTES, 'UTF-8'); ?>"</h2>
   <hr>
@@ -144,8 +142,5 @@ function post_link(array $p): string {
   <?php endif; ?>
 </main>
 
-<!-- Si sidebar te estrecha el footer en algunas vistas, asegúrate del clearfix -->
-<div style="clear:both"></div>
+<?php require_once BASE_PATH . '/resources/views/partials/footer.php';
 
-
-<?php require_once __DIR__ . '/footer.php'; ?>
