@@ -9,7 +9,7 @@ require_once __DIR__ . '/../init.php';
 use App\Models\PaginaPost;
 
 $security->requireLogin();
-$security->requireRole('admin');
+$security->requireRole(['administrador', 'autor']);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);

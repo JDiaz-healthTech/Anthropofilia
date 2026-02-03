@@ -96,10 +96,10 @@ function url(string $path = ''): string
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
     $baseUrl = $protocol . '://' . $host;
-    
+
     // Remover "/" inicial si existe
     $path = ltrim($path, '/');
-    
+
     return $baseUrl . '/' . $path;
 }
 
@@ -116,14 +116,14 @@ try {
     // Usamos la clase importada arriba.
     // Esto define la variable $pdo que usaremos abajo
     $pdo = Database::getConnection();
-    
+
 } catch (Exception $e) {
     error_log('[DB] Connection failed: ' . $e->getMessage());
-    
+
     if (isset($env) && $env === 'dev') {
         die("<h1>Error de Conexión</h1><p>" . htmlspecialchars($e->getMessage()) . "</p>");
     }
-    
+
     http_response_code(500);
     exit('Error de conexión a la base de datos.');
 }
@@ -151,3 +151,4 @@ $security->boot();
 // HELPERS ADICIONALES
 // ============================================================
 require_once BASE_PATH . '/admin/lib/settings.php';
+require_once BASE_PATH . '/app/Helpers/functions.php';  // ← AÑADIR

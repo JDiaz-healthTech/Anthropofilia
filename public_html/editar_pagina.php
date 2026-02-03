@@ -188,6 +188,9 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     </div>
 
 </main>
+<!-- CSS del modal para insertar posts -->
+<link rel="stylesheet" href="<?= url('css/components/post-embed-modal.css') ?>">
+
 <?php
 // CSP Nonce para scripts inline
 $nonceAttr = ($security->cspNonce())
@@ -195,13 +198,22 @@ $nonceAttr = ($security->cspNonce())
     : '';
 ?>
 
+<!-- Plugin de inserción de posts -->
+<script src="<?= url('js/tinymce-post-embed.js') ?>"<?= $nonceAttr ?>></script>
+<script<?= $nonceAttr ?>>
+window.PostEmbedConfig = {
+    searchUrl: '<?= url("api/post_search.php") ?>',
+    csrfToken: '<?= $security->csrfToken() ?>'
+};
+</script>
+
 <!-- Configuración de TinyMCE -->
 <script<?= $nonceAttr ?>>
 if (typeof tinymce !== 'undefined') {
   tinymce.init({
     selector: '#contenido',
-    plugins: 'code link lists image media table autoresize paste',
-    toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | link image media table | code',
+    plugins: 'code link lists image media table autoresize paste postembed',
+toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | link image media table | postembed | code',
     menubar: false,
     height: 540,
 
@@ -345,7 +357,7 @@ if (typeof tinymce !== 'undefined') {
 
     function searchPosts(query) {
         const categoria = filterCategoria.value;
-        const url = new URL('<?= url("api/posts_search.php") ?>', window.location.origin);
+        const url = new URL('<?= url("api/post_search.php") ?>', window.location.origin);
         url.searchParams.set('q', query);
         url.searchParams.set('id_pagina', ID_PAGINA);
         if (categoria) url.searchParams.set('categoria', categoria);

@@ -6,9 +6,9 @@ require_once __DIR__ . '/init.php';
 
 $showSidebar = true;
 
-require_once __DIR__ . '/app/Models/PaginaPost.php';
-
 use App\Models\PaginaPost;
+use App\Helpers\PostEmbedProcessor;
+
 
 // 1) Obtener y validar slug (solo a-z, 0-9 y guiones)
 $slug = $_GET['slug'] ?? '';
@@ -23,6 +23,10 @@ $pagina = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$pagina) {
     $security->abort(404, 'Página no encontrada.');
 }
+
+// 2.5) Procesar marcadores [POST id="X"] en el contenido
+$embedProcessor = new PostEmbedProcessor($pdo, $security);
+$contenidoProcesado = $embedProcessor->process($pagina['contenido'] ?? '');
 
 // 3) Cargar posts relacionados
 $paginaPost = new PaginaPost($pdo);
@@ -51,7 +55,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 
         <!-- Contenido principal de la página -->
         <div class="pagina-contenido">
-            <?= $security->sanitizeHTML($pagina['contenido'] ?? '') ?>
+            <?= $security->sanitizeHTML($contenidoProcesado) ?>
         </div>
 
         <!-- Posts relacionados -->

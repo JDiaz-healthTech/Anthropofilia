@@ -10,7 +10,7 @@ use App\Models\PaginaPost;
 
 // Solo admins pueden gestionar páginas
 $security->requireLogin();
-$security->requireRole('admin');
+$security->requireRole(['administrador', 'autor']);
 
 // Solo POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

@@ -1,5 +1,5 @@
 <?php
-// api/posts_search.php
+// api/post_search.php
 declare(strict_types=1);
 
 header('Content-Type: application/json');
@@ -9,7 +9,7 @@ require_once __DIR__ . '/../init.php';
 use App\Models\PaginaPost;
 
 $security->requireLogin();
-$security->requireRole('admin');
+$security->requireRole(['administrador', 'autor']);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
@@ -85,7 +85,7 @@ try {
     ]);
 
 } catch (Exception $e) {
-    $security->logEvent('error', 'posts_search_failed', [
+    $security->logEvent('error', 'post_search_failed', [
         'query' => $query,
         'error' => $e->getMessage()
     ]);

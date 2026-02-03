@@ -105,6 +105,21 @@ final class SecurityManager
         return $this->hasRole('admin');
     }
 
+    public function requireRole(string|array $roles): void
+    {
+        $roles = (array) $roles;
+
+        foreach ($roles as $role) {
+            if ($role === 'admin') $role = 'administrador';
+            if ($this->hasRole($role)) return;
+        }
+
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'Acceso denegado']);
+        exit();
+    }
+
+
     public function requireOwnershipOrRole(?int $ownerId, array $allowedRoles = ['admin']): void
     {
         $uid = $this->userId();
