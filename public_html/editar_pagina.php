@@ -212,7 +212,7 @@ window.PostEmbedConfig = {
 if (typeof tinymce !== 'undefined') {
   tinymce.init({
     selector: '#contenido',
-    plugins: 'code link lists image media table autoresize paste postembed',
+    plugins: 'code link lists image media table autoresize postembed',
 toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | link image media table | postembed | code',
     menubar: false,
     height: 540,

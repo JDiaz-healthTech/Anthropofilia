@@ -65,7 +65,7 @@ try {
     if (mb_strlen($contenido) > 200000) $contenido = mb_substr($contenido, 0, 200000);
 
     if ($titulo === '' || $contenido === '') {
-        $_SESSION['form_data'] = $_POST;
+        $_SESSION['form_pagina'] = $_POST;
         header('Location: crear_pagina.php?status=invalid');
         exit();
     }
