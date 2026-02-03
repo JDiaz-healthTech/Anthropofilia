@@ -72,7 +72,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     <div>
       <label for="contenido">Contenido</label>
       <textarea
-        id="contenido" name="contenido" rows="20" required maxlength="50000"><?= htmlspecialchars($form['contenido'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+        id="contenido" name="contenido" rows="20" maxlength="50000"><?= htmlspecialchars($form['contenido'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
     </div>
 
     <div>
