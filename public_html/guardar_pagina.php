@@ -88,13 +88,13 @@ try {
 } catch (PDOException $e) {
     // Duplicado del slug (23000 en MySQL para unique constraint)
     if ((int)$e->getCode() === 23000) {
-        $_SESSION['form_data'] = $_POST;
+        $_SESSION['form_pagina'] = $_POST;
         header('Location: crear_pagina.php?status=duplicate');
         exit();
     }
 
     $security->logEvent('error', 'page_create_failed', ['error' => $e->getMessage()]);
-    $_SESSION['form_data'] = $_POST;
+    $_SESSION['form_pagina'] = $_POST;
     header('Location: crear_pagina.php?status=db_error');
     exit();
 }
