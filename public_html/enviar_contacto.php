@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/init.php';
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 // Solo POST
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     header('Location: ' . url('contacto.php'), true, 302);
@@ -50,29 +54,47 @@ try {
         exit();
     }
 
-    // Email
-    $to   = $_ENV['MAIL_TO']   ?? 'analosampedro@gmail.com';
-    $host = parse_url($_ENV['APP_URL'] ?? ('https://' . ($_SERVER['HTTP_HOST'] ?? 'localhost')), PHP_URL_HOST) ?: 'localhost';
-    $from = $_ENV['MAIL_FROM'] ?? ('no-reply@' . $host);
+// Configuración desde .env
+$mailHost = $_ENV['MAIL_HOST'] ?? 'smtp.hostinger.com';
+$mailPort = (int)($_ENV['MAIL_PORT'] ?? 465);
+$mailUser = $_ENV['MAIL_USERNAME'] ?? '';
+$mailPass = $_ENV['MAIL_PASSWORD'] ?? '';
+$mailFrom = $_ENV['MAIL_FROM'] ?? 'als@anthropofilia.es';
+$mailTo   = $_ENV['MAIL_TO'] ?? 'analosampedro@gmail.com';
 
-    // Mitigar header injection
-    $safeName  = preg_replace('/[\r\n]+/', ' ', $nombre);
-    $safeEmail = preg_replace('/[\r\n]+/', ' ', $email);
+// Mitigar header injection
+$safeName  = preg_replace('/[\r\n]+/', ' ', $nombre);
+$safeEmail = preg_replace('/[\r\n]+/', ' ', $email);
 
-    $subjectPlain = "Nuevo mensaje de contacto de: {$safeName}";
-    $subject = '=?UTF-8?B?' . base64_encode($subjectPlain) . '?=';
+$mail = new PHPMailer(true);
 
-    $body = "Nombre: {$nombre}\nEmail: {$email}\n\nMensaje:\n{$mensaje}\n";
+try {
+    // Configuración SMTP
+    $mail->isSMTP();
+    $mail->Host       = $mailHost;
+    $mail->SMTPAuth   = true;
+    $mail->Username   = $mailUser;
+    $mail->Password   = $mailPass;
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    $mail->Port       = $mailPort;
+    $mail->CharSet    = 'UTF-8';
 
-    $headers  = "From: {$from}\r\n";
-    if ($email_ok) {
-        $headers .= "Reply-To: {$safeName} <{$safeEmail}>\r\n";
-    }
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-    $headers .= "X-Mailer: Anthropofilia\r\n";
+    // Remitente y destinatario
+    $mail->setFrom($mailFrom, 'Anthropofilia');
+    $mail->addAddress($mailTo);
+    $mail->addBCC($mailFrom); // Copia oculta al remitente
+    $mail->addReplyTo($safeEmail, $safeName);
 
-    $ok = @mail($to, $subject, $body, $headers);
+    // Contenido
+    $mail->isHTML(false);
+    $mail->Subject = "Nuevo mensaje de contacto de: {$safeName}";
+    $mail->Body    = "Nombre: {$nombre}\nEmail: {$email}\n\nMensaje:\n{$mensaje}\n";
+
+    $ok = $mail->send();
+} catch (Exception $e) {
+    $security->logEvent('error', 'phpmailer_error', ['error' => $mail->ErrorInfo]);
+    $ok = false;
+}
 
     if ($ok) {
         $security->logEvent('info', 'contact_sent', ['from'=>$safeEmail]);
