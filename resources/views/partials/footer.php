@@ -37,7 +37,7 @@ endif;
     <?php if ($isLogged): ?>
       <div class="admin-nav" role="navigation" aria-label="Área de administración">
         <a href="<?= url('dashboard.php') ?>" class="btn-admin-link">
-          📊 Dashboard
+          📊 Panel de Control
         </a>
 
         <span aria-hidden="true">|</span>

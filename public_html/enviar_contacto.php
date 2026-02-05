@@ -19,7 +19,7 @@ try {
     $security->csrfValidate($_POST['csrf_token'] ?? null);
 
     // Rate limit: 5 envíos/h por IP
-    $security->checkRateLimit('contact_form', 5, 3600);
+    $security->checkRateLimit('contact_form', 3, 3600);
 
     // Honeypot
     if (!empty($_POST['website'] ?? '')) {
@@ -45,8 +45,8 @@ try {
     }
 
     $nombre_ok  = $nombre !== '';
-    $email_ok   = (bool)filter_var($email, FILTER_VALIDATE_EMAIL);
-    $mensaje_ok = $mensaje !== '';
+    $email_ok = (bool)filter_var($email, FILTER_VALIDATE_EMAIL)
+            && preg_match('/^[^@]+@[^@]+\.[a-z]{2,}$/i', $email);    $mensaje_ok = $mensaje !== '';
 
     if (!$nombre_ok || !$email_ok || !$mensaje_ok) {
         $_SESSION['form_data'] = ['nombre'=>$nombre,'email'=>$email,'mensaje'=>$mensaje];
@@ -67,6 +67,11 @@ $safeName  = preg_replace('/[\r\n]+/', ' ', $nombre);
 $safeEmail = preg_replace('/[\r\n]+/', ' ', $email);
 
 $mail = new PHPMailer(true);
+
+$mail->SMTPDebug = 2; // Mostrar debug en logs
+$mail->Debugoutput = function($str, $level) use ($security) {
+    $security->logEvent('debug', 'smtp_debug', ['level' => $level, 'message' => $str]);
+};
 
 try {
     // Configuración SMTP

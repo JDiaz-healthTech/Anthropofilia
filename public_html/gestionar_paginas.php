@@ -66,13 +66,13 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 
 <main class="container">
     <nav class="breadcrumbs" aria-label="Breadcrumbs">
-        <a href="<?= url('index.php') ?>">Inicio</a> 
+        <a href="<?= url('index.php') ?>">Inicio</a>
         <span aria-hidden="true">›</span>
-        <a href="<?= url('dashboard.php') ?>">Dashboard</a>
+        <a href="<?= url('dashboard.php') ?>">Panel de Control</a>
         <span aria-hidden="true">›</span>
         <span aria-current="page">Gestionar Páginas</span>
     </nav>
- 
+
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <h2>Gestionar Páginas</h2>
         <a href="<?= url('crear_pagina.php') ?>" class="btn btn-primary">➕ Nueva Página</a>
@@ -86,9 +86,9 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 
     <!-- Buscador -->
     <form method="get" style="margin-bottom: 2rem; display: flex; gap: 0.5rem; align-items: center;">
-        <input 
-            type="text" 
-            name="q" 
+        <input
+            type="text"
+            name="q"
             placeholder="Buscar por título"
             value="<?= htmlspecialchars($q, ENT_QUOTES, 'UTF-8') ?>"
             style="flex: 1; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; min-width: 200px;"
@@ -124,27 +124,27 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                             <?= htmlspecialchars($r['slug'] ?? '', ENT_QUOTES, 'UTF-8') ?>
                         </td>
                         <td style="padding: 1rem;">
-                            <?php 
+                            <?php
                                 $fecha = strtotime($r['fecha_creacion']);
-                                echo $fecha ? date('d/m/Y', $fecha) : 'N/A'; 
+                                echo $fecha ? date('d/m/Y', $fecha) : 'N/A';
                             ?>
                         </td>
                         <td style="padding: 1rem; text-align: center;">
                             <div style="display: inline-flex; gap: 0.5rem;">
-                                <a href="<?= url('editar_pagina.php?id=' . (int)$r['id_pagina']) ?>" 
-                                   class="btn btn-sm" 
+                                <a href="<?= url('editar_pagina.php?id=' . (int)$r['id_pagina']) ?>"
+                                   class="btn btn-sm"
                                    style="padding: 0.4rem 0.8rem; font-size: 0.9rem; background: #ffc107; color: #000;">
                                     ✏️ Editar
                                 </a>
-                                
-                                <form method="POST" 
-                                      action="<?= url('eliminar_pagina.php') ?>" 
+
+                                <form method="POST"
+                                      action="<?= url('eliminar_pagina.php') ?>"
                                       style="display: inline;"
                                       onsubmit="return confirm('¿Seguro que deseas eliminar esta página?');">
                                     <?= $security->csrfField() ?>
                                     <input type="hidden" name="id" value="<?= (int)$r['id_pagina'] ?>">
-                                    <button type="submit" 
-                                            class="btn btn-sm" 
+                                    <button type="submit"
+                                            class="btn btn-sm"
                                             style="padding: 0.4rem 0.8rem; font-size: 0.9rem; background: #dc3545; color: white; border: none; cursor: pointer;">
                                         🗑️ Eliminar
                                     </button>
@@ -164,15 +164,15 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                 $base = url('gestionar_paginas.php') . '?';
                 if ($q !== '') $base .= 'q=' . urlencode($q) . '&';
                 ?>
-                
+
                 <?php if ($page > 1): ?>
                     <a href="<?= $base . 'page=' . ($page - 1) ?>" class="btn">« Anterior</a>
                 <?php endif; ?>
-                
+
                 <span style="align-self: center; padding: 0 1rem;">
                     Página <?= $page ?> de <?= $pages ?>
                 </span>
-                
+
                 <?php if ($page < $pages): ?>
                     <a href="<?= $base . 'page=' . ($page + 1) ?>" class="btn">Siguiente »</a>
                 <?php endif; ?>

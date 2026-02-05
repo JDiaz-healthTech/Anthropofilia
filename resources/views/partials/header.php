@@ -7,11 +7,11 @@ declare(strict_types=1);
 // =================================================================
 
 $current_page = basename($_SERVER['SCRIPT_NAME']);
-$nonce = (isset($security) && method_exists($security, 'cspNonce')) 
-    ? $security->cspNonce() 
+$nonce = (isset($security) && method_exists($security, 'cspNonce'))
+    ? $security->cspNonce()
     : null;
-$isLogged = isset($security) && method_exists($security, 'userId') 
-    ? (bool)$security->userId() 
+$isLogged = isset($security) && method_exists($security, 'userId')
+    ? (bool)$security->userId()
     : false;
 
 // =================================================================
@@ -50,7 +50,7 @@ if ($headerPath !== '') {
         $currentHost = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
         $imagePath = $matches[2]; // La parte después del dominio (ej: /uploads/header.jpg)
         $themeConfig['header_bg_url'] = $scheme . '://' . $currentHost . $imagePath;
-    } 
+    }
     // Si es una ruta relativa, convertir a absoluta
     elseif (!preg_match('#^/#', $headerPath)) {
         $themeConfig['header_bg_url'] = $scheme . '://' . $host . '/' . ltrim($headerPath, '/');
@@ -110,8 +110,8 @@ try {
 function nav_active(string $file, ?string $slug = null): string {
     $currFile = basename($_SERVER['SCRIPT_NAME']);
     if ($slug !== null) {
-        return ($currFile === 'pagina.php' && (($_GET['slug'] ?? null) === $slug)) 
-            ? ' class="active"' 
+        return ($currFile === 'pagina.php' && (($_GET['slug'] ?? null) === $slug))
+            ? ' class="active"'
             : '';
     }
     return ($currFile === $file) ? ' class="active"' : '';
@@ -119,7 +119,7 @@ function nav_active(string $file, ?string $slug = null): string {
 
 ?>
 <!DOCTYPE html>
-<html lang="es" 
+<html lang="es"
       data-primary-color="<?= htmlspecialchars($themeConfig['primary_color'], ENT_QUOTES, 'UTF-8') ?>"
       data-bg-color="<?= htmlspecialchars($themeConfig['bg_color'], ENT_QUOTES, 'UTF-8') ?>">
 <head>
@@ -128,7 +128,7 @@ function nav_active(string $file, ?string $slug = null): string {
     <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="color-scheme" content="light dark">
-    
+
     <title><?= htmlspecialchars($page_title ?? 'Anthropofilia Blog', ENT_QUOTES, 'UTF-8') ?></title>
 
     <?php if (!empty($meta_description)): ?>
@@ -151,10 +151,10 @@ function nav_active(string $file, ?string $slug = null): string {
 
     <?php if ($needsTinymce): ?>
     <!-- TinyMCE Self-Hosted -->
-    <script src="<?= url('js/tinymce/tinymce.min.js') ?>" 
+    <script src="<?= url('js/tinymce/tinymce.min.js') ?>"
             <?= $nonce ? ' nonce="'.htmlspecialchars($nonce, ENT_QUOTES, 'UTF-8').'"' : '' ?>></script>
     <?php endif; ?>
-    
+
     <!-- JavaScript -->
     <script src="<?= url('js/theme-init.js') ?>" defer></script>
 
@@ -176,7 +176,7 @@ function nav_active(string $file, ?string $slug = null): string {
 </head>
 <body id="top">
     <div class="container">
-        
+
         <!-- =================================================
              HEADER CON IMAGEN DE FONDO
              ================================================= -->
@@ -201,22 +201,35 @@ function nav_active(string $file, ?string $slug = null): string {
             <div class="main-nav-links" id="main-nav-links">
                 <!-- Enlace fijo: Inicio -->
                 <a href="<?= url('index.php') ?>"<?= nav_active('index.php') ?>>Inicio</a>
-                
+
                 <!-- Páginas dinámicas desde BD -->
                 <?php foreach ($menuPages as $page): ?>
                     <a href="<?= url('pagina.php?slug=' . urlencode($page['slug'])) ?>"<?= nav_active('pagina.php', $page['slug']) ?>>
                         <?= htmlspecialchars($page['titulo'], ENT_QUOTES, 'UTF-8') ?>
                     </a>
                 <?php endforeach; ?>
-                
+
                 <!-- Enlaces fijos adicionales -->
                 <a href="<?= url('acerca_de_mi.php') ?>"<?= nav_active('acerca_de_mi.php') ?>>Acerca de mí</a>
                 <a href="<?= url('contacto.php') ?>"<?= nav_active('contacto.php') ?>>Contacto</a>
 
                 <span class="spacer"></span>
-                
+
                 <!-- Dashboard -->
-                <a href="<?= url('dashboard.php') ?>"<?= nav_active('dashboard.php') ?><?= !$isLogged ? ' rel="nofollow"' : '' ?>>Dashboard</a>
+                <!-- Acceso / Panel de Control -->
+                <?php if ($isLogged): ?>
+                    <?php
+                    $userRole = $_SESSION['rol'] ?? 'usuario';
+                    $isAdmin = in_array($userRole, ['administrador', 'autor']);
+                    ?>
+                    <?php if ($isAdmin): ?>
+                        <a href="<?= url('dashboard.php') ?>"<?= nav_active('dashboard.php') ?>>Panel de Control</a>
+                    <?php else: ?>
+                        <a href="<?= url('mi_cuenta.php') ?>"<?= nav_active('mi_cuenta.php') ?>>Mi Cuenta</a>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <a href="<?= url('login.php') ?>"<?= nav_active('login.php') ?> rel="nofollow">Acceder</a>
+                <?php endif; ?>
             </div>
 
             <!-- Controles de accesibilidad -->

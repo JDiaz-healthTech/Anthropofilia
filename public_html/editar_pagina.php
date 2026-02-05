@@ -51,7 +51,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     <nav class="breadcrumbs" aria-label="Breadcrumbs">
         <a href="<?= url('index.php') ?>">Inicio</a>
         <span aria-hidden="true">›</span>
-        <a href="<?= url('dashboard.php') ?>">Dashboard</a>
+        <a href="<?= url('dashboard.php') ?>">Panel de Control</a>
         <span aria-hidden="true">›</span>
         <a href="<?= url('gestionar_paginas.php') ?>">Gestionar Páginas</a>
         <span aria-hidden="true">›</span>

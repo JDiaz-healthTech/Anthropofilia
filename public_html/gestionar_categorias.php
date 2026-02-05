@@ -16,9 +16,9 @@ $messageType = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $security->csrfValidate($_POST['csrf_token'] ?? '');
-    
+
     $action = $_POST['action'] ?? '';
-    
+
     try {
         switch ($action) {
             case 'create':
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $messageType = 'success';
                 }
                 break;
-                
+
             case 'update':
                 $id = (int)($_POST['id_categoria'] ?? 0);
                 $nombre = trim($_POST['nombre_categoria'] ?? '');
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $messageType = 'success';
                 }
                 break;
-                
+
             case 'delete':
                 $id = (int)($_POST['id_categoria'] ?? 0);
                 if ($id > 0) {
@@ -70,7 +70,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 <main class="container" style="max-width: 900px; margin: 2rem auto;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <h1>Gestionar Categorías</h1>
-        <a href="<?= url('dashboard.php') ?>" class="btn">← Volver al Dashboard</a>
+        <a href="<?= url('dashboard.php') ?>" class="btn">← Volver al Panel de Control</a>
     </div>
 
     <?php if ($message): ?>
@@ -87,15 +87,15 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
             <input type="hidden" name="action" value="create">
             <div style="flex: 1;">
                 <label for="nombre_categoria" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Nombre de la categoría:</label>
-                <input type="text" 
-                       id="nombre_categoria" 
-                       name="nombre_categoria" 
-                       required 
+                <input type="text"
+                       id="nombre_categoria"
+                       name="nombre_categoria"
+                       required
                        placeholder="Ej: Antropología Biológica"
                        style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: var(--radius);">
             </div>
-            <button type="submit" 
-                    class="btn" 
+            <button type="submit"
+                    class="btn"
                     style="padding: 0.6rem 1.5rem; background: var(--brand); color: white; border: none; border-radius: var(--radius); font-weight: 600; cursor: pointer;">
                 Crear Categoría
             </button>
@@ -105,7 +105,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     <!-- LISTA DE CATEGORÍAS EXISTENTES -->
     <section>
         <h2>Categorías Existentes (<?= count($categorias) ?>)</h2>
-        
+
         <?php if (!empty($categorias)): ?>
             <div class="table-responsive" style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius); overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
@@ -130,27 +130,27 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                                 <td style="padding: 1rem;">
                                     <div style="display: flex; gap: 0.5rem; justify-content: center;">
                                         <!-- Botón Editar (toggle form inline) -->
-                                        <button onclick="toggleEdit(<?= $cat['id_categoria'] ?>)" 
-                                                class="btn btn-sm" 
+                                        <button onclick="toggleEdit(<?= $cat['id_categoria'] ?>)"
+                                                class="btn btn-sm"
                                                 style="padding: 0.4rem 0.8rem; font-size: 0.9rem; background: #ffc107; color: #000; border: none; border-radius: var(--radius); cursor: pointer;">
                                             ✏️ Editar
                                         </button>
-                                        
+
                                         <!-- Botón Eliminar -->
-                                        <form method="POST" 
+                                        <form method="POST"
                                               style="display: inline; margin: 0;"
                                               onsubmit="return confirm('¿Seguro que deseas eliminar esta categoría? Los posts asociados quedarán sin categoría.');">
                                             <?= $security->csrfField() ?>
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="id_categoria" value="<?= $cat['id_categoria'] ?>">
-                                            <button type="submit" 
-                                                    class="btn btn-sm" 
+                                            <button type="submit"
+                                                    class="btn btn-sm"
                                                     style="padding: 0.4rem 0.8rem; font-size: 0.9rem; background: #dc3545; color: white; border: none; border-radius: var(--radius); cursor: pointer;">
                                                 🗑️ Eliminar
                                             </button>
                                         </form>
                                     </div>
-                                    
+
                                     <!-- Formulario de edición (oculto por defecto) -->
                                     <div id="edit-form-<?= $cat['id_categoria'] ?>" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--card-bg); border-radius: var(--radius);">
                                         <form method="POST" style="display: flex; gap: 0.5rem; align-items: end;">
@@ -158,20 +158,20 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                                             <input type="hidden" name="action" value="update">
                                             <input type="hidden" name="id_categoria" value="<?= $cat['id_categoria'] ?>">
                                             <div style="flex: 1;">
-                                                <input type="text" 
-                                                       name="nombre_categoria" 
-                                                       value="<?= htmlspecialchars($cat['nombre_categoria']) ?>" 
+                                                <input type="text"
+                                                       name="nombre_categoria"
+                                                       value="<?= htmlspecialchars($cat['nombre_categoria']) ?>"
                                                        required
                                                        style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
                                             </div>
-                                            <button type="submit" 
-                                                    class="btn btn-sm" 
+                                            <button type="submit"
+                                                    class="btn btn-sm"
                                                     style="padding: 0.5rem 1rem; background: var(--brand); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
                                                 Guardar
                                             </button>
-                                            <button type="button" 
-                                                    onclick="toggleEdit(<?= $cat['id_categoria'] ?>)" 
-                                                    class="btn btn-sm" 
+                                            <button type="button"
+                                                    onclick="toggleEdit(<?= $cat['id_categoria'] ?>)"
+                                                    class="btn btn-sm"
                                                     style="padding: 0.5rem 1rem; background: #6c757d; color: white; border: none; border-radius: var(--radius); cursor: pointer;">
                                                 Cancelar
                                             </button>

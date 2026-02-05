@@ -7,6 +7,7 @@ require_once __DIR__ . '/init.php';
 use App\Models\Post;
 use App\Models\Page;
 use App\Models\Category;
+use App\Models\Sites;
 
 // Verificar si el usuario está logueado
 $isLoggedIn = !empty($_SESSION['id_usuario']);
@@ -16,13 +17,13 @@ $userName = $_SESSION['nombre_usuario'] ?? null;
 // SI NO ESTÁ LOGUEADO: Mostrar mensaje y botón de login
 // ============================================================
 if (!$isLoggedIn) {
-    $page_title = 'Dashboard - Acceso Requerido';
+    $page_title = 'Panel de Control - Acceso Requerido';
     require_once BASE_PATH . '/resources/views/partials/header.php';
     ?>
 
 <main class="access-denied">
     <div class="access-denied__card">
-        <h1>🔒 Dashboard de Administración</h1>
+        <h1>🔒 Panel de Control de Administración</h1>
         <p>Para acceder al panel de administración necesitas iniciar sesión.</p>
 
         <a href="<?= url('login.php') ?>" class="btn action-btn">
@@ -60,30 +61,22 @@ try {
     $totalPosts = Post::countAll();
     $totalPagesCount = Page::countAll();
     $totalCategories = Category::countAll();
-
-    // Posts paginados para la tabla
-    $page = max(1, (int)($_GET['page'] ?? 1));
-    $perPage = 10;
-    $offset = ($page - 1) * $perPage;
-    $posts = Post::getPaginated($perPage, $offset);
-    $totalPages = max(1, (int)ceil($totalPosts / $perPage)); // ← CORREGIDO
+    $totalSites = Sites::countAll();
 
 } catch (Exception $e) {
-    error_log("Error cargando dashboard: " . $e->getMessage());
+    error_log("Error cargando Panel de Control: " . $e->getMessage());
     $totalPosts = 0;
-    $totalPages = 1; // ← CORREGIDO
     $totalPagesCount = 0;
     $totalCategories = 0;
-    $posts = [];
+    $totalSites = 0;
 }
-
-$page_title = 'Dashboard - Panel de Administración';
+$page_title = 'Panel de Control - Administración';
 require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 
 <main class="admin-dashboard">
         <div class="admin-header">
-            <h1>Dashboard</h1>
+            <h1>Panel de Control</h1>
             <p>¡Bienvenido, <?= htmlspecialchars($userName) ?>!</p>
         </div>
         <?php if ($flash): ?>
@@ -93,21 +86,26 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <?php endif; ?>
 
     <!-- ESTADÍSTICAS BÁSICAS -->
-    <section class="stats-cards">
+    <section class="stats-cards stats-cards--compact">
 
         <div class="stat-card stat-card--posts">
             <div class="stat-card__value"><?= $totalPosts ?></div>
-            <div class="stat-card__label">Entradas publicadas</div>
+            <div class="stat-card__label">Posts</div>
         </div>
 
         <div class="stat-card stat-card--pages">
             <div class="stat-card__value"><?= $totalPagesCount ?></div>
-            <div class="stat-card__label">Páginas creadas</div>
+            <div class="stat-card__label">Páginas</div>
         </div>
 
         <div class="stat-card stat-card--categories">
             <div class="stat-card__value"><?= $totalCategories ?></div>
-            <div class="stat-card__label">Categorías activas</div>
+            <div class="stat-card__label">Categorías</div>
+        </div>
+
+        <div class="stat-card stat-card--sites">
+            <div class="stat-card__value"><?= $totalSites ?></div>
+            <div class="stat-card__label">Sitios</div>
         </div>
 
     </section>
@@ -129,85 +127,21 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
             <span>Personalizar Diseño</span>
         </a>
     </div>
-</section>
-
-<!-- GESTIÓN DE ENTRADAS -->
- <section class="manage-posts">
-
-<div class="section-header">
-    <h2>Gestionar Entradas</h2>
-    <a href="<?= url('crear_post.php') ?>" class="action-btn">
-        <span class="action-btn__icon">+</span> Nueva Entrada
-    </a>
-</div>
-  <?php if (!empty($posts)): ?>
-        <div class="table-responsive">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Título</th>
-                        <th>Fecha de Publicación</th>
-                        <th class="text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($posts as $post): ?>
-                        <tr>
-                            <td>
-                                <strong><?= htmlspecialchars($post['titulo']) ?></strong>
-                            </td>
-                            <td class="admin-table__date">
-                                <?php
-                                    $fecha = strtotime($post['fecha_publicacion']);
-                                    echo $fecha ? date('d/m/Y', $fecha) : 'N/A';
-                                ?>
-                            </td>
-                            <td>
-                                <div class="admin-table__actions">
-                                    <a href="<?= url('editar_post.php?id=' . $post['id_post']) ?>"
-                                    class="btn-sm btn-sm--edit">
-                                        ✏️ Editar
-                                    </a>
-                                        <form method="POST" action="<?= url('eliminar_post.php') ?>"
-                                            style="display: inline;"
-                                            onsubmit="return confirm('¿Seguro que deseas eliminar este post?');">
-                                            <?= $security->csrfField() ?>
-                                            <input type="hidden" name="id" value="<?= (int)$post['id_post'] ?>">
-                                            <input type="hidden" name="origen" value="dashboard"> <!-- o "gestionar_posts" -->
-                                            <button type="submit" class="btn btn-sm" style="background: #dc3545; color: white;">
-                                                🗑️ Eliminar
-                                            </button>
-                                        </form>
-                                </div>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+    </section>
+    <!-- GESTIÓN DE POSTS -->
+    <section class="manage-posts">
+        <div class="section-header">
+            <h2>Gestionar Posts</h2>
+            <a href="<?= url('crear_post.php') ?>" class="action-btn">
+                <span class="action-btn__icon">+</span> Nuevo Post
+            </a>
         </div>
-
-            <!-- PAGINACIÓN -->
-            <?php if ($totalPages > 1): ?>
-                <nav class="pagination">
-                    <?php if ($page > 1): ?>
-                        <a href="<?= url('dashboard.php?page=' . ($page - 1)) ?>" class="btn">« Anterior</a>
-                    <?php endif; ?>
-
-                    <span class="pagination__info">
-                        Página <?= $page ?> de <?= $totalPages ?>
-                    </span>
-
-                    <?php if ($page < $totalPages): ?>
-                        <a href="<?= url('dashboard.php?page=' . ($page + 1)) ?>" class="btn">Siguiente »</a>
-                    <?php endif; ?>
-                </nav>
-            <?php endif; ?>
-
-        <?php else: ?>
-        <p class="empty-state">
-            No hay entradas publicadas todavía. ¡Crea tu primera entrada!
-        </p>
-        <?php endif; ?>
+        <div class="info-card">
+            <p>📝 Tienes <strong><?= $totalPosts ?> posts</strong> publicados</p>
+            <a href="<?= url('gestionar_posts.php') ?>" class="btn-link">
+                Ver todos los posts →
+            </a>
+        </div>
     </section>
 
     <!-- GESTIÓN DE PÁGINAS (Sección simplificada) -->
@@ -227,20 +161,40 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     </section>
 
     <!-- GESTIÓN DE CATEGORÍAS -->
-<section class="manage-categories">
-    <div class="section-header">
-        <h2>Gestionar Categorías</h2>
-        <a href="<?= url('gestionar_categorias.php') ?>" class="action-btn">
-            <span class="action-btn__icon">+</span> Nueva Categoría
-        </a>
-    </div>
-    <div class="info-card">
-        <p>📁 Tienes <strong><?= $totalCategories ?> categorías</strong> activas</p>
-        <a href="<?= url('gestionar_categorias.php') ?>" class="btn-sm">
-            Ver todas las categorías →
-        </a>
-    </div>
-</section>
+    <section class="manage-categories">
+        <div class="section-header">
+            <h2>Gestionar Categorías</h2>
+            <a href="<?= url('gestionar_categorias.php') ?>" class="action-btn">
+                <span class="action-btn__icon">+</span> Nueva Categoría
+            </a>
+        </div>
+        <div class="info-card">
+            <p>📁 Tienes <strong><?= $totalCategories ?> categorías</strong> activas</p>
+            <a href="<?= url('gestionar_categorias.php') ?>" class="btn-link">
+                Ver todas las categorías →
+            </a>
+        </div>
+    </section>
+
+    <!-- GESTIÓN DE SITIOS DE INTERÉS -->
+    <section class="manage-sites">
+        <div class="section-header">
+            <h2>Gestionar Sitios de Interés</h2>
+            <a href="<?= url('gestionar_sitios.php') ?>" class="action-btn">
+                <span class="action-btn__icon">+</span> Nuevo Sitio
+            </a>
+        </div>
+        <div class="info-card">
+            <p>🔗 Enlaces externos en la sidebar</p>
+            <a href="<?= url('gestionar_sitios.php') ?>" class="btn-link">
+                Ver todos los sitios →
+            </a>
+        </div>
+    </section>
+
+
+
+
 
 </main>
 

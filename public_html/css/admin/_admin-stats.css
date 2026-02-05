@@ -4,48 +4,118 @@
 
 /* Contenedor de las tarjetas */
 .stats-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Versión compacta (4 columnas) */
+.stats-cards--compact {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 }
 
 /* Tarjeta base */
 .stat-card {
-  padding: 1.5rem;
-  color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
+    padding: 1.25rem;
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border, #e0e0e0);
+    border-radius: var(--radius, 8px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    transition: width 0.25s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-color: transparent;
+}
+
+.stat-card:hover::before {
+    width: 6px;
 }
 
 /* Número grande */
 .stat-card__value {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text, #2c2c2c);
+    margin-bottom: 0.25rem;
+    line-height: 1;
+}
+
+.stats-cards--compact .stat-card__value {
+    font-size: 1.75rem;
 }
 
 /* Etiqueta descriptiva */
 .stat-card__label {
-  opacity: 0.9;
-  font-size: 0.95rem;
+    color: var(--text-muted, #666);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-/* Variantes con gradientes */
-.stat-card--posts {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+.stats-cards--compact .stat-card__label {
+    font-size: 0.75rem;
 }
 
-.stat-card--pages {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+/* Variantes - Barra lateral de color */
+.stat-card--posts::before {
+    background: var(--brand, #8b4513);
 }
 
-.stat-card--categories {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+.stat-card--posts:hover {
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.05) 0%, rgba(139, 69, 19, 0.02) 100%);
+}
+
+.stat-card--pages::before {
+    background: #6366f1;
+}
+
+.stat-card--pages:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0.02) 100%);
+}
+
+.stat-card--categories::before {
+    background: #10b981;
+}
+
+.stat-card--categories:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);
+}
+
+.stat-card--sites::before {
+    background: #f59e0b;
+}
+
+.stat-card--sites:hover {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(245, 158, 11, 0.02) 100%);
+}
+
+/* Dark mode */
+html.theme-dark .stat-card {
+    background: var(--card-bg, #1e1e1e);
+    border-color: var(--border, #333);
+}
+
+html.theme-dark .stat-card__value {
+    color: var(--text, #f0f0f0);
+}
+
+html.theme-dark .stat-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }

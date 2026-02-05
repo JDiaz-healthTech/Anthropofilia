@@ -56,9 +56,9 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 
 <main class="container">
     <nav class="breadcrumbs" aria-label="Breadcrumbs">
-        <a href="<?= url('index.php') ?>">Inicio</a> 
+        <a href="<?= url('index.php') ?>">Inicio</a>
         <span aria-hidden="true">›</span>
-        <a href="<?= url('dashboard.php') ?>">Dashboard</a>
+        <a href="<?= url('dashboard.php') ?>">Panel de Control</a>
         <span aria-hidden="true">›</span>
         <span aria-current="page">Crear Post</span>
     </nav>
@@ -77,11 +77,11 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <div>
             <label for="titulo">Título <span style="color: red;">*</span></label>
             <input
-                type="text" 
-                id="titulo" 
+                type="text"
+                id="titulo"
                 name="titulo"
-                required 
-                maxlength="150" 
+                required
+                maxlength="150"
                 autocomplete="off"
                 value="<?= htmlspecialchars($old['titulo'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         </div>
@@ -101,8 +101,8 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <div>
             <label for="etiquetas">Etiquetas (opcional)</label>
             <input
-                type="text" 
-                id="etiquetas" 
+                type="text"
+                id="etiquetas"
                 name="etiquetas"
                 placeholder="Ej: php, programación, tutoriales (separadas por comas)"
                 autocomplete="off"
@@ -111,19 +111,19 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         </div>
         <div>
             <label for="contenido">Contenido <span style="color: red;">*</span></label>
-            <textarea 
-                id="contenido" 
-                name="contenido" 
-                rows="20" 
-                required 
+            <textarea
+                id="contenido"
+                name="contenido"
+                rows="20"
+                required
                 maxlength="200000"><?= htmlspecialchars($old['contenido'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
         </div>
 
         <div>
             <label for="imagen">Imagen destacada (opcional)</label>
             <input
-                type="file" 
-                id="imagen" 
+                type="file"
+                id="imagen"
                 name="imagen"
                 accept="image/jpeg,image/png,image/gif,image/webp">
             <small>Máximo 2MB. Formatos: JPG, PNG, GIF, WebP</small>
@@ -131,8 +131,8 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <div>
             <label for="imagen_url">O URL de imagen externa (opcional)</label>
             <input
-                type="url" 
-                id="imagen_url" 
+                type="url"
+                id="imagen_url"
                 name="imagen_url"
                 placeholder="https://ejemplo.com/imagen.jpg"
                 value="<?= htmlspecialchars($old['imagen_url'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
@@ -163,13 +163,13 @@ document.getElementById('formCrearPost').addEventListener('submit', function(e) 
 
     // 2. VALIDAR: Comprobar que no esté vacío
     var contenido = document.getElementById('contenido').value.trim();
-    
+
     if (contenido === '') {
         e.preventDefault(); // Frenar el envío
         alert('El contenido no puede estar vacío.');
         return false;
     }
-    
+
     // 3. Validar que se haya seleccionado una categoría
     var categoria = document.getElementById('id_categoria').value;
     if (categoria === '') {
@@ -182,12 +182,12 @@ document.getElementById('formCrearPost').addEventListener('submit', function(e) 
 
 <script>
 // Obtenemos el token CSRF de la sesión de PHP para usarlo en JS
-const csrfToken = "<?php echo htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8'); ?>"; 
+const csrfToken = "<?php echo htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8'); ?>";
 
 if (typeof tinymce !== 'undefined') {
     tinymce.init({
         selector: 'textarea#contenido',
-        
+
         // --- CORRECCIÓN DE RUTAS DE LOS ICONOS ---
         base_url: 'js/tinymce', // Importante: Sin barra inicial
         suffix: '.min',         // Optimización
@@ -202,12 +202,12 @@ if (typeof tinymce !== 'undefined') {
         block_formats: 'Párrafo=p; Encabezado 2=h2; Encabezado 3=h3; Encabezado 4=h4; Cita=blockquote; Preformateado=pre',
 
         link_target_list: [
-            { title: 'Nueva pestaña', value: '_blank' }, 
+            { title: 'Nueva pestaña', value: '_blank' },
             { title: 'Misma pestaña', value: '' }
         ],
         rel_list: [
-            { title: 'Ninguno', value: '' }, 
-            { title: 'noopener', value: 'noopener' }, 
+            { title: 'Ninguno', value: '' },
+            { title: 'noopener', value: 'noopener' },
             { title: 'nofollow', value: 'nofollow' }
         ],
         default_link_target: '_blank',
@@ -236,7 +236,7 @@ if (typeof tinymce !== 'undefined') {
                     return;
                 }
             }
-            
+
             // Detectar Vimeo
             if (data.url.indexOf('vimeo.com/') !== -1) {
                 var vimeoId = data.url.split('vimeo.com/')[1].split(/[?&]/)[0];
@@ -247,14 +247,14 @@ if (typeof tinymce !== 'undefined') {
                     return;
                 }
             }
-            
+
             // Si no es YouTube ni Vimeo, dejar que TinyMCE lo maneje
             resolve({ html: '' });
         },
 
         // --- GESTIÓN DE SUBIDA DE IMÁGENES ---
         // Nota: Debes crear el archivo 'upload_image.php' para que esto funcione
-        images_upload_url: 'upload_image.php', 
+        images_upload_url: 'upload_image.php',
         images_upload_credentials: true,
         automatic_uploads: true,
         image_caption: true,
@@ -270,38 +270,38 @@ if (typeof tinymce !== 'undefined') {
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', 'upload_image.php'); // Asegúrate de crear este archivo
                 xhr.withCredentials = true;
-                
+
                 // Inyectamos el token CSRF en la cabecera
                 xhr.setRequestHeader('X-CSRF-Token', csrfToken);
-                
-                xhr.upload.onprogress = function (e) { 
-                    if (e.lengthComputable) progress(e.loaded / e.total * 100); 
+
+                xhr.upload.onprogress = function (e) {
+                    if (e.lengthComputable) progress(e.loaded / e.total * 100);
                 };
-                
+
                 xhr.onload = function () {
-                    if (xhr.status < 200 || xhr.status >= 300) { 
-                        reject('HTTP ' + xhr.status); 
-                        return; 
+                    if (xhr.status < 200 || xhr.status >= 300) {
+                        reject('HTTP ' + xhr.status);
+                        return;
                     }
                     try {
                         var json = JSON.parse(xhr.responseText);
-                        if (!json || typeof json.location !== 'string') { 
-                            reject('Respuesta inválida: ' + xhr.responseText); 
-                            return; 
+                        if (!json || typeof json.location !== 'string') {
+                            reject('Respuesta inválida: ' + xhr.responseText);
+                            return;
                         }
                         resolve(json.location);
-                    } catch (err) { 
-                        reject('JSON inválido: ' + err.message); 
+                    } catch (err) {
+                        reject('JSON inválido: ' + err.message);
                     }
                 };
-                
+
                 xhr.onerror = function () { reject('Error de red'); };
-                
+
                 var formData = new FormData();
                 formData.append('file', blobInfo.blob(), blobInfo.filename());
                 // También enviamos el token por POST por si acaso
                 formData.append('csrf_token', csrfToken);
-                
+
                 xhr.send(formData);
             });
         },
@@ -319,7 +319,7 @@ if (typeof tinymce !== 'undefined') {
 
         // --- ESTILOS DENTRO DEL EDITOR ---
         // Usamos style.css que ya tienes subido
-        content_css: ['style.css'], 
+        content_css: ['style.css'],
         content_style: `
             body { max-width: 760px; margin: 1rem auto; line-height: 1.7; font-family: Helvetica, Arial, sans-serif; color: #333; }
             figure { margin: 1.2rem 0; }
@@ -339,12 +339,12 @@ if (typeof tinymce !== 'undefined') {
                 border-radius: 8px;
                 margin: 1.5rem 0;
             }
-            
+
             /* Imágenes con enlaces - efecto hover */
             a img {
                 transition: opacity 0.2s ease, transform 0.2s ease;
             }
-            
+
             a:hover img {
                 opacity: 0.85;
                 transform: scale(1.02);
@@ -353,7 +353,7 @@ if (typeof tinymce !== 'undefined') {
 
         browser_spellcheck: true,
         contextmenu: false,
-        
+
         init_instance_callback: function (editor) {
             console.log('TinyMCE iniciado correctamente con configuración completa');
         }
