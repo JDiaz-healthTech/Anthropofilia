@@ -4,13 +4,11 @@
    ========================================================================== */
 
 .about-article {
-    max-width: 1100px; /* Más ancho para dar aire */
+    max-width: 1100px;
     margin: 0 auto;
     padding: 4rem 0;
 }
 
-/* Ocultamos visualmente el título "Acerca de mí" si preferimos 
-   que el nombre sea el protagonista, pero lo dejamos accesible */
 .visually-hidden {
     position: absolute;
     width: 1px;
@@ -22,19 +20,18 @@
     border: 0;
 }
 
-/* Grid Layout: Más separación */
+/* Grid Layout */
 .about-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 3rem; /* Espacio en móvil */
-    align-items: center; /* Centrado verticalmente */
+    gap: 3rem;
+    align-items: start;
 }
 
-/* Breakpoint Escritorio */
 @media (min-width: 900px) {
     .about-grid {
-        grid-template-columns: 400px 1fr; /* Foto más grande */
-        gap: 6rem; /* MUCHA más distancia entre foto y texto */
+        grid-template-columns: 300px 1fr;
+        gap: 4rem;
     }
 }
 
@@ -42,59 +39,95 @@
 .about__photo {
     margin: 0;
     position: relative;
+    max-width: 300px;
+    justify-self: center;
+}
+
+@media (min-width: 900px) {
+    .about__photo {
+        justify-self: start;
+    }
 }
 
 .about__photo img {
     width: 100%;
     height: auto;
     border-radius: 4px;
-    /* Sombra suave y difusa */
-    box-shadow: 20px 20px 60px rgba(0,0,0,0.05); 
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     object-fit: cover;
-    aspect-ratio: 3/4; /* Formato retrato elegante */
+    object-position: center top; /* Prioriza la parte superior (cara) */
+    aspect-ratio: 1 / 1; /* Cuadrado - mejor para retratos */
 }
 
 /* --- TEXTO Y TIPOGRAFÍA --- */
 .about__content {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 3rem;
+    min-width: 5; /* Permite que el contenido se encoja */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
-/* El Nombre: Grande y con autoridad */
+/* El Nombre */
 .about__name {
     font-family: 'Playfair Display', Georgia, serif;
-    font-size: 3.5rem; /* Tamaño muy grande */
-    line-height: 1.1;
+    font-size: clamp(2rem, 5vw, 3rem); /* Tamaño responsive */
+    line-height: 1.2;
     color: #1a1a1a;
     margin: 0;
+    overflow-wrap: normal; /* Antes era break-word */
+    hyphens: none;
+    white-space: nowrap;
 }
 
 /* Subtítulo / Profesión */
 .about__role {
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
     text-transform: uppercase;
-    letter-spacing: 3px; /* Letras separadas estilo editorial */
-    font-size: 0.85rem;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #888;
-    margin-bottom: 1rem;
-    border-left: 3px solid #d4a373; /* Un detalle de color (opcional) */
+    margin-bottom: 0.5rem;
+    border-left: 3px solid var(--brand, #8b4513);
     padding-left: 1rem;
 }
 
 /* Texto de introducción (Lead) */
 .lead-text {
-    font-size: 1.4rem; /* Más grande para lectura fácil */
+    font-size: clamp(1.1rem, 2.5vw, 1.3rem);
     line-height: 1.6;
     color: #2c3e50;
     font-weight: 400;
 }
 
 /* Texto normal */
+.about__bio {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
 .about__bio p {
-    font-size: 1.1rem;
+    font-size: clamp(1rem, 2vw, 1.1rem);
     line-height: 1.8;
     color: #4a4a4a;
     margin-bottom: 1.5rem;
+}
+
+/* Dark mode */
+html.theme-dark .about__name {
+    color: var(--text, #f0f0f0);
+}
+
+html.theme-dark .about__role {
+    color: #aaa;
+}
+
+html.theme-dark .lead-text,
+html.theme-dark .about__bio p {
+    color: var(--text-muted, #ccc);
 }

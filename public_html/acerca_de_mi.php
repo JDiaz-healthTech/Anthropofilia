@@ -32,8 +32,10 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                 <div class="about__content">
 
                     <header>
-                        <p class="about__role">Filosofía & Biología</p>
-                        <h2 class="about__name">Ana López Sampedro</h2>
+                        <p class="about__role">Filosofía & Historia</p>
+                        <h2 class="about__name">Ana</h2>
+                        <h2 class="about__name">López</h2>
+                        <h2 class="about__name">Sampedro</h2>
                     </header>
 
                     <div class="about__bio">
