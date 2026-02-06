@@ -25,7 +25,10 @@
     border: 1px solid var(--border, #ddd);
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    width: 100%;
     max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     overflow: hidden;
 }
 .post-embebido__header {
@@ -87,15 +90,29 @@
 .post-embebido__contenido iframe,
 .post-embebido__contenido video,
 .post-embebido__contenido embed,
-.post-embebido__contenido object {
-    max-width: 100%;
-    width: 100%;
-    height: auto;
+.post-embebido__contenido object,
+.pagina-contenido iframe,
+.pagina-contenido video,
+.pagina-contenido embed,
+.pagina-contenido object {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 400px;
     aspect-ratio: 16 / 9;
     border-radius: 6px;
     margin: 1rem 0;
+    display: block;
 }
 
+/* Iframes de Genially y similares (interactivos altos) */
+.post-embebido__contenido iframe[src*='genially'],
+.post-embebido__contenido iframe[src*='genial.ly'],
+.pagina-contenido iframe[src*='genially'],
+.pagina-contenido iframe[src*='genial.ly'] {
+    min-height: 500px;
+    aspect-ratio: 16 / 10;
+}
 /* Contenedor de video embebido (YouTube, etc.) */
 .post-embebido__contenido .video-container,
 .post-embebido__contenido .embed-responsive {
@@ -237,4 +254,30 @@
     .post-embebido__header h3 {
         font-size: 1.5rem;
     }
+}
+
+/* =======================================================
+   CONTENEDOR DE PÁGINA - Evitar desbordamiento
+   ======================================================= */
+
+.pagina-contenido {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.pagina-contenido > div,
+.pagina-contenido > p,
+.pagina-contenido > section {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Divs con estilo inline de Genially */
+.pagina-contenido div[style*='width: 100%'],
+.pagina-contenido div[style*='position: relative'] {
+    max-width: 100% !important;
+    width: 100% !important;
 }

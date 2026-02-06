@@ -77,20 +77,23 @@ class Post {
     /**
      * Obtener posts paginados (sustituye al LIMIT/OFFSET manual)
      */
-    public static function getPaginated(int $limit, int $offset): array {
-        $db = Database::getConnection();
-        // Solo traemos lo necesario para la lista, no el contenido entero
-        $stmt = $db->prepare("SELECT id_post, titulo, fecha_publicacion
-                              FROM posts
-                              ORDER BY fecha_publicacion DESC, id_post DESC
-                              LIMIT :limit OFFSET :offset");
+public static function getPaginated(int $limit, int $offset): array {
+    $db = Database::getConnection();
+    $stmt = $db->prepare(
+        "SELECT p.id_post, p.slug, p.titulo, p.contenido, p.imagen_destacada_url,
+                p.fecha_publicacion, c.nombre_categoria, c.slug AS categoria_slug
+         FROM posts p
+         LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
+         ORDER BY p.fecha_publicacion DESC, p.id_post DESC
+         LIMIT :limit OFFSET :offset"
+    );
 
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
 
-        return $stmt->fetchAll();
-    }
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
     /**
      * Obtener un post con detalles adicionales (categoría y etiquetas)
      */

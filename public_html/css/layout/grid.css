@@ -7,21 +7,39 @@
    ============================================= */
 .main-content-area {
     display: grid;
-    grid-template-columns: 1fr;    /* Mobile-first: 1 columna */
+    grid-template-columns: 1fr;
     gap: 2rem;
-    max-width: 1200px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 1.5rem;
+    margin-top: 1.5rem;
 }
 
 /* =============================================
-   DESKTOP - 2 columnas (contenido + sidebar)
+   DESKTOP - 2 columnas (contenido + sidebar fijo)
    ============================================= */
-@media (min-width: 768px) {
+@media (min-width: 900px) {
     .main-content-area {
-        grid-template-columns: 2.5fr 1fr;  /* Contenido más ancho */
+        grid-template-columns: 1fr 340px;
         align-items: start;
-        gap: 2.5rem; 
+        gap: 2.5rem;
+        padding: 2rem 2rem 2rem 3rem;
+        margin-top: 2rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .main-content-area {
+        grid-template-columns: 1fr 380px;
+        gap: 3rem;
+        padding: 2.5rem 2rem 2.5rem 4rem;
+    }
+}
+
+@media (min-width: 1600px) {
+    .main-content-area {
+        grid-template-columns: 1fr 400px;
+        padding: 3rem 2rem 3rem 5rem;
     }
 }
 
@@ -29,14 +47,22 @@
    ELEMENTOS PRINCIPALES
    ============================================= */
 .main-content-area > main,
-.main-content-area > .home-list {
-    min-width: 0;                 /* Previene overflow en grid */
+.main-content-area > .home-list,
+.main-content-area > article {
+    min-width: 0; /* Previene overflow en grid */
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Contenido dentro del main */
+.main-content-area > main > *,
+.main-content-area > article > * {
+    max-width: 100%;
 }
 
 /* Sidebar en desktop */
 .main-content-area > aside {
-    padding-left: 1.5rem;
-    border-left: 1px solid var(--border);
+    padding-left: 0;
 }
 
 /* =============================================

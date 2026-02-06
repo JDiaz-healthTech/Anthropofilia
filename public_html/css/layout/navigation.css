@@ -9,11 +9,12 @@
 .main-nav {
     display: flex;
     align-items: center;
-    justify-content: space-between;   /* ← Espacio entre elementos */
+    justify-content: space-between;
     gap: 1rem;
-    padding: 0.75rem 1rem;
+    padding: 0 2rem;
     background: var(--card-bg);
     border-bottom: 1px solid var(--border);
+    min-height: 56px;
 }
 
 /* =============================================
@@ -22,26 +23,44 @@
 .main-nav-links {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    flex: 1;                          /* ← Ocupa espacio central */
+    gap: 0;
+    flex: 1;
     justify-content: center;
 }
 
-.main-nav a {
-    padding: 0.75rem 1rem;
-    font-family: var(--font-header);
+.main-nav-links a {
+    position: relative;
+    padding: 1rem 1.25rem;
+    font-family: var(--font-body, system-ui, sans-serif);
     font-weight: 500;
-    font-size: var(--step-0);
+    font-size: 0.9rem;
+    letter-spacing: 0.01em;
     text-decoration: none;
     color: var(--fg);
-    border-bottom: 3px solid transparent;
-    transition: var(--transition);
+    transition: color 0.2s ease;
+    white-space: nowrap;
 }
 
-.main-nav a:hover,
-.main-nav a.active {
-    border-bottom-color: var(--brand);
+.main-nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--brand);
+    transition: width 0.25s ease;
+}
+
+.main-nav-links a:hover,
+.main-nav-links a.active {
     color: var(--brand);
+}
+
+.main-nav-links a:hover::after,
+.main-nav-links a.active::after {
+    width: calc(100% - 1.5rem);
 }
 
 /* =============================================
@@ -51,35 +70,32 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-left: auto;                /* ← Empuja a la derecha */
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 /* =============================================
    BOTÓN HAMBURGUESA (móvil)
    ============================================= */
 .mobile-nav-toggle {
-    /* Variables locales */
     --size: 44px;
     --bar-h: 3px;
     --gap: 6px;
     --anim: 0.22s ease-in-out;
-    
-    /* Layout */
+
     display: none;
     align-items: center;
     justify-content: center;
     width: var(--size);
     height: var(--size);
     padding: 0;
-    flex-shrink: 0;               /* ← No encogimiento */
-    
-    /* Estilos */
+    flex-shrink: 0;
+
     background: transparent;
     border: 2px solid var(--brand);
     border-radius: var(--radius);
     color: var(--brand);
-    
-    /* Interacción */
+
     cursor: pointer;
     transition: var(--transition);
 }
@@ -106,7 +122,7 @@
 .hamburger-icon::before,
 .hamburger-icon::after,
 .hamburger-icon span {
-    content: "";
+    content: '';
     position: absolute;
     left: 0;
     right: 0;
@@ -120,9 +136,15 @@
         bottom var(--anim);
 }
 
-.hamburger-icon::before { top: 0; }
-.hamburger-icon span     { top: calc(var(--bar-h) + var(--gap)); }
-.hamburger-icon::after   { bottom: 0; }
+.hamburger-icon::before {
+    top: 0;
+}
+.hamburger-icon span {
+    top: calc(var(--bar-h) + var(--gap));
+}
+.hamburger-icon::after {
+    bottom: 0;
+}
 
 /* =============================================
    ESTADO ABIERTO (X animada)
@@ -143,66 +165,78 @@
 }
 
 /* =============================================
+   RESPONSIVE - TABLET
+   ============================================= */
+@media (max-width: 1024px) {
+    .main-nav {
+        padding: 0 1.5rem;
+    }
+
+    .main-nav-links a {
+        padding: 1rem 0.9rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* =============================================
    RESPONSIVE - MÓVIL
    ============================================= */
 @media (max-width: 768px) {
-    /* Barra como grid de 2 columnas */
     .main-nav {
         display: grid;
-        grid-template-columns: auto 1fr;  /* Hamburguesa | Espacio flexible */
+        grid-template-columns: auto 1fr;
         grid-template-rows: auto;
         gap: 0;
         align-items: center;
         padding: 0.75rem 1rem;
+        min-height: auto;
     }
-    
-    /* HAMBURGUESA - Izquierda arriba */
+
     .mobile-nav-toggle {
         display: inline-flex;
         grid-column: 1;
         grid-row: 1;
     }
-    
-    /* ACCESIBILIDAD - Derecha arriba (siempre visible) */
+
     .accessibility-controls {
         grid-column: 2;
         grid-row: 1;
-        justify-self: end;                /* Alinea a la derecha */
+        justify-self: end;
         gap: 0.4rem;
     }
-    
-    /* MENÚ DESPLEGABLE - Debajo del hamburguesa (izquierda) */
+
     .main-nav-links {
         display: none;
-        grid-column: 1;                   /* Solo columna 1 (izquierda) */
+        grid-column: 1 / -1;
         grid-row: 2;
         flex-direction: column;
         gap: 0;
         margin-top: 0.75rem;
         padding-top: 0.75rem;
         border-top: 1px solid var(--border);
-        width: auto;                      /* Ancho automático (no 100%) */
-        min-width: 250px;                 /* Ancho mínimo legible */
-        max-width: 80%;                   /* No ocupa todo el ancho */
+        width: 100%;
     }
-    
+
     .main-nav-links.active {
         display: flex;
     }
-    
-    /* Links del menú móvil */
-    .main-nav a {
+
+    .main-nav-links a {
         display: block;
         padding: 0.75rem 1rem;
+        font-size: 0.95rem;
         border-left: 3px solid transparent;
         text-align: left;
-        white-space: nowrap;              /* No romper líneas */
     }
-    
-    .main-nav a:hover,
-    .main-nav a.active {
+
+    .main-nav-links a::after {
+        display: none;
+    }
+
+    .main-nav-links a:hover,
+    .main-nav-links a.active {
         border-left-color: var(--brand);
-        background: var(--page-bg);
+        background: rgba(139, 69, 19, 0.05);
     }
 }
 

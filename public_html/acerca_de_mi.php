@@ -10,8 +10,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 <div class="main-content-area container about">
 
     <main>
-        <nav class="breadcrumbs" aria-label="Breadcrumbs" style="margin-bottom: 3rem;">
-            <a href="<?= url('index.php') ?>">Inicio</a> <span aria-hidden="true">›</span>
+        <nav class="breadcrumbs" aria-label="Breadcrumbs">            <a href="<?= url('index.php') ?>">Inicio</a> <span aria-hidden="true">›</span>
             <span aria-current="page">Perfil</span>
         </nav>
 

@@ -1,22 +1,32 @@
 /* ==========================================================================
    CARDS - Tarjetas de posts y contenido
    ========================================================================== */
-
 /* =============================================
    TARJETA DE POST (general)
    ============================================= */
 .post-card {
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-soft);
-    padding: 1.2rem;
     background: var(--card-bg);
-    transition: var(--transition);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
+.post-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--brand);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
 .post-card h2 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
+    margin: 0 0 0.6rem 0;
+    font-size: clamp(1.05rem, 2vw, 1.2rem);
+    line-height: 1.4;
+    font-weight: 600;
 }
 
 .post-card h2 a {
@@ -29,23 +39,163 @@
     color: var(--brand);
 }
 
-/* Efecto hover en toda la card */
-.post-card:hover {
-    box-shadow: var(--shadow);
-    transform: translateY(-2px);
+/* =============================================
+   METADATOS (categoría + fecha en línea)
+   ============================================= */
+.post-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+}
+
+.post-meta .categoria {
+    background: rgba(139, 69, 19, 0.1);
+    color: var(--brand);
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.post-meta time {
+    color: var(--muted);
 }
 
 /* =============================================
-   METADATOS DEL POST (fecha, autor, categoría)
+   EXTRACTO
    ============================================= */
-.post-meta {
-    display: block;
-    font-family: var(--font-header);
-    font-size: var(--step--1);
+.post-card__excerpt {
+    font-size: 0.9rem;
+    line-height: 1.55;
     color: var(--muted);
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
+    margin: 0 0 0.75rem 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Ocultar extracto si está vacío o solo tiene "..." */
+.post-card__excerpt:empty,
+.post-card__excerpt:blank {
+    display: none;
+}
+
+/* =============================================
+   ENLACE LEER MÁS (compacto)
+   ============================================= */
+.post-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--brand);
+    text-decoration: none;
+    transition: gap 0.2s ease;
+}
+
+.post-card__link:hover {
+    gap: 0.4rem;
+    text-decoration: none;
+}
+
+.post-card__link::after {
+    content: '→';
+    font-size: 0.9em;
+}
+
+/* =============================================
+   IMAGEN DESTACADA
+   ============================================= */
+.post-card__image {
+    margin: -1.25rem -1.5rem 1rem -1.5rem;
+    overflow: hidden;
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.post-card__image img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.post-card:hover .post-card__image img {
+    transform: scale(1.02);
+}
+
+/* =============================================
+   TARJETAS EN HOME
+   ============================================= */
+.home-list .post-card {
+    background-color: var(--home-card-bg, #fff);
+}
+
+.home-list .post-card:last-child {
+    margin-bottom: 0;
+}
+/* =============================================
+   EXTRACTO DEL POST
+   ============================================= */
+.post-card__excerpt {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-top: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* =============================================
+   IMAGEN DESTACADA EN CARD
+   ============================================= */
+.post-card__image {
+    margin: -1.5rem -1.5rem 1rem -1.5rem;
+    overflow: hidden;
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.post-card__image img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.post-card:hover .post-card__image img {
+    transform: scale(1.03);
+}
+
+/* =============================================
+   ENLACE LEER MÁS
+   ============================================= */
+.post-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand);
+    text-decoration: none;
+    transition: gap 0.2s ease;
+}
+
+.post-card__link:hover {
+    gap: 0.5rem;
+}
+
+.post-card__link::after {
+    content: '→';
 }
 
 /* =============================================

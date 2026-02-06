@@ -1,12 +1,12 @@
 /* ==========================================================================
-   PAGE: ACERCA DE MÍ (Diseño Editorial Mejorado)
+   PAGE: ACERCA DE MÍ (Diseño Editorial)
    Ruta: /css/pages/acerca_de_mi.css
    ========================================================================== */
 
 .about-article {
-    max-width: 1100px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 4rem 0;
+    padding: 1rem 0 3rem 0;
 }
 
 .visually-hidden {
@@ -24,13 +24,20 @@
 .about-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 2rem;
     align-items: start;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 768px) {
     .about-grid {
-        grid-template-columns: 300px 1fr;
+        grid-template-columns: 280px 1fr;
+        gap: 3rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .about-grid {
+        grid-template-columns: 320px 1fr;
         gap: 4rem;
     }
 }
@@ -39,46 +46,36 @@
 .about__photo {
     margin: 0;
     position: relative;
-    max-width: 300px;
+    max-width: 320px;
     justify-self: center;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 768px) {
     .about__photo {
         justify-self: start;
+        position: sticky;
+        top: 2rem;
     }
 }
 
 .about__photo img {
     width: 100%;
     height: auto;
-    border-radius: 4px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     object-fit: cover;
-    object-position: center top; /* Prioriza la parte superior (cara) */
-    aspect-ratio: 1 / 1; /* Cuadrado - mejor para retratos */
+    object-position: center top;
+    aspect-ratio: 1 / 1;
 }
 
-/* --- TEXTO Y TIPOGRAFÍA --- */
+/* --- CONTENIDO --- */
 .about__content {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
-    min-width: 5; /* Permite que el contenido se encoja */
+    gap: 1.5rem;
+    min-width: 0;
     overflow-wrap: break-word;
     word-wrap: break-word;
-}
-
-/* El Nombre */
-.about__name {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: clamp(2rem, 5vw, 3rem); /* Tamaño responsive */
-    line-height: 1.2;
-    color: #1a1a1a;
-    margin: 0;
-    overflow-wrap: normal; /* Antes era break-word */
-    hyphens: none;
-    white-space: nowrap;
 }
 
 /* Subtítulo / Profesión */
@@ -89,20 +86,33 @@
         sans-serif;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    color: #888;
-    margin-bottom: 0.5rem;
+    color: var(--muted, #888);
+    margin-bottom: 0.25rem;
     border-left: 3px solid var(--brand, #8b4513);
-    padding-left: 1rem;
+    padding-left: 0.75rem;
+}
+
+/* El Nombre */
+.about__name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    line-height: 1.2;
+    color: var(--fg, #1a1a1a);
+    margin: 0 0 1rem 0;
+    white-space: nowrap;
+    hyphens: none;
+    word-break: keep-all;
 }
 
 /* Texto de introducción (Lead) */
 .lead-text {
-    font-size: clamp(1.1rem, 2.5vw, 1.3rem);
-    line-height: 1.6;
-    color: #2c3e50;
+    font-size: clamp(1.05rem, 2vw, 1.2rem);
+    line-height: 1.7;
+    color: var(--fg, #2c3e50);
     font-weight: 400;
+    margin-bottom: 0.5rem;
 }
 
 /* Texto normal */
@@ -112,15 +122,42 @@
 }
 
 .about__bio p {
-    font-size: clamp(1rem, 2vw, 1.1rem);
+    font-size: clamp(0.95rem, 1.8vw, 1.05rem);
     line-height: 1.8;
-    color: #4a4a4a;
-    margin-bottom: 1.5rem;
+    color: var(--muted, #4a4a4a);
+    margin-bottom: 1.25rem;
 }
 
-/* Dark mode */
+.about__bio p:last-child {
+    margin-bottom: 0;
+}
+
+/* --- RESPONSIVE MÓVIL --- */
+@media (max-width: 767px) {
+    .about-article {
+        padding: 0.5rem 0 2rem 0;
+    }
+
+    .about__photo {
+        max-width: 220px;
+    }
+
+    .about__content {
+        text-align: center;
+    }
+
+    .about__role {
+        border-left: none;
+        padding-left: 0;
+        display: inline-block;
+        border-bottom: 2px solid var(--brand, #8b4513);
+        padding-bottom: 0.25rem;
+    }
+}
+
+/* --- DARK MODE --- */
 html.theme-dark .about__name {
-    color: var(--text, #f0f0f0);
+    color: var(--fg, #f0f0f0);
 }
 
 html.theme-dark .about__role {
@@ -129,5 +166,5 @@ html.theme-dark .about__role {
 
 html.theme-dark .lead-text,
 html.theme-dark .about__bio p {
-    color: var(--text-muted, #ccc);
+    color: var(--muted, #ccc);
 }
