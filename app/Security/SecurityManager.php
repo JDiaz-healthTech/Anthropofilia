@@ -412,7 +412,7 @@ public function sanitizeHTML(string $html): string
         // 5. ETIQUETAS Y ATRIBUTOS PERMITIDOS (tu lista + iframes)
         $config->set(
             'HTML.Allowed',
-            'p,br,strong,em,ul,ol,li,blockquote,a[href|title|target|rel],img[src|alt|title|width|height],h2,h3,code,pre,table,thead,tbody,tr,th,td,iframe[src|width|height|frameborder|allowfullscreen|title|allow]'
+            'p,br,strong,em,ul,ol,li,blockquote,a[href|title|target|rel],img[src|alt|title|width|height],h2[id],h3[id],h4[id],code,pre,table,thead,tbody,tr,th,td,iframe[src|width|height|frameborder|allowfullscreen|title|allow]'
         );
 
         // 6. Permitir que los enlaces se abran en nueva pestaña
@@ -420,7 +420,7 @@ public function sanitizeHTML(string $html): string
 
 // Damos un ID único a esta configuración personalizada
             $config->set('HTML.DefinitionID', 'anthropofilia-iframe-fix');
-            $config->set('HTML.DefinitionRev', 1);
+            $config->set('HTML.DefinitionRev', 2);
 
             // Intentamos obtener la definición "cruda" para editarla
             if ($def = $config->maybeGetRawHTMLDefinition()) {

@@ -149,6 +149,10 @@ function nav_active(string $file, ?string $slug = null): string {
     <link rel="stylesheet" href="<?= url('css/pages/post.css') ?>">
     <?php endif; ?>
 
+    <?php if ($current_page === 'pagina.php'): ?>
+    <link rel="stylesheet" href="<?= url('css/components/toc.css') ?>">
+    <?php endif; ?>
+
     <?php if ($needsTinymce): ?>
     <!-- TinyMCE Self-Hosted -->
     <script src="<?= url('js/tinymce/tinymce.min.js') ?>"

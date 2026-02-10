@@ -57,6 +57,7 @@ try {
     $slugInput = trim((string)($_POST['slug'] ?? ''));
     $contenido = (string)($_POST['contenido'] ?? '');
     $orden     = max(0, min(100, (int)($_POST['orden'] ?? 0))); // Entre 0-100
+    $mostrar_indice = isset($_POST['mostrar_indice']) ? 1 : 0;
     $userId    = (int)$security->userId();
 
     // Longitudes (ajústalas si quieres)
@@ -78,9 +79,9 @@ try {
     $contenidoLimpio = $security->sanitizeHTML($contenido);
 
     // 4) Insert
-    $sql = 'INSERT INTO paginas (titulo, slug, contenido, orden, fecha_creacion) VALUES (?, ?, ?, ?, NOW())';
+    $sql = 'INSERT INTO paginas (titulo, slug, contenido, orden, mostrar_indice, fecha_creacion) VALUES (?, ?, ?, ?, ?, NOW())';
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$titulo, $slug, $contenidoLimpio, $orden]);
+    $stmt->execute([$titulo, $slug, $contenidoLimpio, $orden, $mostrar_indice]);
 
     header('Location: gestionar_paginas.php?msg=created');
     exit();

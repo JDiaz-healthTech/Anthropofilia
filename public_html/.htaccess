@@ -27,6 +27,6 @@ DirectoryIndex index.php index.html
 </IfModule>
 
 <IfModule mod_headers.c>
-    # Permitir iframes de Genially
-    Header set Content-Security-Policy "frame-src 'self' https://view.genially.com https://*.genially.com; frame-ancestors 'self';"
+    # CSP completo
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tiny.cloud https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tiny.cloud; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://view.genially.com https://*.genially.com; connect-src 'self' https://cdn.tiny.cloud;"
 </IfModule>

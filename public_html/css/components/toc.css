@@ -1,0 +1,192 @@
+/* ==========================================================================
+   TABLE OF CONTENTS (Índice de contenidos)
+   ========================================================================== */
+
+.toc {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border, #ddd);
+    border-left: 4px solid var(--brand, #8b4513);
+    border-radius: 6px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+/* Header con título y botón toggle */
+.toc__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: rgba(139, 69, 19, 0.05);
+    border-bottom: 1px solid var(--border, #eee);
+}
+
+.toc__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--fg, #333);
+}
+
+.toc__toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    background: transparent;
+    border: 1px solid var(--border, #ddd);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--muted, #666);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toc__toggle:hover {
+    background: var(--brand, #8b4513);
+    color: #fff;
+    border-color: var(--brand, #8b4513);
+}
+
+.toc__toggle-icon {
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+}
+
+.toc__toggle[aria-expanded='false'] .toc__toggle-icon {
+    transform: rotate(-90deg);
+}
+
+.toc__toggle[aria-expanded='false'] .toc__toggle-text::before {
+    content: 'Mostrar';
+}
+
+.toc__toggle[aria-expanded='true'] .toc__toggle-text::before {
+    content: 'Ocultar';
+}
+
+.toc__toggle-text {
+    font-size: 0;
+}
+
+/* Lista principal */
+.toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 1rem 1.25rem;
+    counter-reset: toc-counter;
+    transition:
+        max-height 0.3s ease,
+        opacity 0.3s ease,
+        padding 0.3s ease;
+    max-height: 1000px;
+    opacity: 1;
+}
+
+.toc__list.collapsed {
+    max-height: 0;
+    opacity: 0;
+    padding: 0 1.25rem;
+    overflow: hidden;
+}
+
+/* Sublistas */
+.toc__sublist {
+    list-style: none;
+    margin: 0.25rem 0 0 0;
+    padding: 0 0 0 1.25rem;
+}
+
+/* Items */
+.toc__item {
+    margin-bottom: 0.4rem;
+}
+
+.toc__item:last-child {
+    margin-bottom: 0;
+}
+
+/* Enlaces */
+.toc__link {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.35rem 0.5rem;
+    text-decoration: none;
+    color: var(--fg, #333);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.toc__link:hover {
+    background: rgba(139, 69, 19, 0.08);
+    color: var(--brand, #8b4513);
+}
+
+/* Numeración */
+.toc__number {
+    flex-shrink: 0;
+    font-weight: 600;
+    color: var(--brand, #8b4513);
+    font-size: 0.85em;
+    min-width: 1.5rem;
+}
+
+.toc__text {
+    flex: 1;
+}
+
+/* Niveles de indentación */
+.toc__item--level-3 .toc__link {
+    font-size: 0.85rem;
+}
+
+.toc__item--level-4 .toc__link {
+    font-size: 0.8rem;
+    color: var(--muted, #666);
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    .toc {
+        margin-bottom: 1.5rem;
+    }
+
+    .toc__header {
+        padding: 0.75rem 1rem;
+    }
+
+    .toc__title {
+        font-size: 0.9rem;
+    }
+
+    .toc__list {
+        padding: 0.75rem 1rem;
+    }
+
+    .toc__link {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.4rem;
+    }
+}
+
+/* =============================================
+   DARK MODE
+   ============================================= */
+html.theme-dark .toc {
+    background: var(--card-bg, #2a2a2a);
+    border-color: var(--border, #444);
+}
+
+html.theme-dark .toc__header {
+    background: rgba(139, 69, 19, 0.1);
+    border-bottom-color: var(--border, #444);
+}
+
+html.theme-dark .toc__link:hover {
+    background: rgba(139, 69, 19, 0.15);
+}

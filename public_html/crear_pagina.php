@@ -83,6 +83,14 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         value="<?= htmlspecialchars($form['orden'] ?? '0', ENT_QUOTES, 'UTF-8') ?>">
       <small>Número menor aparece primero. Usa 10, 20, 30... para reorganizar fácilmente después.</small>
     </div>
+    <div class="form-group form-group--checkbox">
+      <label class="checkbox-label">
+          <input type="checkbox" id="mostrar_indice" name="mostrar_indice" value="1"
+                <?= !empty($form['mostrar_indice']) ? 'checked' : '' ?>>
+          <span class="checkbox-text">Mostrar índice de contenidos</span>
+      </label>
+      <small>Genera automáticamente un índice basado en los títulos (Título 1, 2, 3) del contenido.</small>
+    </div>
 
     <button type="submit">Guardar página</button>
   </form>
@@ -115,8 +123,7 @@ toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter ali
     menubar: false,
     height: 540,
 
-    block_formats: 'Párrafo=p; Encabezado 2=h2; Encabezado 3=h3; Encabezado 4=h4; Cita=blockquote; Preformateado=pre',
-
+    block_formats: 'Párrafo=p; Título 1=h2; Título 2=h3; Título 3=h4; Cita=blockquote; Preformateado=pre',
     link_target_list: [{ title: 'Nueva pestaña', value: '_blank' }, { title: 'Misma pestaña', value: '' }],
     rel_list: [{ title: 'Ninguno', value: '' }, { title: 'noopener', value: 'noopener' }, { title: 'nofollow', value: 'nofollow' }],
     default_link_target: '_blank',

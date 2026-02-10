@@ -17,7 +17,7 @@ if (!preg_match('/^[a-z0-9-]{1,120}$/', $slug)) {
 }
 
 // 2) Consultar la tabla `paginas`
-$stmt = $pdo->prepare('SELECT id_pagina, titulo, contenido FROM paginas WHERE slug = ? LIMIT 1');
+$stmt = $pdo->prepare('SELECT id_pagina, titulo, contenido, mostrar_indice FROM paginas WHERE slug = ? LIMIT 1');
 $stmt->execute([$slug]);
 $pagina = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$pagina) {
@@ -53,10 +53,23 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <h1><?= htmlspecialchars($pagina['titulo'] ?? '(sin título)', ENT_QUOTES, 'UTF-8') ?></h1>
         <hr>
 
-        <!-- Contenido principal de la página -->
-        <div class="pagina-contenido">
-            <?= $security->sanitizeHTML($contenidoProcesado) ?>
-        </div>
+    <!-- Índice de contenidos (si está activo) -->
+    <?php
+    if (!empty($pagina['mostrar_indice'])) {
+        $tocResult = \App\Helpers\TocGenerator::generate($contenidoProcesado);
+        $tocHtml = $tocResult['toc'];
+        $contenidoProcesado = $tocResult['content'];
+
+        if (!empty($tocHtml)) {
+            echo $tocHtml;
+        }
+    }
+    ?>
+
+    <!-- Contenido principal de la página -->
+    <div class="pagina-contenido">
+<?= $contenidoProcesado ?>
+    </div>
 
         <!-- Posts relacionados -->
         <?php if (!empty($postsRelacionados)): ?>
@@ -151,5 +164,9 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <?php endif; ?>
     </article>
 </main>
+
+<?php if (!empty($pagina['mostrar_indice'])): ?>
+<script src="<?= url('js/toc.js') ?>"></script>
+<?php endif; ?>
 
 <?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>

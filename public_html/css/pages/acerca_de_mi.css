@@ -1,11 +1,10 @@
 /* ==========================================================================
-   PAGE: ACERCA DE MÍ (Diseño Editorial)
+   PAGE: ACERCA DE MÍ
    Ruta: /css/pages/acerca_de_mi.css
    ========================================================================== */
 
 .about-article {
     max-width: 100%;
-    margin: 0 auto;
     padding: 1rem 0 3rem 0;
 }
 
@@ -20,39 +19,37 @@
     border: 0;
 }
 
-/* Grid Layout */
+/* Layout con Grid - más predecible que flexbox */
 .about-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    align-items: start;
+    display: block;
 }
 
 @media (min-width: 768px) {
     .about-grid {
-        grid-template-columns: 280px 1fr;
-        gap: 3rem;
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        gap: 2rem;
+        align-items: start;
     }
 }
 
 @media (min-width: 1024px) {
     .about-grid {
-        grid-template-columns: 320px 1fr;
-        gap: 4rem;
+        grid-template-columns: 250px minmax(0, 1fr);
+        gap: 2.5rem;
     }
 }
 
 /* --- FOTO --- */
 .about__photo {
-    margin: 0;
-    position: relative;
-    max-width: 320px;
-    justify-self: center;
+    margin: 0 auto 2rem auto;
+    max-width: 220px;
 }
 
 @media (min-width: 768px) {
     .about__photo {
-        justify-self: start;
+        margin: 0;
+        max-width: none;
         position: sticky;
         top: 2rem;
     }
@@ -70,9 +67,6 @@
 
 /* --- CONTENIDO --- */
 .about__content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
     min-width: 0;
     overflow-wrap: break-word;
     word-wrap: break-word;
@@ -89,38 +83,33 @@
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--muted, #888);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
     border-left: 3px solid var(--brand, #8b4513);
     padding-left: 0.75rem;
 }
 
-/* El Nombre */
+/* El Nombre - cada palabra en su línea */
 .about__name {
     font-family: 'Playfair Display', Georgia, serif;
-    font-size: clamp(1.2rem, 3vw, 2rem);
-    line-height: 1.2;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    line-height: 1.15;
     color: var(--fg, #1a1a1a);
-    margin: 0 0 1rem 0;
-    white-space: nowrap;
-    hyphens: none;
-    word-break: keep-all;
+    margin: 0 0 0.25rem 0;
+}
+
+.about__content header {
+    margin-bottom: 1.5rem;
 }
 
 /* Texto de introducción (Lead) */
 .lead-text {
-    font-size: clamp(1.05rem, 2vw, 1.2rem);
+    font-size: clamp(1rem, 2vw, 1.1rem);
     line-height: 1.7;
     color: var(--fg, #2c3e50);
-    font-weight: 400;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 /* Texto normal */
-.about__bio {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-}
-
 .about__bio p {
     font-size: clamp(0.95rem, 1.8vw, 1.05rem);
     line-height: 1.8;
@@ -139,7 +128,7 @@
     }
 
     .about__photo {
-        max-width: 220px;
+        max-width: 200px;
     }
 
     .about__content {
