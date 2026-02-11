@@ -99,7 +99,7 @@ if (!function_exists('get_thumbnail_url')) {
      * - https://www.youtube.com/embed/VIDEO_ID
      * - https://youtube.com/shorts/VIDEO_ID
      */
-    function get_thumbnail_url(?string $url): ?string
+   function get_thumbnail_url(?string $url): ?string
     {
         if (empty($url)) {
             return null;
@@ -109,7 +109,8 @@ if (!function_exists('get_thumbnail_url')) {
 
         // Detectar YouTube (varios formatos)
         if (preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/', $url, $matches)) {
-            return 'https://img.youtube.com/vi/' . $matches[1] . '/maxresdefault.jpg';
+            // Usar hqdefault (480x360) que siempre existe, en lugar de maxresdefault
+            return 'https://img.youtube.com/vi/' . $matches[1] . '/hqdefault.jpg';
         }
 
         // No es YouTube, devolver URL original
