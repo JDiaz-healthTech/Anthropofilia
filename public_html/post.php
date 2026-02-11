@@ -70,7 +70,9 @@ $meta_description = mb_substr(
 // Campos saneados
 $titulo_safe    = htmlspecialchars($post['titulo'] ?? '', ENT_QUOTES, 'UTF-8');
 $categoria_safe = htmlspecialchars($post['nombre_categoria'] ?? 'Sin categoría', ENT_QUOTES, 'UTF-8');
-$imagen_url     = $post['imagen_destacada_url'] ?? null;
+
+// Obtener URL de imagen (convierte YouTube a miniatura automáticamente)
+$imagen_url = get_thumbnail_url($post['imagen_destacada_url'] ?? null);
 
 // Contenido HTML (defensa en profundidad)
 $contenido_html = $security->sanitizeHTML($post['contenido'] ?? '');

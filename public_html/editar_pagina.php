@@ -40,7 +40,7 @@ try {
 
 } catch (Throwable $e) {
     http_response_code(500);
-    die('Error al cargar la página.');
+die('Error: ' . $e->getMessage() . ' en ' . $e->getFile() . ':' . $e->getLine());
 }
 
 $page_title = 'Editar Página';

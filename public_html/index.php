@@ -38,12 +38,15 @@ $extracto = mb_strlen($textoLimpio) > 20 ? mb_substr($textoLimpio, 0, 150) . '..
 
             // URL del post
             $postUrl = url('post.php?slug=' . urlencode($post['slug'] ?? '') . '&id=' . $post['id_post']);
+
+            // Obtener URL de imagen (convierte YouTube a miniatura automáticamente)
+            $imagenUrl = get_thumbnail_url($post['imagen_destacada_url'] ?? null);
         ?>
             <article class="post-card">
-                <?php if (!empty($post['imagen_destacada_url'])): ?>
+                <?php if (!empty($imagenUrl)): ?>
                     <div class="post-card__image">
                         <a href="<?= $postUrl ?>">
-                            <img src="<?= htmlspecialchars($post['imagen_destacada_url'], ENT_QUOTES, 'UTF-8') ?>"
+                            <img src="<?= htmlspecialchars($imagenUrl, ENT_QUOTES, 'UTF-8') ?>"
                                  alt="<?= htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8') ?>"
                                  loading="lazy">
                         </a>

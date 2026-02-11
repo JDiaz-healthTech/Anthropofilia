@@ -88,3 +88,31 @@ if (!function_exists('pluralize')) {
         return $count === 1 ? $singular : $plural;
     }
 }
+
+if (!function_exists('get_thumbnail_url')) {
+    /**
+     * Convierte una URL de YouTube a su miniatura, o devuelve la URL original si es una imagen.
+     *
+     * Soporta:
+     * - https://youtu.be/VIDEO_ID
+     * - https://www.youtube.com/watch?v=VIDEO_ID
+     * - https://www.youtube.com/embed/VIDEO_ID
+     * - https://youtube.com/shorts/VIDEO_ID
+     */
+    function get_thumbnail_url(?string $url): ?string
+    {
+        if (empty($url)) {
+            return null;
+        }
+
+        $url = trim($url);
+
+        // Detectar YouTube (varios formatos)
+        if (preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/', $url, $matches)) {
+            return 'https://img.youtube.com/vi/' . $matches[1] . '/maxresdefault.jpg';
+        }
+
+        // No es YouTube, devolver URL original
+        return $url;
+    }
+}
