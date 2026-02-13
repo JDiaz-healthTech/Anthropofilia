@@ -26,28 +26,28 @@ form label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    font-family: var(--font-header);
+    font-family: var(--font-body);
     color: var(--fg);
 }
 
 /* =============================================
    INPUTS DE TEXTO Y SELECT
    ============================================= */
-.form-container input[type="text"],
-.form-container input[type="url"],
-.form-container input[type="password"],
-.form-container input[type="email"],
-.form-container input[type="search"],
-.form-container input[type="number"],
-.form-container input[type="file"],
+.form-container input[type='text'],
+.form-container input[type='url'],
+.form-container input[type='password'],
+.form-container input[type='email'],
+.form-container input[type='search'],
+.form-container input[type='number'],
+.form-container input[type='file'],
 .form-container select,
 .form-container textarea,
-input[type="text"],
-input[type="url"],
-input[type="password"],
-input[type="email"],
-input[type="search"],
-input[type="number"],
+input[type='text'],
+input[type='url'],
+input[type='password'],
+input[type='email'],
+input[type='search'],
+input[type='number'],
 textarea,
 select {
     width: 100%;
@@ -69,7 +69,7 @@ input:focus,
 textarea:focus,
 select:focus {
     border-color: var(--brand);
-    box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.2);  /* Café transparente */
+    box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.2); /* Café transparente */
     outline: none;
 }
 
@@ -98,7 +98,7 @@ textarea {
 /* =============================================
    FILE INPUTS (inputs de archivo)
    ============================================= */
-input[type="file"] {
+input[type='file'] {
     padding: 0.4rem;
     cursor: pointer;
 }
@@ -106,8 +106,8 @@ input[type="file"] {
 /* =============================================
    CHECKBOXES Y RADIOS
    ============================================= */
-input[type="checkbox"],
-input[type="radio"] {
+input[type='checkbox'],
+input[type='radio'] {
     width: auto;
     margin-right: 0.5rem;
     cursor: pointer;

@@ -22,9 +22,9 @@
 /* Header CON imagen de fondo */
 .main-header.has-bg-image {
     background-size: cover;
-    background-position: center 35%;    /* ← Más arriba, muestra más imagen */
+    background-position: center 35%; /* ← Más arriba, muestra más imagen */
     background-repeat: no-repeat;
-    min-height: 300px;            /* ← 30% menos que 500px */
+    min-height: 300px; /* ← 30% menos que 500px */
 }
 
 /* =============================================
@@ -36,11 +36,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.5) 0%,
-        rgba(0, 0, 0, 0.7) 100%
-    );
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.7) 100%);
     z-index: 1;
 }
 
@@ -70,22 +66,22 @@
 
 /* Título CON imagen de fondo - BLANCO FORZADO */
 .main-header.has-bg-image h1 {
-    color: #FFFFFF !important;
-    text-shadow: 
+    color: #ffffff !important;
+    text-shadow:
         2px 2px 6px rgba(0, 0, 0, 1),
         4px 4px 12px rgba(0, 0, 0, 0.8),
         0 0 25px rgba(0, 0, 0, 0.6);
 }
 .main-header.has-bg-image h4 {
-    color: #FFFFFF !important;
-    text-shadow: 
+    color: #ffffff !important;
+    text-shadow:
         2px 2px 6px rgba(0, 0, 0, 1),
         4px 4px 12px rgba(0, 0, 0, 0.8),
         0 0 25px rgba(0, 0, 0, 0.6);
 }
 .main-header.has-bg-image p {
-    color: #FFFFFF !important;
-    text-shadow: 
+    color: #ffffff !important;
+    text-shadow:
         2px 2px 6px rgba(0, 0, 0, 1),
         4px 4px 12px rgba(0, 0, 0, 0.8),
         0 0 25px rgba(0, 0, 0, 0.6);
@@ -106,8 +102,8 @@
 
 /* Subtítulo CON imagen - BLANCO FORZADO */
 .main-header.has-bg-image .header-subtitle {
-    color: #FFFFFF !important;
-    text-shadow: 
+    color: #ffffff !important;
+    text-shadow:
         2px 2px 6px rgba(0, 0, 0, 1),
         3px 3px 10px rgba(0, 0, 0, 0.8);
 }
@@ -127,8 +123,8 @@
 
 /* Tagline CON imagen - BLANCO FORZADO */
 .main-header.has-bg-image .header-tagline {
-    color: #FFFFFF !important;
-    text-shadow: 
+    color: #ffffff !important;
+    text-shadow:
         2px 2px 6px rgba(0, 0, 0, 1),
         3px 3px 10px rgba(0, 0, 0, 0.8);
     font-weight: 600;
@@ -164,11 +160,7 @@ html.theme-dark .main-header .header-tagline {
 
 /* Overlay más oscuro en modo oscuro */
 html.theme-dark .main-header.has-bg-image .header-overlay {
-    background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.6) 0%,
-        rgba(0, 0, 0, 0.8) 100%
-    );
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.8) 100%);
 }
 
 /* =============================================
@@ -179,19 +171,19 @@ html.theme-dark .main-header.has-bg-image .header-overlay {
         min-height: 280px;
         padding: 2.5rem 1.5rem;
     }
-    
+
     .main-header.has-bg-image {
-        min-height: 300px;       
+        min-height: 300px;
     }
-    
+
     .main-header h1 {
         font-size: 3rem;
     }
-    
+
     .main-header .header-subtitle {
         font-size: 1.2rem;
     }
-    
+
     .main-header .header-tagline {
         font-size: 1.3rem;
     }
@@ -202,16 +194,16 @@ html.theme-dark .main-header.has-bg-image .header-overlay {
         min-height: 220px;
         padding: 2rem 1rem;
     }
-    
+
     .main-header.has-bg-image {
-        min-height: 245px;        /* ← 30% menos que 350px */
+        min-height: 245px; /* ← 30% menos que 350px */
     }
-    
+
     .main-header h1 {
         font-size: 2.2rem;
         letter-spacing: 1px;
     }
-    
+
     .main-header .header-subtitle,
     .main-header .header-tagline {
         font-size: 1rem;
@@ -223,21 +215,21 @@ html.theme-dark .main-header.has-bg-image .header-overlay {
         min-height: 180px;
         padding: 1.5rem 0.75rem;
     }
-    
+
     .main-header.has-bg-image {
-        min-height: 192px;        /* ← 30% menos que 275px */
+        min-height: 192px; /* ← 30% menos que 275px */
     }
-    
+
     .main-header h1 {
         font-size: 1.8rem;
         letter-spacing: 0.5px;
     }
-    
+
     .main-header .header-subtitle,
     .main-header .header-tagline {
         font-size: 0.95rem;
     }
-    
+
     .main-header .header-content {
         padding: 1rem 0.5rem;
     }
@@ -252,7 +244,7 @@ html.theme-dark .main-header.has-bg-image .header-overlay {
     .main-header.has-bg-image .header-overlay {
         background: rgba(0, 0, 0, 0.75);
     }
-    
+
     .main-header.has-bg-image h1,
     .main-header.has-bg-image .header-subtitle,
     .main-header.has-bg-image .header-tagline {
@@ -274,11 +266,11 @@ html.theme-dark .main-header.has-bg-image .header-overlay {
         background-image: none !important;
         background: white;
     }
-    
+
     .main-header .header-overlay {
         display: none;
     }
-    
+
     .main-header h1,
     .main-header .header-subtitle,
     .main-header .header-tagline {

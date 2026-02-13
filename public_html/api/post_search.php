@@ -27,10 +27,12 @@ try {
     $where = ['1=1'];
     $params = [];
 
-    // Búsqueda por texto
+  // Búsqueda por texto
     if ($query !== '') {
-        $where[] = '(p.titulo LIKE :query OR p.contenido LIKE :query)';
-        $params[':query'] = '%' . $query . '%';
+        $searchTerm = '%' . addcslashes($query, '%_\\') . '%';
+        $where[] = '(p.titulo LIKE :query_titulo OR p.contenido LIKE :query_contenido)';
+        $params[':query_titulo'] = $searchTerm;
+        $params[':query_contenido'] = $searchTerm;
     }
 
     // Filtro por categoría

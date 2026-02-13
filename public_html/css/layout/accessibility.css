@@ -9,8 +9,8 @@
 .accessibility-controls {
     display: flex;
     align-items: center;
-    flex-direction: row;        /* ← FORZAR fila siempre */
-    flex-wrap: nowrap;          /* ← NO permitir wrap */
+    flex-direction: row; /* ← FORZAR fila siempre */
+    flex-wrap: nowrap; /* ← NO permitir wrap */
     gap: 0.5rem;
     margin-left: auto;
     padding-right: 1rem;
@@ -24,27 +24,27 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    
+
     /* Tamaño fijo y cuadrado */
     width: 44px;
     height: 44px;
     min-width: 44px;
     max-width: 44px;
     padding: 0;
-    flex-shrink: 0;             /* ← NO permitir encogimiento */
-    
+    flex-shrink: 0; /* ← NO permitir encogimiento */
+
     /* Estilos */
     background: transparent;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     color: var(--muted);
-    
+
     /* Tipografía */
-    font-family: var(--font-header);
+    font-family: var(--font-body);
     font-weight: 600;
     font-size: 0.9rem;
     line-height: 1;
-    
+
     /* Interacción */
     cursor: pointer;
     transition: var(--transition);
@@ -77,19 +77,19 @@
    ============================================= */
 @media (max-width: 768px) {
     .accessibility-controls {
-        gap: 0.4rem;            /* Gap más pequeño */
+        gap: 0.4rem; /* Gap más pequeño */
         padding-right: 0.5rem;
-        flex-direction: row;    /* ← Asegurar fila */
-        flex-wrap: nowrap;      /* ← Asegurar no wrap */
+        flex-direction: row; /* ← Asegurar fila */
+        flex-wrap: nowrap; /* ← Asegurar no wrap */
     }
-    
+
     .accessibility-button {
-        width: 38px;            /* Más pequeño para que quepan */
+        width: 38px; /* Más pequeño para que quepan */
         height: 38px;
         min-width: 38px;
         max-width: 38px;
         font-size: 0.8rem;
-        flex-shrink: 0;         /* ← No encogimiento */
+        flex-shrink: 0; /* ← No encogimiento */
     }
 }
 
@@ -98,7 +98,7 @@
     .accessibility-controls {
         gap: 0.3rem;
     }
-    
+
     .accessibility-button {
         width: 34px;
         height: 34px;

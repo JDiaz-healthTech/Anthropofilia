@@ -141,6 +141,11 @@ function nav_active(string $file, ?string $slug = null): string {
     <meta name="robots" content="noindex, nofollow">
     <?php endif; ?>
 
+    <!-- Google Fonts: Nunito Sans (body) + Playfair Display (headers) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400&display=swap">
+
     <!-- CSS Principal -->
     <link rel="stylesheet" href="<?= url('css/style.css') ?>">
 
@@ -188,8 +193,8 @@ function nav_active(string $file, ?string $slug = null): string {
             <div class="header-overlay"></div>
             <div class="header-content">
                 <h1>ANTHROPOFILIA</h1>
-                <h4>Blog de Ana López Sampedro</h4>
-                <p>Por un pensamento propio.</p>
+                <h4>Ana López Sampedro</h4>
+                <p><i>Por un pensamento propio.</i></p>
             </div>
         </header>
 
