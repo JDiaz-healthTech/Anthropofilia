@@ -32,9 +32,12 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 <main class="home-list">
     <?php if (!empty($posts)): ?>
         <?php foreach ($posts as $post):
-// Generar extracto limpio (ignorar si solo hay HTML/iframes)
-$textoLimpio = trim(strip_tags($post['contenido'] ?? ''));
-$extracto = mb_strlen($textoLimpio) > 20 ? mb_substr($textoLimpio, 0, 150) . '...' : '';
+// Generar extracto limpio
+$textoLimpio = strip_tags($post['contenido'] ?? '');
+$textoLimpio = html_entity_decode($textoLimpio, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+$textoLimpio = preg_replace('/\s+/u', ' ', $textoLimpio);
+$textoLimpio = trim($textoLimpio);
+$extracto = mb_strlen($textoLimpio) > 20 ? mb_substr($textoLimpio, 0, 150) . '…' : '';
 
             // URL del post
             $postUrl = url('post.php?slug=' . urlencode($post['slug'] ?? '') . '&id=' . $post['id_post']);
@@ -44,8 +47,8 @@ $extracto = mb_strlen($textoLimpio) > 20 ? mb_substr($textoLimpio, 0, 150) . '..
                 $imagenUrl = $thumb['url'];
                 $thumbType = $thumb['type'];
         ?>
-            <article class="post-card">
-<?php if (!empty($imagenUrl)): ?>
+          <article class="post-card">
+                <?php if (!empty($imagenUrl)): ?>
                     <div class="post-card__image">
                         <a href="<?= $postUrl ?>">
                             <img src="<?= htmlspecialchars($imagenUrl, ENT_QUOTES, 'UTF-8') ?>"
@@ -53,7 +56,7 @@ $extracto = mb_strlen($textoLimpio) > 20 ? mb_substr($textoLimpio, 0, 150) . '..
                                  loading="lazy">
                         </a>
                     </div>
- <?php elseif ($thumbType !== 'none'): ?>
+                <?php elseif ($thumbType !== 'none'): ?>
                     <div class="post-card__image post-card__placeholder post-card__placeholder--<?= $thumbType ?>">
                         <a href="<?= $postUrl ?>">
                             <span class="placeholder-icon"><?= match($thumbType) {
@@ -72,28 +75,37 @@ $extracto = mb_strlen($textoLimpio) > 20 ? mb_substr($textoLimpio, 0, 150) . '..
                     </div>
                 <?php endif; ?>
 
-                <h2>
-                    <a href="<?= $postUrl ?>">
-                        <?= htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8') ?>
-                    </a>
-                </h2>
+                <div class="post-card__body">
+                    <h2>
+                        <a href="<?= $postUrl ?>">
+                            <?= htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8') ?>
+                        </a>
+                    </h2>
 
-                <div class="post-meta">
-                    <?php if (!empty($post['nombre_categoria'])): ?>
-                        <span class="categoria"><?= htmlspecialchars($post['nombre_categoria'], ENT_QUOTES, 'UTF-8') ?></span>
+                    <div class="post-meta">
+                        <?php if (!empty($post['nombre_categoria'])): ?>
+                            <span class="categoria"><?= htmlspecialchars($post['nombre_categoria'], ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php endif; ?>
+                        <time datetime="<?= date('Y-m-d', strtotime($post['fecha_publicacion'])) ?>">
+                            <?= date('d/m/Y', strtotime($post['fecha_publicacion'])) ?>
+                        </time>
+                        <?php if ($thumbType === 'youtube'): ?>
+                            <span class="post-meta__type" title="Vídeo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20"/><polygon points="10 12 16 15 10 18 10 12"/></svg></span>
+                        <?php elseif ($thumbType === 'genially'): ?>
+                            <span class="post-meta__type" title="Contenido interactivo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg></span>
+                        <?php elseif ($thumbType === 'calameo'): ?>
+                            <span class="post-meta__type" title="Publicación digital"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($extracto): ?>
+                        <p class="post-card__excerpt">
+                            <?= htmlspecialchars($extracto, ENT_QUOTES, 'UTF-8') ?>
+                        </p>
                     <?php endif; ?>
-                    <time datetime="<?= date('Y-m-d', strtotime($post['fecha_publicacion'])) ?>">
-                        <?= date('d/m/Y', strtotime($post['fecha_publicacion'])) ?>
-                    </time>
+
+                    <a href="<?= $postUrl ?>" class="post-card__link">Leer más</a>
                 </div>
-
-                <?php if ($extracto): ?>
-                    <p class="post-card__excerpt">
-                        <?= htmlspecialchars($extracto, ENT_QUOTES, 'UTF-8') ?>
-                    </p>
-                <?php endif; ?>
-
-                <a href="<?= $postUrl ?>" class="post-card__link">Leer más</a>
             </article>
         <?php endforeach; ?>
     <?php else: ?>

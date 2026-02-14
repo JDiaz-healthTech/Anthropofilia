@@ -5,22 +5,22 @@
    TARJETA DE POST (general)
    ============================================= */
 .post-card {
+    display: flex;
+    flex-direction: row;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--card-bg);
-    padding: 1.25rem 1.5rem;
     margin-bottom: 1.25rem;
+    overflow: hidden;
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
 }
 
 .post-card:hover {
-    transform: translateY(-3px);
     border-color: var(--brand);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
-
 /* Título */
 .post-card h2 {
     margin: 0 0 0.6rem 0;
@@ -67,6 +67,17 @@
     color: var(--muted);
 }
 
+/* Icono de tipo de contenido en metadatos */
+.post-meta__type {
+    display: inline-flex;
+    align-items: center;
+    color: var(--muted);
+}
+
+.post-meta__type svg {
+    vertical-align: middle;
+}
+
 /* =============================================
    EXTRACTO
    ============================================= */
@@ -85,50 +96,6 @@
 .post-card__excerpt:empty,
 .post-card__excerpt:blank {
     display: none;
-}
-
-/* =============================================
-   ENLACE LEER MÁS (compacto)
-   ============================================= */
-.post-card__link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--brand);
-    text-decoration: none;
-    transition: gap 0.2s ease;
-}
-
-.post-card__link:hover {
-    gap: 0.4rem;
-    text-decoration: none;
-}
-
-.post-card__link::after {
-    content: '→';
-    font-size: 0.9em;
-}
-
-/* =============================================
-   IMAGEN DESTACADA
-   ============================================= */
-.post-card__image {
-    margin: -1.25rem -1.5rem 1rem -1.5rem;
-    overflow: hidden;
-    border-radius: var(--radius) var(--radius) 0 0;
-}
-
-.post-card__image img {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.post-card:hover .post-card__image img {
-    transform: scale(1.02);
 }
 
 /* =============================================
@@ -159,20 +126,30 @@
    IMAGEN DESTACADA EN CARD
    ============================================= */
 .post-card__image {
-    margin: -1.5rem -1.5rem 1rem -1.5rem;
+    flex-shrink: 0;
+    width: 180px;
+    min-height: 140px;
     overflow: hidden;
-    border-radius: var(--radius) var(--radius) 0 0;
 }
 
 .post-card__image img {
     width: 100%;
-    height: 180px;
+    height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
 }
 
 .post-card:hover .post-card__image img {
-    transform: scale(1.03);
+    transform: scale(1.04);
+}
+
+/* Cuerpo de la card (texto) */
+.post-card__body {
+    flex: 1;
+    min-width: 0;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
 }
 
 /* =============================================
@@ -182,8 +159,8 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    margin-top: 1rem;
-    font-size: 0.875rem;
+    margin-top: auto;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--brand);
     text-decoration: none;
@@ -197,7 +174,6 @@
 .post-card__link::after {
     content: '→';
 }
-
 /* =============================================
    CONTENIDO DEL POST ÚNICO (single post)
    ============================================= */
@@ -220,6 +196,16 @@
    ============================================= */
 @media (max-width: 768px) {
     .post-card {
+        flex-direction: column;
+    }
+
+    .post-card__image {
+        width: 100%;
+        min-height: auto;
+        height: 160px;
+    }
+
+    .post-card__body {
         padding: 1rem;
     }
 
@@ -236,11 +222,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 160px;
-    margin: -1.25rem -1.5rem 1rem -1.5rem;
-    border-radius: var(--radius) var(--radius) 0 0;
     background: var(--page-bg, #f5f0eb);
-    border-bottom: 1px solid var(--border);
 }
 
 .post-card__placeholder a {
