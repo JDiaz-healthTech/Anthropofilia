@@ -201,31 +201,16 @@ function nav_active(string $file, ?string $slug = null): string {
         <!-- =================================================
              NAVEGACIÓN
              ================================================= -->
-        <nav class="main-nav" role="navigation" aria-label="Principal">
-            <button class="mobile-nav-toggle" aria-controls="main-nav-links" aria-expanded="false">
+        <nav class="nav-primary" role="navigation" aria-label="Principal">
+            <button class="mobile-nav-toggle" aria-controls="nav-mobile-panel" aria-expanded="false">
                 <span class="visually-hidden">Menú</span>
                 <span class="hamburger-icon"><span></span></span>
             </button>
 
-            <div class="main-nav-links" id="main-nav-links">
-                <!-- Enlace fijo: Inicio -->
+            <div class="nav-primary-links">
                 <a href="<?= url('index.php') ?>"<?= nav_active('index.php') ?>>Inicio</a>
-
-                <!-- Páginas dinámicas desde BD -->
-                <?php foreach ($menuPages as $page): ?>
-                    <a href="<?= url('pagina.php?slug=' . urlencode($page['slug'])) ?>"<?= nav_active('pagina.php', $page['slug']) ?>>
-                        <?= htmlspecialchars($page['titulo'], ENT_QUOTES, 'UTF-8') ?>
-                    </a>
-                <?php endforeach; ?>
-
-                <!-- Enlaces fijos adicionales -->
                 <a href="<?= url('acerca_de_mi.php') ?>"<?= nav_active('acerca_de_mi.php') ?>>Acerca de mí</a>
                 <a href="<?= url('contacto.php') ?>"<?= nav_active('contacto.php') ?>>Contacto</a>
-
-                <span class="spacer"></span>
-
-                <!-- Dashboard -->
-                <!-- Acceso / Panel de Control -->
                 <?php if ($isLogged): ?>
                     <?php
                     $userRole = $_SESSION['rol'] ?? 'usuario';
@@ -240,16 +225,85 @@ function nav_active(string $file, ?string $slug = null): string {
                     <a href="<?= url('login.php') ?>"<?= nav_active('login.php') ?> rel="nofollow">Acceder</a>
                 <?php endif; ?>
             </div>
-
-            <!-- Controles de accesibilidad -->
-            <div class="accessibility-controls">
-                <button id="toggle-dark" title="Alternar claro/oscuro" class="accessibility-button" aria-pressed="false">🌗</button>
-                <button id="toggle-high-contrast" title="Alternar alto contraste" class="accessibility-button" aria-pressed="false">HC</button>
-                <button id="increase-font-size" title="Aumentar tamaño de fuente" class="accessibility-button">A+</button>
-                <button id="decrease-font-size" title="Disminuir tamaño de fuente" class="accessibility-button">A−</button>
-            </div>
         </nav>
 
+        <?php if (!empty($menuPages)): ?>
+        <nav class="nav-pages" aria-label="Contenido">
+            <div class="nav-pages-links">
+                <?php foreach ($menuPages as $page): ?>
+                    <a href="<?= url('pagina.php?slug=' . urlencode($page['slug'])) ?>"<?= nav_active('pagina.php', $page['slug']) ?>>
+                        <?= htmlspecialchars($page['titulo'], ENT_QUOTES, 'UTF-8') ?>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </nav>
+        <?php endif; ?>
+
+        <div class="nav-mobile-panel" id="nav-mobile-panel">
+            <a href="<?= url('index.php') ?>"<?= nav_active('index.php') ?>>Inicio</a>
+            <a href="<?= url('acerca_de_mi.php') ?>"<?= nav_active('acerca_de_mi.php') ?>>Acerca de mí</a>
+            <a href="<?= url('contacto.php') ?>"<?= nav_active('contacto.php') ?>>Contacto</a>
+            <?php if ($isLogged): ?>
+                <?php if ($isAdmin ?? false): ?>
+                    <a href="<?= url('dashboard.php') ?>"<?= nav_active('dashboard.php') ?>>Panel de Control</a>
+                <?php else: ?>
+                    <a href="<?= url('mi_cuenta.php') ?>"<?= nav_active('mi_cuenta.php') ?>>Mi Cuenta</a>
+                <?php endif; ?>
+            <?php else: ?>
+                <a href="<?= url('login.php') ?>"<?= nav_active('login.php') ?> rel="nofollow">Acceder</a>
+            <?php endif; ?>
+
+            <?php if (!empty($menuPages)): ?>
+            <div class="nav-mobile-section">
+                <button class="nav-mobile-section-toggle" aria-expanded="false">
+                    Contenido (<?= count($menuPages) ?>)
+                    <span class="nav-mobile-chevron">▼</span>
+                </button>
+                <div class="nav-mobile-section-list">
+                    <?php foreach ($menuPages as $page): ?>
+                        <a href="<?= url('pagina.php?slug=' . urlencode($page['slug'])) ?>"<?= nav_active('pagina.php', $page['slug']) ?>>
+                            <?= htmlspecialchars($page['titulo'], ENT_QUOTES, 'UTF-8') ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+        </div>
+</div>
+
+        <!-- =================================================
+             BOTÓN FLOTANTE DE ACCESIBILIDAD (FAB)
+             ================================================= -->
+        <div class="a11y-fab-wrapper">
+            <button class="a11y-fab" id="a11y-fab-toggle" aria-label="Opciones de accesibilidad" aria-expanded="false">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <circle cx="12" cy="4.5" r="2.5"/>
+                    <path d="M12 8c-3.5 0-6.5 1.2-6.5 1.2L6.5 11h3v4.5L7 22h2.5l2.5-5.5L14.5 22H17l-2.5-6.5V11h3l1-1.8S15.5 8 12 8z"/>
+                </svg>
+            </button>
+            <div class="a11y-fab-panel" id="a11y-fab-panel">
+                <div class="a11y-fab-panel-header">Accesibilidad</div>
+                <button id="toggle-dark" class="a11y-fab-option" aria-pressed="false">
+                    <span class="a11y-fab-icon">🌗</span>
+                    <span>Modo oscuro</span>
+                </button>
+                <button id="toggle-high-contrast" class="a11y-fab-option" aria-pressed="false">
+                    <span class="a11y-fab-icon">HC</span>
+                    <span>Alto contraste</span>
+                </button>
+                <button id="increase-font-size" class="a11y-fab-option">
+                    <span class="a11y-fab-icon">A+</span>
+                    <span>Aumentar texto</span>
+                </button>
+                <button id="decrease-font-size" class="a11y-fab-option">
+                    <span class="a11y-fab-icon">A−</span>
+                    <span>Reducir texto</span>
+                </button>
+            </div>
+        </div>
+        <!-- =================================================
+             FIN DEL HEADER Y NAVEGACIÓN
+             ================================================= -->
         <!-- =================================================
              INICIO DEL CONTENIDO PRINCIPAL
              ================================================= -->

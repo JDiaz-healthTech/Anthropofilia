@@ -31,6 +31,7 @@
 @import 'components/media.css'; /* Imágenes y lightbox */
 @import 'components/tables.css'; /* Tablas (admin) */
 @import 'components/errors.css'; /* Páginas de error (404, 500) */
+@import 'components/a11y-fab.css'; /* Botón flotante accesibilidad */
 @import 'layout/accessibility.css'; /* Controles de accesibilidad */
 
 /* ==========================================================================

@@ -8,7 +8,9 @@
 .button,
 .btn,
 .action-btn,
-button:not(.accessibility-button):not(.mobile-nav-toggle):not(.tox-button):not(.tox-tbtn),
+button:not(.accessibility-button):not(.mobile-nav-toggle):not(.tox-button):not(.tox-tbtn):not(.a11y-fab):not(
+        .a11y-fab-option
+    ):not(.nav-mobile-section-toggle),
 input[type='submit'],
 input[type='button'],
 a.button,
@@ -33,7 +35,9 @@ a.btn {
 .button:hover,
 .btn:hover,
 .action-btn:hover,
-button:not(.accessibility-button):not(.mobile-nav-toggle):not(.tox-button):not(.tox-tbtn):hover,
+button:not(.accessibility-button):not(.mobile-nav-toggle):not(.tox-button):not(.tox-tbtn):not(.a11y-fab):not(
+        .a11y-fab-option
+    ):not(.nav-mobile-section-toggle),
 input[type='submit']:hover,
 input[type='button']:hover,
 a.button:hover,

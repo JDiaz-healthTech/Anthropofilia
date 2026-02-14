@@ -264,7 +264,7 @@ final class SecurityManager
         }
 
         $scriptSrc  = ["'self'"];
-        $styleSrc   = ["'self'"];
+        $styleSrc   = ["'self'", "https://fonts.googleapis.com"];
         $imgSrc     = ["'self'", "data:", "blob:", "https:"];
         $fontSrc    = ["'self'", "data:", "https:"];
         $connectSrc = ["'self'"];

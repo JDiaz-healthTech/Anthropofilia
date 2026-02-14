@@ -76,23 +76,7 @@ endif;
 
 </div><!-- /.container -->
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Mobile navigation
-    const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
-    const mainNavLinks = document.getElementById('main-nav-links');
-
-    if (mobileNavToggle && mainNavLinks) {
-      mobileNavToggle.addEventListener('click', function() {
-        const isOpen = mainNavLinks.classList.toggle('active');
-        this.classList.toggle('is-open', isOpen);
-        this.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        this.setAttribute('aria-label', isOpen ? 'Cerrar menú' : 'Abrir menú');
-      });
-    }
-  });
-</script>
-
+<script defer src="<?= url('js/nav.js') ?>"></script>
 <script defer src="<?= url('js/ui.js') ?>"></script>
 <script defer src="<?= url('js/accessibility.js') ?>"></script>
 <script defer src="<?= url('js/lightbox.js') ?>"></script>

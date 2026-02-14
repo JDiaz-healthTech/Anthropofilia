@@ -72,7 +72,8 @@ $titulo_safe    = htmlspecialchars($post['titulo'] ?? '', ENT_QUOTES, 'UTF-8');
 $categoria_safe = htmlspecialchars($post['nombre_categoria'] ?? 'Sin categoría', ENT_QUOTES, 'UTF-8');
 
 // Obtener URL de imagen (convierte YouTube a miniatura automáticamente)
-$imagen_url = get_thumbnail_url($post['imagen_destacada_url'] ?? null);
+$thumb = get_thumbnail_url($post['imagen_destacada_url'] ?? null, $post['contenido'] ?? null);
+$imagen_url = $thumb['url'];
 
 // Contenido HTML (defensa en profundidad)
 $contenido_html = $security->sanitizeHTML($post['contenido'] ?? '');
@@ -106,14 +107,34 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
             </span>
         <?php endif; ?>
       </span>
-      <?php if (!empty($imagen_url)): ?>
+<?php if ($thumb['type'] === 'youtube'): ?>
+        <?php
+        // Extraer video ID de la URL original o del contenido
+        $videoId = null;
+        $srcUrl = $post['imagen_destacada_url'] ?? '';
+        if (preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/', $srcUrl, $vm)) {
+            $videoId = $vm[1];
+        } elseif (preg_match('/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/', $post['contenido'] ?? '', $vm)) {
+            $videoId = $vm[1];
+        }
+        ?>
+        <?php if ($videoId): ?>
+        <figure class="imagen-destacada video-embed">
+          <iframe width="560" height="315"
+                  src="https://www.youtube.com/embed/<?= $videoId ?>"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                  loading="lazy"></iframe>
+        </figure>
+        <?php endif; ?>
+      <?php elseif (!empty($imagen_url)): ?>
         <figure class="imagen-destacada">
-      <!-- Imagen destacada con lazy loading -->
-      <img src="<?= htmlspecialchars($imagen_url, ENT_QUOTES, 'UTF-8') ?>"
-          alt="Imagen destacada del artículo"
-          loading="lazy"
-          decoding="async"
-          sizes="(min-width: 800px) 720px, 100vw">
+          <img src="<?= htmlspecialchars($imagen_url, ENT_QUOTES, 'UTF-8') ?>"
+               alt="Imagen destacada del artículo"
+               loading="lazy"
+               decoding="async"
+               sizes="(min-width: 800px) 720px, 100vw">
         </figure>
       <?php endif; ?>
     </header>

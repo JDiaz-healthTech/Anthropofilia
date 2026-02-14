@@ -1,0 +1,208 @@
+/* ==========================================================================
+   BOTÓN FLOTANTE DE ACCESIBILIDAD (FAB)
+   Posición fija inferior derecha, abre panel con opciones
+   ========================================================================== */
+
+/* =============================================
+   WRAPPER (contiene FAB + panel)
+   ============================================= */
+.a11y-fab-wrapper {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 1000;
+}
+
+/* =============================================
+   BOTÓN CIRCULAR (FAB)
+   ============================================= */
+.a11y-fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(58, 58, 58, 0.5);
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.a11y-fab:hover {
+    background: rgba(42, 42, 42, 0.7);
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.a11y-fab:focus-visible {
+    outline: 3px solid var(--brand, #8b4513);
+    outline-offset: 3px;
+}
+
+.a11y-fab svg {
+    width: 80%;
+    height: 80%;
+    display: block;
+    pointer-events: none;
+}
+
+/* =============================================
+   PANEL DE OPCIONES
+   ============================================= */
+.a11y-fab-panel {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    bottom: calc(100% + 0.75rem);
+    right: 0;
+    min-width: 200px;
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border, #ddd);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.a11y-fab-panel.active {
+    display: flex;
+}
+
+/* Cabecera del panel */
+.a11y-fab-panel-header {
+    padding: 0.75rem 1rem;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted, #888);
+    border-bottom: 1px solid var(--border, #ddd);
+}
+
+/* =============================================
+   OPCIONES INDIVIDUALES
+   ============================================= */
+.a11y-fab-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: none;
+    border: none;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--fg, #333);
+    cursor: pointer;
+    transition: background 0.15s ease;
+    text-align: left;
+}
+
+.a11y-fab-option:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.a11y-fab-option:focus-visible {
+    outline: 2px solid var(--brand, #8b4513);
+    outline-offset: -2px;
+}
+
+/* Icono a la izquierda */
+.a11y-fab-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--page-bg, #f5f5f5);
+    font-size: 0.85rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+/* Estado activo (pressed) */
+.a11y-fab-option[aria-pressed='true'] {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.a11y-fab-option[aria-pressed='true'] .a11y-fab-icon {
+    background: var(--brand, #8b4513);
+    color: #ffffff;
+}
+
+/* =============================================
+   TEMA OSCURO
+   ============================================= */
+.theme-dark .a11y-fab {
+    background: rgba(85, 85, 85, 0.5);
+    color: #fff;
+}
+
+.theme-dark .a11y-fab:hover {
+    background: rgba(102, 102, 102, 0.7);
+}
+
+.theme-dark .a11y-fab-panel {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.theme-dark .a11y-fab-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.theme-dark .a11y-fab-option[aria-pressed='true'] {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* =============================================
+   RESPONSIVE - TABLET
+   ============================================= */
+@media (max-width: 1024px) {
+    .a11y-fab-wrapper {
+        bottom: 1.25rem;
+        right: 1.25rem;
+    }
+
+    .a11y-fab {
+        width: 48px;
+        height: 48px;
+    }
+
+    .a11y-fab svg {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* =============================================
+   RESPONSIVE - MÓVIL
+   ============================================= */
+@media (max-width: 768px) {
+    .a11y-fab-wrapper {
+        bottom: 1rem;
+        right: 1rem;
+    }
+
+    .a11y-fab {
+        width: 46px;
+        height: 46px;
+    }
+
+    .a11y-fab svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    /* Panel ocupa más ancho en móvil */
+    .a11y-fab-panel {
+        right: 0;
+        min-width: 190px;
+    }
+}

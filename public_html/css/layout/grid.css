@@ -20,26 +20,26 @@
    ============================================= */
 @media (min-width: 900px) {
     .main-content-area {
-        grid-template-columns: 1fr 340px;
+        grid-template-columns: 1fr 300px;
         align-items: start;
         gap: 2.5rem;
-        padding: 2rem 2rem 2rem 3rem;
+        padding: 2rem 2.5rem;
         margin-top: 2rem;
     }
 }
 
 @media (min-width: 1200px) {
     .main-content-area {
-        grid-template-columns: 1fr 380px;
+        grid-template-columns: 1fr 320px;
         gap: 3rem;
-        padding: 2.5rem 2rem 2.5rem 4rem;
+        padding: 2.5rem 3rem;
     }
 }
 
 @media (min-width: 1600px) {
-    .main-content-area {
-        grid-template-columns: 1fr 400px;
-        padding: 3rem 2rem 3rem 5rem;
+    thumbnail .main-content-area {
+        grid-template-columns: 1fr 340px;
+        padding: 3rem 4rem;
     }
 }
 

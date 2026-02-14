@@ -39,16 +39,35 @@ $extracto = mb_strlen($textoLimpio) > 20 ? mb_substr($textoLimpio, 0, 150) . '..
             // URL del post
             $postUrl = url('post.php?slug=' . urlencode($post['slug'] ?? '') . '&id=' . $post['id_post']);
 
-            // Obtener URL de imagen (convierte YouTube a miniatura automáticamente)
-            $imagenUrl = get_thumbnail_url($post['imagen_destacada_url'] ?? null);
+                // Obtener URL de imagen y tipo de contenido
+                $thumb = get_thumbnail_url($post['imagen_destacada_url'] ?? null, $post['contenido'] ?? null);
+                $imagenUrl = $thumb['url'];
+                $thumbType = $thumb['type'];
         ?>
             <article class="post-card">
-                <?php if (!empty($imagenUrl)): ?>
+<?php if (!empty($imagenUrl)): ?>
                     <div class="post-card__image">
                         <a href="<?= $postUrl ?>">
                             <img src="<?= htmlspecialchars($imagenUrl, ENT_QUOTES, 'UTF-8') ?>"
                                  alt="<?= htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8') ?>"
                                  loading="lazy">
+                        </a>
+                    </div>
+ <?php elseif ($thumbType !== 'none'): ?>
+                    <div class="post-card__image post-card__placeholder post-card__placeholder--<?= $thumbType ?>">
+                        <a href="<?= $postUrl ?>">
+                            <span class="placeholder-icon"><?= match($thumbType) {
+                                'genially'  => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>',
+                                'calameo'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg>',
+                                'vimeo'     => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
+                                default     => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+                            } ?></span>
+                            <span class="placeholder-label"><?= match($thumbType) {
+                                'genially'  => 'Contenido interactivo',
+                                'calameo'   => 'Publicación digital',
+                                'vimeo'     => 'Vídeo',
+                                default     => 'Recurso externo'
+                            } ?></span>
                         </a>
                     </div>
                 <?php endif; ?>

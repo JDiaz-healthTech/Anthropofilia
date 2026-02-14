@@ -91,29 +91,73 @@ if (!function_exists('pluralize')) {
 
 if (!function_exists('get_thumbnail_url')) {
     /**
-     * Convierte una URL de YouTube a su miniatura, o devuelve la URL original si es una imagen.
+     * Obtiene la URL de miniatura para un post.
      *
-     * Soporta:
-     * - https://youtu.be/VIDEO_ID
-     * - https://www.youtube.com/watch?v=VIDEO_ID
-     * - https://www.youtube.com/embed/VIDEO_ID
-     * - https://youtube.com/shorts/VIDEO_ID
+     * Prioridad:
+     * 1. Si imagen_destacada_url es una imagen real → la devuelve
+     * 2. Si es una URL de YouTube → genera thumbnail
+     * 3. Si es una URL no-imagen (Calameo, Genially) → la ignora
+     * 4. Si es NULL → busca iframes en el contenido del post
+     *
+     * @param string|null $url            imagen_destacada_url del post
+     * @param string|null $contenido      contenido HTML del post (para buscar iframes)
+     * @return array{url: string|null, type: string}  url de la miniatura y tipo de contenido
      */
-   function get_thumbnail_url(?string $url): ?string
+    function get_thumbnail_url(?string $url, ?string $contenido = null): array
     {
-        if (empty($url)) {
-            return null;
+        // 1. Si hay URL explícita, analizar qué tipo es
+        if (!empty($url)) {
+            $url = trim($url);
+
+            // YouTube → thumbnail
+            if (preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/', $url, $m)) {
+                return ['url' => 'https://img.youtube.com/vi/' . $m[1] . '/hqdefault.jpg', 'type' => 'youtube'];
+            }
+
+            // Calameo → extraer thumbnail del libro
+            if (str_contains($url, 'calameo.com')) {
+                if (preg_match('/calameo\.com\/(?:books|read)\/(\w+)/', $url, $m)) {
+                    return ['url' => 'https://i.calameoassets.com/' . $m[1] . '/thumb.png', 'type' => 'calameo'];
+                }
+                // URL de Calameo no reconocida, caer al análisis de contenido
+            }
+            // Genially → no es una imagen renderizable
+            elseif (str_contains($url, 'genially.com') || str_contains($url, 'genial.ly')) {
+                // No devolver como imagen, caer al análisis de contenido
+            }
+            // Cualquier otra cosa (imagen real, upload local) → devolver tal cual
+            else {
+                return ['url' => $url, 'type' => 'image'];
+            }
         }
 
-        $url = trim($url);
+        // 2. Sin imagen válida: buscar iframes en el contenido
+        if (!empty($contenido)) {
+            // YouTube embebido en contenido
+            if (preg_match('/(?:youtube\.com\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $contenido, $m)) {
+                return ['url' => 'https://img.youtube.com/vi/' . $m[1] . '/hqdefault.jpg', 'type' => 'youtube'];
+            }
 
-        // Detectar YouTube (varios formatos)
-        if (preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/', $url, $matches)) {
-            // Usar hqdefault (480x360) que siempre existe, en lugar de maxresdefault
-            return 'https://img.youtube.com/vi/' . $matches[1] . '/hqdefault.jpg';
+            // Genially embebido
+            if (str_contains($contenido, 'genially.com') || str_contains($contenido, 'genial.ly')) {
+                return ['url' => null, 'type' => 'genially'];
+            }
+
+            // Calameo embebido → extraer thumbnail del bkcode del iframe
+            if (preg_match('/calameo\.com\/.*bkcode=(\w+)/', $contenido, $m)) {
+                return ['url' => 'https://i.calameoassets.com/' . $m[1] . '/thumb.png', 'type' => 'calameo'];
+            }
+            if (str_contains($contenido, 'calameo.com')) {
+                return ['url' => null, 'type' => 'calameo'];
+            }
+
+            // Vimeo embebido
+            if (preg_match('/player\.vimeo\.com\/video\/(\d+)/', $contenido, $m)) {
+                return ['url' => null, 'type' => 'vimeo'];
+            }
         }
 
-        // No es YouTube, devolver URL original
-        return $url;
+        // 3. Nada encontrado
+        return ['url' => null, 'type' => 'none'];
     }
 }
