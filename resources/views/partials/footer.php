@@ -80,6 +80,7 @@ endif;
 <script defer src="<?= url('js/ui.js') ?>"></script>
 <script defer src="<?= url('js/accessibility.js') ?>"></script>
 <script defer src="<?= url('js/lightbox.js') ?>"></script>
+<script defer src="<?= url('js/responsive-iframes.js') ?>"></script>
 
 </body>
 </html>

@@ -17,7 +17,7 @@ if (isset($_GET['reset'])) {
     try {
         $stmt = $pdo->prepare("DELETE FROM settings WHERE k IN ('theme_primary_color', 'theme_bg_color', 'header_bg_url')");
         $stmt->execute();
-        
+
         header('Location: personalizar.php?status=success');
         exit();
     } catch (Exception $e) {
@@ -30,7 +30,41 @@ if (isset($_GET['reset'])) {
 // CSRF
 $security->csrfValidate($_POST['csrf_token'] ?? null);
 
+$current_header = get_setting($pdo, 'header_bg_url', '');
+
+// 0. RESTAURAR DESDE HISTORIAL
+    if (isset($_POST['restore_from_history'])) {
+        $restorePath = trim($_POST['restore_from_history']);
+        // Validar que existe en el historial
+        $historyJson = get_setting($pdo, 'header_bg_history', '[]');
+        $history = json_decode($historyJson, true) ?: [];
+
+        if (in_array($restorePath, $history, true) && file_exists(__DIR__ . '/' . $restorePath)) {
+            // Mover actual al historial
+            if (!empty($current_header) && !in_array($current_header, $history, true)) {
+                array_unshift($history, $current_header);
+            }
+            // Quitar la restaurada del historial
+            $history = array_values(array_filter($history, fn($h) => $h !== $restorePath));
+            $history = array_slice($history, 0, 5);
+
+            set_setting($pdo, 'header_bg_history', json_encode($history));
+            set_setting($pdo, 'header_bg_url', $restorePath);
+
+            header('Location: personalizar.php?status=success');
+            exit();
+        }
+    }
+
+
+
 try {
+
+    // 0b. OVERLAY OPACITY
+    $overlayOpacity = (int)($_POST['header_overlay_opacity'] ?? 50);
+    $overlayOpacity = max(0, min(100, $overlayOpacity));
+    set_setting($pdo, 'header_overlay_opacity', (string)$overlayOpacity);
+
     // 1. COLORES
     $primary_color = trim($_POST['primary_color'] ?? '#0645ad');
     $bg_color = trim($_POST['bg_color'] ?? '#ffffff');
@@ -47,14 +81,17 @@ try {
     set_setting($pdo, 'theme_primary_color', $primary_color);
     set_setting($pdo, 'theme_bg_color', $bg_color);
 
-    // 2. IMAGEN DE CABECERA
-    $current_header = get_setting($pdo, 'header_bg_url', '');
-
-    // ¿Eliminar imagen actual?
+// ¿Eliminar imagen actual?
     if (isset($_POST['remove_header_image']) && $_POST['remove_header_image'] === '1') {
-        // Eliminar archivo físico si existe
-        if (!empty($current_header) && file_exists(__DIR__ . '/' . $current_header)) {
-            @unlink(__DIR__ . '/' . $current_header);
+        // Mover al historial en vez de borrar
+        if (!empty($current_header)) {
+            $historyJson = get_setting($pdo, 'header_bg_history', '[]');
+            $history = json_decode($historyJson, true) ?: [];
+            if (!in_array($current_header, $history, true)) {
+                array_unshift($history, $current_header);
+                $history = array_slice($history, 0, 5);
+            }
+            set_setting($pdo, 'header_bg_history', json_encode($history));
         }
         set_setting($pdo, 'header_bg_url', '');
         $current_header = '';
@@ -63,7 +100,7 @@ try {
     // ¿Subir nueva imagen?
     if (isset($_FILES['header_image']) && $_FILES['header_image']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['header_image'];
-        
+
         // Validar tipo
         $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -95,15 +132,37 @@ try {
             throw new Exception('Error al subir el archivo');
         }
 
-        // Eliminar imagen anterior si existe
-        if (!empty($current_header) && file_exists(__DIR__ . '/' . $current_header)) {
-            @unlink(__DIR__ . '/' . $current_header);
+// Añadir imagen anterior al historial (máximo 5)
+        if (!empty($current_header)) {
+            $historyJson = get_setting($pdo, 'header_bg_history', '[]');
+            $history = json_decode($historyJson, true) ?: [];
+
+            // Añadir al inicio si no está ya
+            if (!in_array($current_header, $history, true)) {
+                array_unshift($history, $current_header);
+            }
+
+            // Mantener solo las últimas 5
+            if (count($history) > 5) {
+                $removed = array_splice($history, 5);
+                // Borrar archivos que salen del historial
+                foreach ($removed as $old) {
+                    $oldPath = __DIR__ . '/' . $old;
+                    if (file_exists($oldPath)) {
+                        @unlink($oldPath);
+                    }
+                }
+            }
+
+            set_setting($pdo, 'header_bg_history', json_encode($history));
         }
 
-        // Guardar ruta relativa
+        // Guardar nueva imagen como activa
         $relativePath = 'uploads/theme/' . $filename;
         set_setting($pdo, 'header_bg_url', $relativePath);
     }
+
+
 
     header('Location: personalizar.php?status=success');
     exit();
@@ -113,3 +172,4 @@ try {
     header('Location: personalizar.php?status=error');
     exit();
 }
+

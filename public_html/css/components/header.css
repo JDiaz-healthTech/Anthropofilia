@@ -36,8 +36,13 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.7) 100%);
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, var(--overlay-top, 0.4)) 0%,
+        rgba(0, 0, 0, var(--overlay-bottom, 0.6)) 100%
+    );
     z-index: 1;
+    transition: background 0.3s ease;
 }
 
 /* =============================================
@@ -158,11 +163,13 @@ html.theme-dark .main-header .header-tagline {
     color: var(--muted);
 }
 
-/* Overlay más oscuro en modo oscuro */
 html.theme-dark .main-header.has-bg-image .header-overlay {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.8) 100%);
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, calc(var(--overlay-top, 0.4) + 0.15)) 0%,
+        rgba(0, 0, 0, calc(var(--overlay-bottom, 0.6) + 0.15)) 100%
+    );
 }
-
 /* =============================================
    RESPONSIVE
    ============================================= */
@@ -242,7 +249,7 @@ html.theme-dark .main-header.has-bg-image .header-overlay {
 /* Alto contraste */
 @media (prefers-contrast: high) {
     .main-header.has-bg-image .header-overlay {
-        background: rgba(0, 0, 0, 0.75);
+        background: rgba(0, 0, 0, max(var(--overlay-bottom, 0.6), 0.75));
     }
 
     .main-header.has-bg-image h1,

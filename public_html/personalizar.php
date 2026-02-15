@@ -12,6 +12,8 @@ $config = [
     'primary_color' => get_setting($pdo, 'theme_primary_color', '#0645ad'),
     'bg_color' => get_setting($pdo, 'theme_bg_color', '#ffffff'),
     'header_bg_url' => get_setting($pdo, 'header_bg_url', ''),
+    'overlay_opacity' => (int)get_setting($pdo, 'header_overlay_opacity', '50'),
+    'bg_history' => json_decode(get_setting($pdo, 'header_bg_history', '[]'), true) ?: [],
 ];
 
 // Mensajes de estado
@@ -25,6 +27,7 @@ if ($status === 'success') {
 
 $page_title = 'Personalizar Diseño';
 $categoria = null;
+$extra_css = 'css/pages/personalizar.css';
 require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 
@@ -43,103 +46,120 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <div aria-live="polite"><?= $message ?></div>
     <?php endif; ?>
 
-    <form action="<?= url('guardar_personalizacion.php') ?>" method="post" enctype="multipart/form-data" class="form-container">
+    <form action="<?= url('guardar_personalizacion.php') ?>" method="post" enctype="multipart/form-data" class="form-container" id="personalizar-form">
         <?= $security->csrfField() ?>
 
-        <!-- SECCIÓN: Colores -->
-        <fieldset style="border: 1px solid #ddd; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-            <legend style="font-weight: bold; font-size: 1.2rem;">Colores del Tema</legend>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-                <div>
-                    <label for="primary_color">Color principal (enlaces, botones)</label>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <input
-                            type="color"
-                            id="primary_color"
-                            name="primary_color"
-                            value="<?= htmlspecialchars($config['primary_color'], ENT_QUOTES, 'UTF-8') ?>"
-                            style="width: 60px; height: 40px; border: 1px solid #ccc; cursor: pointer;">
-                        <input
-                            type="text"
-                            value="<?= htmlspecialchars($config['primary_color'], ENT_QUOTES, 'UTF-8') ?>"
-                            readonly
-                            style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; background: #f5f5f5;">
-                    </div>
-                    <small>Predeterminado: #0645ad</small>
-                </div>
-
-                <div>
-                    <label for="bg_color">Color de fondo</label>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <input
-                            type="color"
-                            id="bg_color"
-                            name="bg_color"
-                            value="<?= htmlspecialchars($config['bg_color'], ENT_QUOTES, 'UTF-8') ?>"
-                            style="width: 60px; height: 40px; border: 1px solid #ccc; cursor: pointer;">
-                        <input
-                            type="text"
-                            value="<?= htmlspecialchars($config['bg_color'], ENT_QUOTES, 'UTF-8') ?>"
-                            readonly
-                            style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; background: #f5f5f5;">
-                    </div>
-                    <small>Predeterminado: #ffffff</small>
-                </div>
-            </div>
-        </fieldset>
-
         <!-- SECCIÓN: Imagen de Cabecera -->
-        <fieldset style="border: 1px solid #ddd; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-            <legend style="font-weight: bold; font-size: 1.2rem;">Imagen de Cabecera</legend>
+        <fieldset class="pz-fieldset">
+            <legend class="pz-legend">Imagen de Cabecera</legend>
+
+            <!-- Preview en vivo -->
+            <div class="pz-preview" id="header-preview">
+                <div class="pz-preview__overlay" id="preview-overlay"></div>
+                <div class="pz-preview__content">
+                    <span class="pz-preview__title">ANTHROPOFILIA</span>
+                    <span class="pz-preview__subtitle">Ana López Sampedro</span>
+                </div>
+                <?php if (empty($config['header_bg_url'])): ?>
+                    <p class="pz-preview__empty">Sin imagen de cabecera</p>
+                <?php endif; ?>
+            </div>
+
+            <!-- Subir nueva imagen -->
+            <div class="pz-upload">
+                <label for="header_image" class="pz-upload__label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Seleccionar imagen
+                </label>
+                <input type="file" id="header_image" name="header_image"
+                       accept="image/jpeg,image/png,image/gif,image/webp" class="pz-upload__input">
+                <span class="pz-upload__info" id="file-info">Máximo 2MB · JPG, PNG, GIF, WebP</span>
+            </div>
 
             <?php if (!empty($config['header_bg_url'])): ?>
-                <div style="margin-bottom: 1rem;">
-                    <p><strong>Imagen actual:</strong></p>
-                    <img
-                        src="<?= htmlspecialchars($config['header_bg_url'], ENT_QUOTES, 'UTF-8') ?>"
-                        alt="Imagen de cabecera actual"
-                        style="max-width: 100%; height: auto; border: 2px solid #ddd; border-radius: 8px;">
-                    <label style="display: block; margin-top: 1rem;">
-                        <input type="checkbox" name="remove_header_image" value="1">
-                        Eliminar imagen actual
-                    </label>
-                </div>
+                <label class="pz-checkbox">
+                    <input type="checkbox" name="remove_header_image" value="1">
+                    Eliminar imagen actual
+                </label>
             <?php endif; ?>
 
-            <div>
-                <label for="header_image">Subir nueva imagen de cabecera</label>
-                <input
-                    type="file"
-                    id="header_image"
-                    name="header_image"
-                    accept="image/jpeg,image/png,image/gif,image/webp">
-                <small>Máximo 2MB. Recomendado: 1200x300px. Formatos: JPG, PNG, GIF, WebP</small>
+            <!-- Slider de oscurecimiento -->
+            <div class="pz-slider-group">
+                <label for="header_overlay_opacity" class="pz-slider-group__label">
+                    Oscurecimiento del overlay
+                    <span class="pz-slider-group__value" id="overlay-value"><?= $config['overlay_opacity'] ?>%</span>
+                </label>
+                <input type="range" id="header_overlay_opacity" name="header_overlay_opacity"
+                       min="0" max="100" step="5"
+                       value="<?= $config['overlay_opacity'] ?>"
+                       class="pz-slider">
+                <div class="pz-slider-group__hints">
+                    <span>Sin overlay</span>
+                    <span>Muy oscuro</span>
+                </div>
+            </div>
+
+            <!-- Historial de fondos -->
+            <?php if (!empty($config['bg_history'])): ?>
+                <div class="pz-history">
+                    <p class="pz-history__title">Fondos anteriores</p>
+                    <div class="pz-history__grid">
+                        <?php foreach ($config['bg_history'] as $bgPath): ?>
+                            <?php if (file_exists(__DIR__ . '/' . $bgPath)): ?>
+                                <button type="submit" name="restore_from_history"
+                                        value="<?= htmlspecialchars($bgPath, ENT_QUOTES, 'UTF-8') ?>"
+                                        class="pz-history__item"
+                                        title="Restaurar este fondo">
+                                    <img src="<?= htmlspecialchars($bgPath, ENT_QUOTES, 'UTF-8') ?>"
+                                         alt="Fondo anterior" loading="lazy">
+                                </button>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </fieldset>
+
+        <!-- SECCIÓN: Colores (deshabilitada) -->
+        <fieldset class="pz-fieldset pz-fieldset--disabled" disabled>
+            <legend class="pz-legend">Colores del Tema <span class="pz-badge">Próximamente</span></legend>
+
+            <div class="pz-color-grid">
+                <div class="pz-color-field">
+                    <label for="primary_color">Color principal</label>
+                    <div class="pz-color-picker">
+                        <input type="color" id="primary_color" name="primary_color"
+                               value="<?= htmlspecialchars($config['primary_color'], ENT_QUOTES, 'UTF-8') ?>">
+                        <span class="pz-color-picker__hex"><?= $config['primary_color'] ?></span>
+                    </div>
+                </div>
+                <div class="pz-color-field">
+                    <label for="bg_color">Color de fondo</label>
+                    <div class="pz-color-picker">
+                        <input type="color" id="bg_color" name="bg_color"
+                               value="<?= htmlspecialchars($config['bg_color'], ENT_QUOTES, 'UTF-8') ?>">
+                        <span class="pz-color-picker__hex"><?= $config['bg_color'] ?></span>
+                    </div>
+                </div>
             </div>
         </fieldset>
 
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
-            <button type="submit" style="padding: 0.75rem 2rem;">💾 Guardar Cambios</button>
-            <a href="<?= url('dashboard.php') ?>" style="padding: 0.75rem 1.5rem; background: #6c757d; color: white; text-decoration: none; border-radius: 4px;">Cancelar</a>
-            <button
-                type="button"
-                onclick="if(confirm('¿Restaurar valores predeterminados?')) location.href='<?= url('guardar_personalizacion.php?reset=1') ?>'"
-                style="margin-left: auto; padding: 0.75rem 1.5rem; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        <!-- Acciones -->
+        <div class="pz-actions">
+            <button type="submit" class="pz-btn pz-btn--primary">Guardar Cambios</button>
+            <a href="<?= url('dashboard.php') ?>" class="pz-btn pz-btn--secondary">Cancelar</a>
+            <button type="button" class="pz-btn pz-btn--danger"
+                    onclick="if(confirm('¿Restaurar valores predeterminados?')) location.href='<?= url('guardar_personalizacion.php?reset=1') ?>'">
                 🔄 Restablecer
             </button>
         </div>
     </form>
 </main>
 
-<script>
-// Actualizar el texto del color cuando cambia el picker
-document.getElementById('primary_color').addEventListener('input', function(e) {
-    e.target.nextElementSibling.value = e.target.value.toUpperCase();
-});
-
-document.getElementById('bg_color').addEventListener('input', function(e) {
-    e.target.nextElementSibling.value = e.target.value.toUpperCase();
-});
-</script>
+<script src="<?= url('js/personalizar.js') ?>" defer></script>
 
 <?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>

@@ -32,6 +32,7 @@ $themeConfig = [
     'primary_color' => get_setting($pdo, 'theme_primary_color', '#0645ad'),
     'bg_color' => get_setting($pdo, 'theme_bg_color', '#ffffff'),
     'header_bg_url' => get_setting($pdo, 'header_bg_url', ''),
+    'overlay_opacity' => (int)get_setting($pdo, 'header_overlay_opacity', '50'),
 ];
 
 // Validar colores
@@ -69,9 +70,14 @@ $headerClass = $hasHeaderBg ? 'main-header has-bg-image' : 'main-header';
 $headerStyle = '';
 
 if ($hasHeaderBg) {
+    $overlayDec = $themeConfig['overlay_opacity'] / 100;
+    $overlayTop = round($overlayDec * 0.8, 2);
+    $overlayBottom = round(min($overlayDec * 1.2, 1), 2);
     $headerStyle = sprintf(
-        ' style="background-image: url(\'%s\');"',
-        htmlspecialchars($themeConfig['header_bg_url'], ENT_QUOTES, 'UTF-8')
+        ' style="background-image: url(\'%s\'); --overlay-top: %s; --overlay-bottom: %s;"',
+        htmlspecialchars($themeConfig['header_bg_url'], ENT_QUOTES, 'UTF-8'),
+        $overlayTop,
+        $overlayBottom
     );
 }
 
@@ -157,6 +163,11 @@ function nav_active(string $file, ?string $slug = null): string {
     <?php if ($current_page === 'pagina.php'): ?>
     <link rel="stylesheet" href="<?= url('css/components/toc.css') ?>">
     <?php endif; ?>
+
+    <?php if ($current_page === 'personalizar.php'): ?>
+    <link rel="stylesheet" href="<?= url('css/pages/personalizar.css') ?>">
+    <?php endif; ?>
+
 
     <?php if ($needsTinymce): ?>
     <!-- TinyMCE Self-Hosted -->

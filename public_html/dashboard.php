@@ -77,7 +77,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 <main class="admin-dashboard">
         <div class="admin-header">
             <h1>Panel de Control</h1>
-            <p>¡Bienvenido, <?= htmlspecialchars($userName) ?>!</p>
+            <p>¡Bienvenid@, <?= htmlspecialchars($userName) ?>!</p>
         </div>
         <?php if ($flash): ?>
             <div class="alert success">
@@ -116,7 +116,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     <div class="quick-actions__grid">
         <a href="<?= url('crear_post.php') ?>" class="action-btn">
             <span class="action-btn__icon">+</span>
-            <span>Crear Nueva Entrada</span>
+            <span>Crear Nuevo Post</span>
         </a>
         <a href="<?= url('crear_pagina.php') ?>" class="action-btn">
             <span class="action-btn__icon">📄</span>
