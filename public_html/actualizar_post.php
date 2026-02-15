@@ -57,7 +57,7 @@ try {
 
     // 7) Manejo de imagen
     $imagen_url = $postRow['imagen_destacada_url']; // Mantener la actual por defecto
-    
+
     // A) Si se subió un nuevo archivo
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
         try {
@@ -69,24 +69,24 @@ try {
 
             $base_dir_fs = __DIR__ . '/uploads/' . date('Y/m/');
             $base_dir_url = 'uploads/' . date('Y/m/');
-            
+
             if (!is_dir($base_dir_fs)) {
                 mkdir($base_dir_fs, 0755, true);
             }
 
             $nombre = bin2hex(random_bytes(16)) . $ext;
             $dest_fs  = $base_dir_fs . $nombre;
-            
+
             if (move_uploaded_file($_FILES['imagen']['tmp_name'], $dest_fs)) {
                 // Eliminar imagen anterior si existe y no es URL externa
-                if (!empty($postRow['imagen_destacada_url']) && 
+                if (!empty($postRow['imagen_destacada_url']) &&
                     !filter_var($postRow['imagen_destacada_url'], FILTER_VALIDATE_URL)) {
                     $old_image = __DIR__ . '/' . $postRow['imagen_destacada_url'];
                     if (file_exists($old_image)) {
                         @unlink($old_image);
                     }
                 }
-                
+
                 $imagen_url = $base_dir_url . $nombre;
             }
         } catch (\Throwable $e) {
@@ -95,12 +95,19 @@ try {
         }
     }
     // B) Si se proporcionó una URL nueva (y no se subió archivo)
-    elseif (isset($_POST['imagen_url']) && !empty(trim($_POST['imagen_url']))) {
-        $imagen_url_in = trim($_POST['imagen_url']);
-        if (filter_var($imagen_url_in, FILTER_VALIDATE_URL)) {
-            $imagen_url = $imagen_url_in;
+        elseif (isset($_POST['imagen_url'])) {
+            $imagen_url_in = trim($_POST['imagen_url']);
+            if ($imagen_url_in === '') {
+                // Campo vaciado explícitamente → borrar imagen
+                $imagen_url = null;
+            } elseif (filter_var($imagen_url_in, FILTER_VALIDATE_URL)) {
+                $imagen_url = $imagen_url_in;
+            }
         }
-    }
+
+        // DEBUG TEMPORAL — borrar después
+    error_log("DEBUG actualizar_post: imagen_url = " . var_export($imagen_url, true));
+    error_log("DEBUG actualizar_post: POST[imagen_url] = " . var_export($_POST['imagen_url'] ?? 'NO EXISTE', true));
 
     // 8) Update
     $sql = "UPDATE posts

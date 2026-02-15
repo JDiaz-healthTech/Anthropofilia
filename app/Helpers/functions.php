@@ -114,12 +114,9 @@ if (!function_exists('get_thumbnail_url')) {
                 return ['url' => 'https://img.youtube.com/vi/' . $m[1] . '/hqdefault.jpg', 'type' => 'youtube'];
             }
 
-            // Calameo → extraer thumbnail del libro
+            // Calameo → no se puede generar thumbnail sin API, usar placeholder
             if (str_contains($url, 'calameo.com')) {
-                if (preg_match('/calameo\.com\/(?:books|read)\/(\w+)/', $url, $m)) {
-                    return ['url' => 'https://i.calameoassets.com/' . $m[1] . '/thumb.png', 'type' => 'calameo'];
-                }
-                // URL de Calameo no reconocida, caer al análisis de contenido
+                // Caer al análisis de contenido o devolver placeholder
             }
             // Genially → no es una imagen renderizable
             elseif (str_contains($url, 'genially.com') || str_contains($url, 'genial.ly')) {
@@ -143,10 +140,7 @@ if (!function_exists('get_thumbnail_url')) {
                 return ['url' => null, 'type' => 'genially'];
             }
 
-            // Calameo embebido → extraer thumbnail del bkcode del iframe
-            if (preg_match('/calameo\.com\/.*bkcode=(\w+)/', $contenido, $m)) {
-                return ['url' => 'https://i.calameoassets.com/' . $m[1] . '/thumb.png', 'type' => 'calameo'];
-            }
+            // Calameo embebido → placeholder (thumbnail requiere API con clave)
             if (str_contains($contenido, 'calameo.com')) {
                 return ['url' => null, 'type' => 'calameo'];
             }
