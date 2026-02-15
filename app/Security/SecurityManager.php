@@ -45,11 +45,11 @@ final class SecurityManager
         ],
 
         // Uploads
-        'uploads' => [
-            'max_size_bytes' => 2 * 1024 * 1024,
-            'allowed_mime'   => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-            'max_pixels'     => 1600,
-        ],
+                'uploads' => [
+                    'max_size_bytes' => 2 * 1024 * 1024,
+                    'allowed_mime'   => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+                    'max_pixels'     => 1600,
+                ],
     ];
 
     private ?string $cspNonce = null;
@@ -294,13 +294,24 @@ final class SecurityManager
             $styleSrc[]  = "'nonce-{$nonce}'";
         }
 
+// Orígenes permitidos para iframes embebidos
+        $frameSrc = [
+            "'self'",
+            "https://www.youtube.com",
+            "https://www.youtube-nocookie.com",
+            "https://player.vimeo.com",
+            "https://view.genially.com",
+            "https://v.calameo.com",
+        ];
+
         $csp = sprintf(
-            "default-src 'self'; script-src %s; style-src %s; img-src %s; font-src %s; connect-src %s; frame-ancestors %s; base-uri 'self'; form-action 'self'",
+            "default-src 'self'; script-src %s; style-src %s; img-src %s; font-src %s; connect-src %s; frame-src %s; frame-ancestors %s; base-uri 'self'; form-action 'self'",
             implode(' ', $scriptSrc),
             implode(' ', $styleSrc),
             implode(' ', $imgSrc),
             implode(' ', $fontSrc),
             implode(' ', $connectSrc),
+            implode(' ', $frameSrc),
             implode(' ', $frameAnc)
         );
 
@@ -408,8 +419,7 @@ public function sanitizeHTML(string $html): string
         // 4. ===== IFRAMES SEGUROS (NUEVA FUNCIONALIDAD) =====
         // Permitir iframes SOLO de YouTube y Vimeo
         $config->set('HTML.SafeIframe', true);
-        $config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube(-nocookie)?\.com/embed/|player\.vimeo\.com/video/|view\.genially\.com/)%');
-        // 5. ETIQUETAS Y ATRIBUTOS PERMITIDOS (tu lista + iframes)
+        $config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube(-nocookie)?\.com/embed/|player\.vimeo\.com/video/|view\.genially\.com/|v\.calameo\.com/)%');        // 5. ETIQUETAS Y ATRIBUTOS PERMITIDOS (tu lista + iframes)
         $config->set(
             'HTML.Allowed',
             'p,br,strong,em,ul,ol,li,blockquote,a[href|title|target|rel],img[src|alt|title|width|height],h2[id],h3[id],h4[id],code,pre,table,thead,tbody,tr,th,td,iframe[src|width|height|frameborder|allowfullscreen|title|allow]'
@@ -420,7 +430,7 @@ public function sanitizeHTML(string $html): string
 
 // Damos un ID único a esta configuración personalizada
             $config->set('HTML.DefinitionID', 'anthropofilia-iframe-fix');
-            $config->set('HTML.DefinitionRev', 2);
+            $config->set('HTML.DefinitionRev', 3);
 
             // Intentamos obtener la definición "cruda" para editarla
             if ($def = $config->maybeGetRawHTMLDefinition()) {

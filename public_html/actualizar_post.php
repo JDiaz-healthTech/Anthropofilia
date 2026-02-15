@@ -105,10 +105,6 @@ try {
             }
         }
 
-        // DEBUG TEMPORAL — borrar después
-    error_log("DEBUG actualizar_post: imagen_url = " . var_export($imagen_url, true));
-    error_log("DEBUG actualizar_post: POST[imagen_url] = " . var_export($_POST['imagen_url'] ?? 'NO EXISTE', true));
-
     // 8) Update
     $sql = "UPDATE posts
             SET titulo = ?, contenido = ?, id_categoria = ?, imagen_destacada_url = ?, actualizado_en = NOW()
