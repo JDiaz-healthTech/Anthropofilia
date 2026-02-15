@@ -45,9 +45,9 @@ if (isset($_GET['status'])) {
             $errorMessage = $uploadError ?? 'Error al subir la imagen.';
             break;
         case 'db_error':
-            $errorMessage = 'Error al guardar el post. Por favor, inténtalo de nuevo.';
-            break;
-    }
+        $errorMessage = $dbError ?? 'Error al guardar el post. Por favor, inténtalo de nuevo.';
+        break;
+        }
 }
 $page_title = 'Crear Nuevo Post';
 $categoria = null;
