@@ -22,9 +22,11 @@
 /* Header CON imagen de fondo */
 .main-header.has-bg-image {
     background-size: cover;
-    background-position: center 35%; /* ← Más arriba, muestra más imagen */
+    background-position: center 35%;
     background-repeat: no-repeat;
-    min-height: 300px; /* ← 30% menos que 500px */
+    min-height: 200px;
+    max-height: 350px;
+    height: 25vw;
 }
 
 /* =============================================
@@ -180,7 +182,9 @@ html.theme-dark .main-header.has-bg-image .header-overlay {
     }
 
     .main-header.has-bg-image {
-        min-height: 300px;
+        min-height: 190px;
+        max-height: 300px;
+        height: 28vw;
     }
 
     .main-header h1 {
@@ -203,7 +207,9 @@ html.theme-dark .main-header.has-bg-image .header-overlay {
     }
 
     .main-header.has-bg-image {
-        min-height: 245px; /* ← 30% menos que 350px */
+        min-height: 180px;
+        max-height: 250px;
+        height: 30vw;
     }
 
     .main-header h1 {
@@ -224,7 +230,9 @@ html.theme-dark .main-header.has-bg-image .header-overlay {
     }
 
     .main-header.has-bg-image {
-        min-height: 192px; /* ← 30% menos que 275px */
+        min-height: 140px;
+        max-height: 200px;
+        height: 35vw;
     }
 
     .main-header h1 {
