@@ -308,7 +308,7 @@
 /* Grid de tarjetas */
 .search-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: 1fr;
     gap: 1.25rem;
     margin-bottom: 2rem;
 }
@@ -354,6 +354,12 @@
     margin: 0 0 1rem 0;
     font-size: var(--step-0, 0.95rem);
     line-height: 1.5;
+    color: var(--muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .search-card__link {

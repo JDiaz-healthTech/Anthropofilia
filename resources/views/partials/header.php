@@ -135,7 +135,7 @@ function nav_active(string $file, ?string $slug = null): string {
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="color-scheme" content="light dark">
 
-    <title><?= htmlspecialchars($page_title ?? 'Anthropofilia', ENT_QUOTES, 'UTF-8') ?></title>
+    <title>Anthropofilia<?= !empty($page_title) ? ' — ' . htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') : '' ?></title>
 
     <?php if (!empty($meta_description)): ?>
     <meta name="description" content="<?= htmlspecialchars($meta_description, ENT_QUOTES, 'UTF-8') ?>">

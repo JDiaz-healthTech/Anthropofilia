@@ -182,7 +182,7 @@
 }
 
 /* Resultados de búsqueda */
-.search-results {
+.modal-body .search-results {
     max-height: 400px;
     overflow-y: auto;
     border: 1px solid var(--border, #ddd);

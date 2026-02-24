@@ -44,6 +44,31 @@
 }
 
 /* =============================================
+   SIN SIDEBAR - Contenido centrado a ancho completo
+   ============================================= */
+@media (min-width: 900px) {
+    .main-content-area:not(:has(> aside)) {
+        grid-template-columns: 1fr;
+        max-width: 900px;
+        margin-inline: auto;
+    }
+}
+
+@media (min-width: 1200px) {
+    .main-content-area:not(:has(> aside)) {
+        grid-template-columns: 1fr;
+        max-width: 960px;
+    }
+}
+
+@media (min-width: 1600px) {
+    .main-content-area:not(:has(> aside)) {
+        grid-template-columns: 1fr;
+        max-width: 1040px;
+    }
+}
+
+/* =============================================
    ELEMENTOS PRINCIPALES
    ============================================= */
 .main-content-area > main,
