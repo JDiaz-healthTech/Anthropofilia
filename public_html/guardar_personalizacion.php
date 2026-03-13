@@ -6,14 +6,17 @@ require_once __DIR__ . '/init.php';
 
 $security->requireLogin();
 
-// Verificar método POST o reset
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' && !isset($_GET['reset'])) {
+// Solo POST permitido
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: personalizar.php');
     exit();
 }
 
+// CSRF — valida siempre, para reset y para guardar
+$security->csrfValidate($_POST['csrf_token'] ?? null);
+
 // RESET: Restaurar valores predeterminados
-if (isset($_GET['reset'])) {
+if (($_POST['action'] ?? '') === 'reset') {
     try {
         $stmt = $pdo->prepare("DELETE FROM settings WHERE k IN ('theme_primary_color', 'theme_bg_color', 'header_bg_url')");
         $stmt->execute();
@@ -26,9 +29,6 @@ if (isset($_GET['reset'])) {
         exit();
     }
 }
-
-// CSRF
-$security->csrfValidate($_POST['csrf_token'] ?? null);
 
 $current_header = get_setting($pdo, 'header_bg_url', '');
 
