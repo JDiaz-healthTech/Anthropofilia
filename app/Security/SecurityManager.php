@@ -577,13 +577,13 @@ public function sanitizeHTML(string $html): string
         http_response_code($code);
 
         // Usar páginas de error personalizadas
-        if ($code === 404 && file_exists(__DIR__ . '/../../resources/errors/404.php')) {
-            require __DIR__ . '/../../resources/errors/404.php';
+        if ($code === 404 && file_exists(__DIR__ . '/../../resources/views/errors/404.php')) {
+            require __DIR__ . '/../../resources/views/errors/404.php';
             exit();
         }
 
-        if ($code === 500 && file_exists(__DIR__ . '/../../resources/errors/500.php')) {
-            require __DIR__ . '/../../resources/errors/500.php';
+        if ($code === 500 && file_exists(__DIR__ . '/../../resources/views/errors/500.php')) {
+            require __DIR__ . '/../../resources/views/errors/500.php';
             exit();
         }
 

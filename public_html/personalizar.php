@@ -152,11 +152,14 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <div class="pz-actions">
             <button type="submit" class="pz-btn pz-btn--primary">Guardar Cambios</button>
             <a href="<?= url('dashboard.php') ?>" class="pz-btn pz-btn--secondary">Cancelar</a>
-            <button type="button" class="pz-btn pz-btn--danger"
-                    onclick="if(confirm('¿Restaurar valores predeterminados?')) location.href='<?= url('guardar_personalizacion.php?reset=1') ?>'">
-                🔄 Restablecer
-            </button>
         </div>
+    </form>
+
+    <form method="POST" action="<?= url('guardar_personalizacion.php') ?>"
+          onsubmit="return confirm('¿Restaurar valores predeterminados?')">
+        <?= $security->csrfField() ?>
+        <input type="hidden" name="action" value="reset">
+        <button type="submit" class="pz-btn pz-btn--danger">🔄 Restablecer</button>
     </form>
 </main>
 

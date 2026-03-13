@@ -28,6 +28,7 @@ try {
     $titulo       = trim($security->cleanInput($_POST['titulo'] ?? ''));
     $contenido    = $_POST['contenido'] ?? ''; // HTML permitido; sanitiza al render
     $id_categoria = (int)$security->cleanInput($_POST['id_categoria'] ?? '', 'int');
+    $etiquetas_raw = trim((string)($_POST['etiquetas'] ?? ''));
 
     if ($id_post <= 0 || $id_categoria <= 0 || $titulo === '' || $contenido === '') {
         http_response_code(400);
@@ -105,17 +106,48 @@ try {
             }
         }
 
-    // 8) Update
+    // 8) Update principal + etiquetas en transacción
+    $pdo->beginTransaction();
+
     $sql = "UPDATE posts
             SET titulo = ?, contenido = ?, id_categoria = ?, imagen_destacada_url = ?, actualizado_en = NOW()
             WHERE id_post = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$titulo, $contenido, $id_categoria, $imagen_url, $id_post]);
 
+    // 9) Actualizar etiquetas
+    $tags = array_values(array_unique(array_filter(array_map(
+        fn($t) => trim(mb_strtolower($t, 'UTF-8')),
+        preg_split('/,/', $etiquetas_raw) ?: []
+    ), fn($t) => $t !== '')));
+
+    $pdo->prepare("DELETE FROM post_etiquetas WHERE id_post = ?")->execute([$id_post]);
+
+    if ($tags) {
+        $stmtUpsert = $pdo->prepare(
+            "INSERT INTO etiquetas (nombre_etiqueta)
+             VALUES (?)
+             ON DUPLICATE KEY UPDATE id_etiqueta = LAST_INSERT_ID(id_etiqueta)"
+        );
+        $stmtLink = $pdo->prepare(
+            "INSERT IGNORE INTO post_etiquetas (id_post, id_etiqueta) VALUES (?, ?)"
+        );
+        foreach ($tags as $tag) {
+            $stmtUpsert->execute([$tag]);
+            $id_tag = (int)$pdo->lastInsertId();
+            $stmtLink->execute([$id_post, $id_tag]);
+        }
+    }
+
+    $pdo->commit();
+
     header("Location: dashboard.php?msg=updated", true, 303);
     exit();
 
 } catch (PDOException $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     if ($e->getCode() === '23000') {
         http_response_code(409);
         $security->logEvent('warn', 'post_update_constraint', [

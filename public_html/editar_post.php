@@ -11,9 +11,9 @@ if (!$post_id || $post_id <= 0) {
 }
 
 // 3) Cargar post
-$sql_post = "SELECT id_post, slug, titulo, contenido, imagen_destacada_url, 
+$sql_post = "SELECT id_post, slug, titulo, contenido, imagen_destacada_url,
                               fecha_publicacion, id_usuario, id_categoria
-                       FROM posts 
+                       FROM posts
                        WHERE id_post = :id";
 $stmt = $pdo->prepare($sql_post);
 $stmt->execute([$post_id]);
@@ -47,7 +47,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     <?php endif; ?>
     <span aria-current="page"><?= htmlspecialchars($page_title ?? 'Actual', ENT_QUOTES, 'UTF-8') ?></span>
   </nav>
- 
+
     <h2>Editar Post</h2>
     <form action="actualizar_post.php" method="POST" enctype="multipart/form-data" class="form-container">
             <?php echo $security->csrfField(); ?>
@@ -87,13 +87,14 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 
         <div>
             <label for="imagen_url">URL de la Imagen Destacada:</label>
-            <input type="url" id="imagen_url" name="imagen_url"
-                   value="<?php echo htmlspecialchars($post['imagen_destacada_url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+          <input type="text" id="imagen_url" name="imagen_url"
+                placeholder="https://ejemplo.com/imagen.jpg o ruta local"
+                value="<?php echo htmlspecialchars($post['imagen_destacada_url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
         </div>
         <div>
             <label for="imagen">O subir nueva imagen:</label>
-            <input type="file" 
-                   id="imagen" 
+            <input type="file"
+                   id="imagen"
                    name="imagen"
                    accept="image/jpeg,image/png,image/gif,image/webp">
             <small>Máximo 2MB. Si subes un archivo nuevo, reemplazará la URL anterior.</small>
@@ -115,7 +116,7 @@ $nonceAttr = ($security->cspNonce())
 if (typeof tinymce !== 'undefined') {
   tinymce.init({
     selector: '#contenido',
-    
+
     // Plugins útiles
     plugins: 'code link lists image media table autoresize paste advlist',
     toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code',
@@ -154,7 +155,7 @@ if (typeof tinymce !== 'undefined') {
                 return;
             }
         }
-        
+
         // Detectar Vimeo
         if (data.url.indexOf('vimeo.com/') !== -1) {
             var vimeoId = data.url.split('vimeo.com/')[1].split(/[?&]/)[0];
@@ -165,7 +166,7 @@ if (typeof tinymce !== 'undefined') {
                 return;
             }
         }
-        
+
         // Si no es YouTube ni Vimeo, dejar que TinyMCE lo maneje
         resolve({ html: '' });
     },
@@ -223,7 +224,7 @@ if (typeof tinymce !== 'undefined') {
       th, td { padding: .5rem; }
       ul, ol { margin-left: 1.2rem; }
       pre, code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
-      
+
       /* Vídeos responsive */
       iframe {
           max-width: 100%;
@@ -232,12 +233,12 @@ if (typeof tinymce !== 'undefined') {
           border-radius: 8px;
           margin: 1.5rem 0;
       }
-      
+
       /* Imágenes con enlaces - efecto hover */
       a img {
           transition: opacity 0.2s ease, transform 0.2s ease;
       }
-      
+
       a:hover img {
           opacity: 0.85;
           transform: scale(1.02);
