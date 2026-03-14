@@ -46,41 +46,34 @@ use App\Models\Sites;
     <h3>Etiquetas populares</h3>
     <?php
     try {
-        // Obtener etiquetas con conteo de posts
-        $sql = "SELECT e.id_etiqueta, e.nombre_etiqueta, COUNT(pe.id_post) as total
-                FROM etiquetas e
-                INNER JOIN post_etiquetas pe ON e.id_etiqueta = pe.id_etiqueta
-                GROUP BY e.id_etiqueta, e.nombre_etiqueta
-                HAVING total > 0
-                ORDER BY total DESC, e.nombre_etiqueta ASC
-                LIMIT 20";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
-        $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $tags = \App\Models\Tag::getMostUsed(12);
 
         if ($tags) {
-            // Calcular tamaños para la nube
             $counts = array_column($tags, 'total');
             $min = min($counts);
             $max = max($counts);
-            $range = max($max - $min, 1); // Evitar división por cero
+            $range = max($max - $min, 1);
 
             echo '<div class="tag-cloud">';
             foreach ($tags as $tag) {
-                $count = (int)$tag['total'];
-                // Tamaño relativo: 0.8em - 1.8em
-                $size = 0.8 + (($count - $min) / $range);
-                $slug = strtolower(trim(preg_replace('/[^a-z0-9]+/i', '-', $tag['nombre_etiqueta'])));
-                $name = htmlspecialchars($tag['nombre_etiqueta'], ENT_QUOTES, 'UTF-8');
+                $count = (int) $tag['total'];
+                // Nivel de 1 a 5 para escalar por CSS en vez de inline style
+                $level = (int) ceil((($count - $min) / $range) * 4) + 1;
+                $name  = e($tag['nombre_etiqueta']);
 
-                echo '<a href="' . url('etiqueta.php?tag=' . urlencode($slug)) . '"
-                         class="tag-item"
-                         style="font-size: ' . $size . 'em;"
-                         title="' . $count . ' ' . ($count === 1 ? 'entrada' : 'entradas') . '">
-                         ' . $name . '
-                      </a>';
+                echo '<a href="' . url('etiqueta.php?tag=' . urlencode($tag['nombre_etiqueta'])) . '"
+                         class="tag-item tag-item--level-' . $level . '"
+                         title="' . $count . ' ' . pluralize($count, 'entrada', 'entradas') . '">'
+                         . $name .
+                     '</a>';
             }
             echo '</div>';
+
+            // Enlace a ver todas si hay más etiquetas que las mostradas
+            $totalTags = \App\Models\Tag::countAll();
+            if ($totalTags > 12) {
+                echo '<a href="' . url('archivo.php') . '" class="sidebar-more">Ver todas las etiquetas →</a>';
+            }
         } else {
             echo '<p class="sidebar-empty">No hay etiquetas todavía.</p>';
         }

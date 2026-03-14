@@ -17,7 +17,7 @@
 .sidebar-widget {
     background: var(--bg);
     padding: 1.5rem;
-    margin-bottom: 2rem;        /* ← Más espacio entre widgets */
+    margin-bottom: 2rem; /* ← Más espacio entre widgets */
     border-radius: var(--radius);
     box-shadow: var(--shadow);
 }
@@ -51,29 +51,29 @@
 .search-form {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;               /* ← Espacio entre input y botón */
-    align-items: stretch;       /* ← Misma altura */
+    gap: 0.75rem; /* ← Espacio entre input y botón */
+    align-items: stretch; /* ← Misma altura */
 }
 
-.search-form input[type="search"] {
+.search-form input[type='search'] {
     flex: 1;
-    padding: 0.7rem 0.8rem;     /* ← Más padding */
+    padding: 0.7rem 0.8rem; /* ← Más padding */
     border: 1px solid var(--border);
     border-radius: var(--radius);
     font-size: var(--step--1);
     background: var(--input-bg);
     color: var(--input-fg);
-    min-width: 0;               /* ← Permite encogimiento */
+    min-width: 0; /* ← Permite encogimiento */
 }
 
-.search-form input[type="search"]:focus {
+.search-form input[type='search']:focus {
     border-color: var(--brand);
     box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
     outline: none;
 }
 
 .search-form button {
-    padding: 0.7rem 1.2rem;     /* ← Más padding horizontal */
+    padding: 0.7rem 1.2rem; /* ← Más padding horizontal */
     background: var(--brand);
     color: white;
     border: none;
@@ -83,7 +83,7 @@
     font-weight: 600;
     white-space: nowrap;
     transition: var(--transition);
-    flex-shrink: 0;             /* ← No encogimiento */
+    flex-shrink: 0; /* ← No encogimiento */
 }
 
 .search-form button:hover {
@@ -308,17 +308,46 @@
         margin-top: 2rem;
         padding: 1rem;
     }
-    
+
     .sidebar-widget {
         padding: 1.2rem;
-        margin-bottom: 1.5rem;  /* ← Espacio entre widgets en móvil */
+        margin-bottom: 1.5rem; /* ← Espacio entre widgets en móvil */
     }
-    
+
     .search-form {
-        gap: 0.6rem;            /* ← Gap ligeramente menor en móvil */
+        gap: 0.6rem; /* ← Gap ligeramente menor en móvil */
     }
-    
+
     .search-form button {
-        padding: 0.7rem 1rem;   /* ← Botón más compacto */
+        padding: 0.7rem 1rem; /* ← Botón más compacto */
     }
+}
+
+/* Nube de etiquetas — niveles de tamaño */
+.tag-item--level-1 {
+    font-size: 0.8em;
+}
+.tag-item--level-2 {
+    font-size: 1em;
+}
+.tag-item--level-3 {
+    font-size: 1.2em;
+}
+.tag-item--level-4 {
+    font-size: 1.5em;
+}
+.tag-item--level-5 {
+    font-size: 1.8em;
+}
+
+.sidebar-more {
+    display: block;
+    margin-top: var(--space-sm);
+    font-size: 0.9em;
+    text-align: right;
+    color: var(--brand);
+}
+
+.sidebar-more:hover {
+    text-decoration: underline;
 }
