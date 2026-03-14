@@ -1,4 +1,4 @@
-  <?php
+<?php
   // app/Models/Tag.php
   declare(strict_types=1);
 
