@@ -224,3 +224,12 @@ Cada sesión de trabajo sigue este patrón:
 3. **Implementar** el cambio mínimo necesario (no sobre-ingeniería)
 4. **Verificar** localmente con Docker (`localhost:8080`)
 5. **Commit** a `develop` con mensaje descriptivo en inglés
+
+## Interaction Mode
+
+ALWAYS work in "snippet mode" unless explicitly told otherwise:
+- Show the exact code change (snippet) with file path and location
+- Explain WHAT changes and WHY before the person applies it
+- Wait for confirmation before moving to the next change
+- NEVER modify multiple files in a single step without asking
+- If a task requires more than 3 file changes, present a numbered plan first and execute one step at a time

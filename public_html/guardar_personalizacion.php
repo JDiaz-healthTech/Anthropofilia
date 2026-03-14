@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // CSRF — valida siempre, para reset y para guardar
-$security->csrfValidate($_POST['csrf_token'] ?? null);
+$security->requireValidCsrf();
 
 // RESET: Restaurar valores predeterminados
 if (($_POST['action'] ?? '') === 'reset') {

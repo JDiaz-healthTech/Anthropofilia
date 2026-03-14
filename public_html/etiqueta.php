@@ -31,47 +31,48 @@ $meta_description = 'Entradas etiquetadas como "' . $nombre_etiqueta . '" en Ant
 require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 
-<main class="search-results">
-    <nav class="breadcrumbs" aria-label="Breadcrumbs">
-        <a href="<?= url('index.php') ?>">Inicio</a>
-        <span aria-hidden="true">›</span>
-        <span aria-current="page">Etiqueta: <?= e($nombre_etiqueta) ?></span>
-    </nav>
+<div class="main-content-area container">
+    <main>
+        <nav class="breadcrumbs" aria-label="Breadcrumbs">
+            <a href="<?= url('index.php') ?>">Inicio</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">Etiqueta: <?= e($nombre_etiqueta) ?></span>
+        </nav>
 
-    <header class="search-header">
-        <h1>Entradas etiquetadas como: <em><?= e($nombre_etiqueta) ?></em></h1>
-    </header>
+        <header class="search-header">
+            <h1>Entradas etiquetadas como: <em><?= e($nombre_etiqueta) ?></em></h1>
+        </header>
 
-    <?php if ($posts): ?>
-        <p class="search-count">
-            <?= count($posts) === 1 ? 'Se encontró' : 'Se encontraron' ?>
-            <strong><?= count($posts) ?></strong>
-            <?= pluralize(count($posts), 'entrada', 'entradas') ?>.
-        </p>
+        <?php if ($posts): ?>
+            <p class="search-count">
+                <?= count($posts) === 1 ? 'Se encontró' : 'Se encontraron' ?>
+                <strong><?= count($posts) ?></strong>
+                <?= pluralize(count($posts), 'entrada', 'entradas') ?>.
+            </p>
 
-        <section class="search-grid" aria-label="Entradas con esta etiqueta">
-            <?php foreach ($posts as $post): ?>
-                <article class="search-card">
-                    <h2 class="search-card__title">
-                        <a href="<?= url(post_url($post)) ?>">
-                            <?= e($post['titulo']) ?>
-                        </a>
-                    </h2>
-                    <p class="search-card__meta">
-                        <time datetime="<?= e($post['fecha_publicacion'] ?? '') ?>">
-                            Publicado el <?= format_date_es($post['fecha_publicacion'] ?? null) ?>
-                        </time>
-                    </p>
-                    <a href="<?= url(post_url($post)) ?>" class="search-card__link">Leer más →</a>
-                </article>
-            <?php endforeach; ?>
-        </section>
-    <?php else: ?>
-        <div class="search-empty">
-            <p class="search-empty__message">No se encontraron entradas con esta etiqueta.</p>
-            <a href="<?= url('index.php') ?>" class="btn">← Volver al inicio</a>
-        </div>
-    <?php endif; ?>
-</main>
-
+            <section class="search-grid" aria-label="Entradas con esta etiqueta">
+                <?php foreach ($posts as $post): ?>
+                    <article class="search-card">
+                        <h2 class="search-card__title">
+                            <a href="<?= url(post_url($post)) ?>">
+                                <?= e($post['titulo']) ?>
+                            </a>
+                        </h2>
+                        <p class="search-card__meta">
+                            <time datetime="<?= e($post['fecha_publicacion'] ?? '') ?>">
+                                Publicado el <?= format_date_es($post['fecha_publicacion'] ?? null) ?>
+                            </time>
+                        </p>
+                        <a href="<?= url(post_url($post)) ?>" class="search-card__link">Leer más →</a>
+                    </article>
+                <?php endforeach; ?>
+            </section>
+        <?php else: ?>
+            <div class="search-empty">
+                <p class="search-empty__message">No se encontraron entradas con esta etiqueta.</p>
+                <a href="<?= url('index.php') ?>" class="btn">← Volver al inicio</a>
+            </div>
+        <?php endif; ?>
+    </main>
+</div>
 <?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>
