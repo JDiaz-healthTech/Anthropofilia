@@ -577,11 +577,20 @@ public function sanitizeHTML(string $html): string
         http_response_code($code);
 
         // Usar páginas de error personalizadas
+
+        /* Error 403 — Acceso denegado. El usuario no tiene permisos o la verificación CSRF falló. */
+        if ($code === 403 && file_exists(__DIR__ . '/../../resources/views/errors/403.php')) {
+            require __DIR__ . '/../../resources/views/errors/403.php';
+            exit();
+        }
+
+        /* Error 404 — Página no encontrada. La URL solicitada no existe o fue movida. */
         if ($code === 404 && file_exists(__DIR__ . '/../../resources/views/errors/404.php')) {
             require __DIR__ . '/../../resources/views/errors/404.php';
             exit();
         }
 
+        /* Error 500 — Error interno del servidor. Fallo inesperado al procesar la solicitud. */
         if ($code === 500 && file_exists(__DIR__ . '/../../resources/views/errors/500.php')) {
             require __DIR__ . '/../../resources/views/errors/500.php';
             exit();

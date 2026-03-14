@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-
+/* Error 500 — Error interno del servidor. Fallo inesperado al procesar la solicitud. */
 http_response_code(500);
 
 $page_title = 'Error interno del servidor - 500';
@@ -17,7 +17,7 @@ require_once __DIR__ . '/../views/partials/header.php';
         <p class="error-message">
             Lo sentimos, ha ocurrido un error inesperado. Nuestro equipo ha sido notificado.
         </p>
-        
+
         <div class="error-actions">
             <a href="<?= url('index.php') ?>" class="btn btn-primary">
                 ← Volver al inicio

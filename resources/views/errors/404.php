@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-
+/* Error 404 — Página no encontrada. La URL solicitada no existe o fue movida. */
 http_response_code(404);
 
 $page_title = 'Página no encontrada - 404';
@@ -17,7 +17,7 @@ require_once __DIR__ . '/../views/partials/header.php';
         <p class="error-message">
             Lo sentimos, la página que buscas no existe o ha sido movida.
         </p>
-        
+
         <div class="error-actions">
             <a href="<?= url('index.php') ?>" class="btn btn-primary">
                 ← Volver al inicio
