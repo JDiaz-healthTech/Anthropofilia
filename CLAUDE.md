@@ -144,7 +144,7 @@ Estos problemas están documentados. Al editar código existente, no replicarlos
 | I-03 | ~~Configuración de TinyMCE copiada en 3 archivos.~~ Resuelto — centralizado en `js/tinymce-config.js` (Fase 6). | Resuelto |
 | I-04 | ~~CSS inline masivo en 4 archivos de gestión.~~ Resuelto — movido a `css/admin/` (Fase 5). | Resuelto |
 | I-05 | ~~Dos sistemas de personalización: `admin.php` (legacy) y `personalizar.php` (moderno).~~ Resuelto — `admin.php` eliminado (Fase 7). | Resuelto |
-| I-06 | ~~`Page.php` es casi un stub.~~ Modelo completo con CRUD, slug y validación. Pendiente: migrar `guardar_pagina.php` y `actualizar_pagina.php` para usar `Page::create()`/`Page::update()` en vez de SQL directo. | Parcial |
+| I-06 | ~~`Page.php` es casi un stub.~~ Modelo completo con CRUD, slug y validación. Pendiente: migrar `guardar_pagina.php` y `actualizar_pagina.php` para usar `Page::create()`/`Page::update()` en vez de SQL directo. | Parcial | Resuelto
 | I-07 | `init.php` tiene `display_errors=1` hardcodeado antes de leer `APP_ENV`, por lo que siempre expone errores hasta que se sobreescribe. | Importante |
 | I-08 | `enviar_contacto.php` tiene `SMTPDebug = 2` activo en producción (logs SMTP visibles). | Importante | Resuelto
 | m-01 | `feed.php` usa `$GLOBALS['baseUrl']` (es variable local en init.php, no global). | Menor |
