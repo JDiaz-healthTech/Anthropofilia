@@ -52,13 +52,16 @@ use App\Models\Sites;
             $counts = array_column($tags, 'total');
             $min = min($counts);
             $max = max($counts);
-            $range = max($max - $min, 1);
 
             echo '<div class="tag-cloud">';
             foreach ($tags as $tag) {
                 $count = (int) $tag['total'];
-                // Nivel de 1 a 5 para escalar por CSS en vez de inline style
-                $level = (int) ceil((($count - $min) / $range) * 4) + 1;
+                // Si todas iguales → nivel 3 (medio). Si no → escala de 1 a 5
+                if ($min === $max) {
+                    $level = 3;
+                } else {
+                    $level = (int) ceil((($count - $min) / ($max - $min)) * 4) + 1;
+                }
                 $name  = e($tag['nombre_etiqueta']);
 
                 echo '<a href="' . url('etiqueta.php?tag=' . urlencode($tag['nombre_etiqueta'])) . '"
@@ -72,7 +75,7 @@ use App\Models\Sites;
             // Enlace a ver todas si hay más etiquetas que las mostradas
             $totalTags = \App\Models\Tag::countAll();
             if ($totalTags > 12) {
-                echo '<a href="' . url('archivo.php') . '" class="sidebar-more">Ver todas las etiquetas →</a>';
+                echo '<a href="' . url('etiquetas.php') . '" class="sidebar-more">Ver todas las etiquetas →</a>';
             }
         } else {
             echo '<p class="sidebar-empty">No hay etiquetas todavía.</p>';
