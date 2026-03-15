@@ -72,54 +72,49 @@ $page_title = 'Gestionar Sitios de Interés';
 require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 
-<main class="container" style="max-width: 900px; margin: 2rem auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+<main class="container">
+    <div class="section-header">
         <h1>Gestionar Sitios de Interés</h1>
         <a href="<?= url('dashboard.php') ?>" class="btn">← Volver al Panel de Control</a>
     </div>
 
     <?php if ($message): ?>
-        <div class="alert alert-<?= $messageType ?>" style="padding: 1rem; margin-bottom: 1.5rem; border-radius: var(--radius); background: <?= $messageType === 'success' ? '#d4edda' : '#f8d7da' ?>; color: <?= $messageType === 'success' ? '#155724' : '#721c24' ?>;">
+        <div class="alert <?= $messageType ?>">
             <?= htmlspecialchars($message) ?>
         </div>
     <?php endif; ?>
 
     <!-- FORMULARIO CREAR NUEVO SITIO -->
-    <section style="background: var(--card-bg); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border: 1px solid var(--border);">
-        <h2 style="margin-top: 0;">Nuevo Sitio</h2>
-        <form method="POST" style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
+    <section class="admin-card">
+        <h2>Nuevo Sitio</h2>
+        <form method="POST" class="admin-form-inline">
             <?= $security->csrfField() ?>
             <input type="hidden" name="action" value="create">
-            <div style="flex: 2; min-width: 200px;">
-                <label for="nombre" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Nombre:</label>
+            <div class="admin-form-inline__field admin-form-inline__field--2x">
+                <label for="nombre">Nombre:</label>
                 <input type="text"
                     id="nombre"
                     name="nombre"
                     required
-                    placeholder="Ej: Real Academia Española"
-                    style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                    placeholder="Ej: Real Academia Española">
             </div>
-            <div style="flex: 3; min-width: 250px;">
-                <label for="url" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">URL:</label>
+            <div class="admin-form-inline__field admin-form-inline__field--3x">
+                <label for="url">URL:</label>
                 <input type="url"
                     id="url"
                     name="url"
                     required
-                    placeholder="https://www.rae.es"
-                    style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                    placeholder="https://www.rae.es">
             </div>
-            <div style="flex: 1; min-width: 80px;">
-                <label for="orden" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Orden:</label>
+            <div class="admin-form-inline__field admin-form-inline__field--narrow">
+                <label for="orden">Orden:</label>
                 <input type="number"
                     id="orden"
                     name="orden"
                     value="0"
-                    min="0"
-                    style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                    min="0">
             </div>
-            <button type="submit"
-                    class="btn"
-                    style="padding: 0.6rem 1.5rem; background: var(--brand); color: white; border: none; border-radius: var(--radius); font-weight: 600; cursor: pointer;">
+            <button type="submit" class="btn btn-primary">
                 Crear Sitio
             </button>
         </form>
@@ -130,108 +125,98 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <h2>Sitios Existentes (<?= count($sitios) ?>)</h2>
 
         <?php if (!empty($sitios)): ?>
-            <div class="table-responsive" style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius); overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <thead style="background: var(--card-bg);">
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
                         <tr>
-                            <th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border);">Icono</th>
-                            <th style="padding: 1rem; text-align: left; border-bottom: 2px solid var(--border);">Nombre</th>
-                            <th style="padding: 1rem; text-align: left; border-bottom: 2px solid var(--border);">URL</th>
-                            <th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border);">Orden</th>
-                            <th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border);">Activo</th>
-                            <th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border);">Acciones</th>
+                            <th class="text-center">Icono</th>
+                            <th>Nombre</th>
+                            <th>URL</th>
+                            <th class="text-center">Orden</th>
+                            <th class="text-center">Activo</th>
+                            <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($sitios as $sitio): ?>
-                            <tr style="border-bottom: 1px solid var(--border); <?= !$sitio['activo'] ? 'opacity: 0.5;' : '' ?>">
-                                <td style="padding: 1rem; text-align: center;">
+                            <tr<?= !$sitio['activo'] ? ' class="is-inactive"' : '' ?>>
+                                <td class="text-center">
                                     <img src="<?= Sites::getFaviconUrl($sitio['url']) ?>"
                                         alt=""
-                                        style="width: 24px; height: 24px; vertical-align: middle;">
+                                        class="admin-table__favicon">
                                 </td>
-                                <td style="padding: 1rem;">
+                                <td>
                                     <strong><?= htmlspecialchars($sitio['nombre']) ?></strong>
                                 </td>
-                                <td style="padding: 1rem;">
+                                <td>
                                     <a href="<?= htmlspecialchars($sitio['url']) ?>" target="_blank" rel="noopener">
                                         <?= htmlspecialchars($sitio['url']) ?>
                                     </a>
                                 </td>
-                                <td style="padding: 1rem; text-align: center;">
+                                <td class="text-center">
                                     <?= $sitio['orden'] ?>
                                 </td>
-                                <td style="padding: 1rem; text-align: center;">
+                                <td class="text-center">
                                     <?= $sitio['activo'] ? '✅' : '❌' ?>
                                 </td>
-                                <td style="padding: 1rem;">
-                                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                <td>
+                                    <div class="admin-table__actions">
                                         <button onclick="toggleEdit(<?= $sitio['id'] ?>)"
-                                                class="btn btn-sm"
-                                                style="padding: 0.4rem 0.8rem; font-size: 0.9rem; background: #ffc107; color: #000; border: none; border-radius: var(--radius); cursor: pointer;">
+                                                class="btn-sm btn-sm--edit">
                                             ✏️ Editar
                                         </button>
 
                                         <form method="POST"
-                                            style="display: inline; margin: 0;"
                                             onsubmit="return confirm('¿Seguro que deseas eliminar este sitio?');">
                                             <?= $security->csrfField() ?>
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="id" value="<?= $sitio['id'] ?>">
-                                            <button type="submit"
-                                                    class="btn btn-sm"
-                                                    style="padding: 0.4rem 0.8rem; font-size: 0.9rem; background: #dc3545; color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                                            <button type="submit" class="btn-sm btn-sm--delete">
                                                 🗑️ Eliminar
                                             </button>
                                         </form>
                                     </div>
 
                                     <!-- Formulario de edición (oculto por defecto) -->
-                                    <div id="edit-form-<?= $sitio['id'] ?>" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--card-bg); border-radius: var(--radius);">
-                                        <form method="POST" style="display: flex; gap: 0.5rem; align-items: end; flex-wrap: wrap;">
+                                    <div id="edit-form-<?= $sitio['id'] ?>" class="admin-table__edit-panel">
+                                        <form method="POST" class="admin-form-inline">
                                             <?= $security->csrfField() ?>
                                             <input type="hidden" name="action" value="update">
                                             <input type="hidden" name="id" value="<?= $sitio['id'] ?>">
-                                            <div style="flex: 2; min-width: 150px;">
-                                                <label style="font-size: 0.8rem;">Nombre:</label>
+                                            <div class="admin-form-inline__field admin-form-inline__field--2x">
+                                                <label>Nombre:</label>
                                                 <input type="text"
                                                     name="nombre"
                                                     value="<?= htmlspecialchars($sitio['nombre']) ?>"
-                                                    required
-                                                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                                                    required>
                                             </div>
-                                            <div style="flex: 3; min-width: 200px;">
-                                                <label style="font-size: 0.8rem;">URL:</label>
+                                            <div class="admin-form-inline__field admin-form-inline__field--3x">
+                                                <label>URL:</label>
                                                 <input type="url"
                                                     name="url"
                                                     value="<?= htmlspecialchars($sitio['url']) ?>"
-                                                    required
-                                                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                                                    required>
                                             </div>
-                                            <div style="flex: 1; min-width: 60px;">
-                                                <label style="font-size: 0.8rem;">Orden:</label>
+                                            <div class="admin-form-inline__field admin-form-inline__field--narrow">
+                                                <label>Orden:</label>
                                                 <input type="number"
                                                     name="orden"
                                                     value="<?= $sitio['orden'] ?>"
-                                                    min="0"
-                                                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                                                    min="0">
                                             </div>
-                                            <div style="flex: 1; min-width: 60px;">
-                                                <label style="font-size: 0.8rem;">Activo:</label>
-                                                <select name="activo" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                                            <div class="admin-form-inline__field admin-form-inline__field--narrow">
+                                                <label>Activo:</label>
+                                                <select name="activo">
                                                     <option value="1" <?= $sitio['activo'] ? 'selected' : '' ?>>Sí</option>
                                                     <option value="0" <?= !$sitio['activo'] ? 'selected' : '' ?>>No</option>
                                                 </select>
                                             </div>
-                                            <button type="submit"
-                                                    class="btn btn-sm"
-                                                    style="padding: 0.5rem 1rem; background: var(--brand); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                                            <button type="submit" class="btn-sm btn-sm--save">
                                                 Guardar
                                             </button>
                                             <button type="button"
                                                     onclick="toggleEdit(<?= $sitio['id'] ?>)"
-                                                    class="btn btn-sm"
-                                                    style="padding: 0.5rem 1rem; background: #6c757d; color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                                                    class="btn-sm btn-sm--cancel">
                                                 Cancelar
                                             </button>
                                         </form>
@@ -243,7 +228,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                 </table>
             </div>
         <?php else: ?>
-            <p style="padding: 2rem; text-align: center; color: #666; background: var(--card-bg); border-radius: var(--radius);">
+            <p class="empty-state">
                 No hay sitios creados todavía. ¡Crea tu primer sitio de interés!
             </p>
         <?php endif; ?>
@@ -252,8 +237,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 
 <script>
 function toggleEdit(id) {
-    const form = document.getElementById('edit-form-' + id);
-    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    document.getElementById('edit-form-' + id).classList.toggle('is-visible');
 }
 </script>
 

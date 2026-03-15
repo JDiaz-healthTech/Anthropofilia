@@ -66,101 +66,98 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 
 <main class="container">
-            <nav class="breadcrumbs" aria-label="Breadcrumbs">
-            <a href="<?= url('index.php') ?>">Inicio</a>
-            <span aria-hidden="true">›</span>
-            <a href="<?= url('dashboard.php') ?>">Panel de Control</a>
-            <span aria-hidden="true">›</span>
-            <span aria-current="page">Gestionar Posts</span>
-        </nav>
+    <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <a href="<?= url('index.php') ?>">Inicio</a>
+        <span aria-hidden="true">›</span>
+        <a href="<?= url('dashboard.php') ?>">Panel de Control</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">Gestionar Posts</span>
+    </nav>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h2>Gestionar Posts</h2>
-            <a href="<?= url('crear_post.php') ?>" class="btn btn-primary">➕ Nuevo Post</a>
-        </div>
+    <div class="section-header">
+        <h2>Gestionar Posts</h2>
+        <a href="<?= url('crear_post.php') ?>" class="btn btn-primary">➕ Nuevo Post</a>
+    </div>
+
     <?php if ($flash): ?>
-        <div class="alert success" style="padding: 1rem; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; margin-bottom: 1rem;">
+        <div class="alert success">
             <?= htmlspecialchars($flash, ENT_QUOTES, 'UTF-8') ?>
         </div>
     <?php endif; ?>
 
     <!-- Buscador -->
-    <form method="get" style="margin-bottom: 2rem; display: flex; gap: 0.5rem; align-items: center;">
+    <form method="get" class="admin-search">
         <input
             type="text"
             name="q"
             placeholder="Buscar por título"
             value="<?= htmlspecialchars($q, ENT_QUOTES, 'UTF-8') ?>"
-            style="flex: 1; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; min-width: 200px;"
+            class="admin-search__input"
         >
-        <button type="submit" class="btn" style="padding: 0.75rem 1.5rem; white-space: nowrap;">🔍 Buscar</button>
+        <button type="submit" class="btn admin-search__btn">🔍 Buscar</button>
         <?php if ($q !== ''): ?>
-            <a href="<?= url('gestionar_post.php') ?>" class="btn" style="padding: 0.75rem 1.5rem; white-space: nowrap;">✖ Limpiar</a>
+            <a href="<?= url('gestionar_post.php') ?>" class="btn admin-search__btn">✖ Limpiar</a>
         <?php endif; ?>
     </form>
 
     <?php if (!$rows): ?>
-        <p style="padding: 2rem; text-align: center; color: #666; background: #f8f9fa; border-radius: 8px;">
+        <p class="empty-state">
             No hay posts para mostrar. <?php if ($q !== ''): ?>Intenta con otra búsqueda.<?php endif; ?>
         </p>
     <?php else: ?>
-        <div class="table-responsive" style="overflow-x: auto;">
-            <table class="admin-table" style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-               <thead style="background: #f8f9fa;">
-    <tr>
-        <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #dee2e6;">Título</th>
-        <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #dee2e6;">Categoría</th>
-        <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #dee2e6;">Fecha</th>
-        <th style="padding: 1rem; text-align: center; border-bottom: 2px solid #dee2e6;">Acciones</th>
-    </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($rows as $r): ?>
-            <tr style="border-bottom: 1px solid #f0f0f0;">
-                <td style="padding: 1rem;">
-                    <strong><?= htmlspecialchars($r['titulo'] ?? '(sin título)', ENT_QUOTES, 'UTF-8') ?></strong>
-                </td>
-                <td style="padding: 1rem; color: #666; font-size: 0.9rem;">
-                    <?= htmlspecialchars($r['nombre_categoria'] ?? 'Sin categoría', ENT_QUOTES, 'UTF-8') ?>
-                </td>
-                <td style="padding: 1rem;">
-                    <?php
-                        $fecha = strtotime($r['fecha_publicacion']);
-                        echo $fecha ? date('d/m/Y', $fecha) : 'N/A';
-                    ?>
-                </td>
-                <td style="padding: 1rem; text-align: center;">
-                    <div style="display: inline-flex; gap: 0.5rem;">
-                        <a href="<?= url('editar_post.php?id=' . (int)$r['id_post']) ?>"
-                        class="btn btn-sm"
-                        style="padding: 0.4rem 0.8rem; font-size: 0.9rem; background: #ffc107; color: #000;">
-                            ✏️ Editar
-                        </a>
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Categoría</th>
+                        <th>Fecha</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($rows as $r): ?>
+                    <tr>
+                        <td>
+                            <strong><?= htmlspecialchars($r['titulo'] ?? '(sin título)', ENT_QUOTES, 'UTF-8') ?></strong>
+                        </td>
+                        <td class="admin-table__date">
+                            <?= htmlspecialchars($r['nombre_categoria'] ?? 'Sin categoría', ENT_QUOTES, 'UTF-8') ?>
+                        </td>
+                        <td>
+                            <?php
+                                $fecha = strtotime($r['fecha_publicacion']);
+                                echo $fecha ? date('d/m/Y', $fecha) : 'N/A';
+                            ?>
+                        </td>
+                        <td>
+                            <div class="admin-table__actions">
+                                <a href="<?= url('editar_post.php?id=' . (int)$r['id_post']) ?>"
+                                   class="btn-sm btn-sm--edit">
+                                    ✏️ Editar
+                                </a>
 
-                        <form method="POST"
-                            action="<?= url('eliminar_post.php') ?>"
-                            style="display: inline;"
-                            onsubmit="return confirm('¿Seguro que deseas eliminar este post?');">
-                            <?= $security->csrfField() ?>
-                            <input type="hidden" name="id" value="<?= (int)$r['id_post'] ?>">
-                            <input type="hidden" name="origen" value="gestionar_posts">
-                            <button type="submit"
-                                    class="btn btn-sm"
-                                    style="padding: 0.4rem 0.8rem; font-size: 0.9rem; background: #dc3545; color: white; border: none; cursor: pointer;">
-                                🗑️ Eliminar
-                            </button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-        </tbody>
+                                <form method="POST"
+                                      action="<?= url('eliminar_post.php') ?>"
+                                      onsubmit="return confirm('¿Seguro que deseas eliminar este post?');">
+                                    <?= $security->csrfField() ?>
+                                    <input type="hidden" name="id" value="<?= (int)$r['id_post'] ?>">
+                                    <input type="hidden" name="origen" value="gestionar_posts">
+                                    <button type="submit" class="btn-sm btn-sm--delete">
+                                        🗑️ Eliminar
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
             </table>
         </div>
 
         <!-- Paginación -->
         <?php if ($pages > 1): ?>
-            <nav class="pagination" style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center;">
+            <nav class="pagination">
                 <?php
                 $base = url('gestionar_post.php') . '?';
                 if ($q !== '') $base .= 'q=' . urlencode($q) . '&';
@@ -170,7 +167,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                     <a href="<?= $base . 'page=' . ($page - 1) ?>" class="btn">« Anterior</a>
                 <?php endif; ?>
 
-                <span style="align-self: center; padding: 0 1rem;">
+                <span class="pagination__info">
                     Página <?= $page ?> de <?= $pages ?>
                 </span>
 
