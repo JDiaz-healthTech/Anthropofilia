@@ -1,82 +1,78 @@
-# Anthropofilia
+Anthropofilia
+CMS ligero en PHP para divulgación educativa y cultural.
+Diseñado para que una profesora de filosofía publique materiales didácticos — posts, páginas estáticas con contenido interactivo (Genially, Calameo, YouTube), y recursos organizados por categorías y etiquetas — sin depender de plataformas de terceros.
+🔗 anthropofilia.es
 
-Sitio web/blog desarrollado en **PHP + MySQL (PDO)** con sistema de administración privado y enfoque en **accesibilidad** y **rendimiento**.  
-Este repositorio forma parte de mi portfolio.
+Stack
+CapaTecnologíaBackendPHP 8.0+, PDO, MariaDB 10.4+FrontendHTML5, CSS3 (Grid, Flexbox, Custom Properties), JS ES6+EditorTinyMCE 6 (self-hosted)SeguridadSecurityManager propio (CSRF, rate limiting, CSP, HTMLPurifier)ImágenesImageService (validación MIME, resize, conversión WebP)InfraestructuraDocker (desarrollo), Hostinger (producción), Git
 
----
+Funcionalidades
+Contenido público
 
-## ✨ Funcionalidades principales
+Posts con contenido enriquecido, imágenes destacadas y embeds multimedia
+Páginas estáticas con índice de contenidos autogenerado (TOC)
+Sistema de relación páginas ↔ posts (embebidos o cards)
+Categorías, etiquetas y archivo mensual
+Buscador con paginación
+Feed RSS y sitemap XML
+Formulario de contacto (CSRF + rate limiting + honeypot + PHPMailer)
 
-### Front (público)
-- Portada con listado de posts y paginación.
-- Post individual con imagen destacada, contenido enriquecido y **lightbox** para imágenes.
-- Páginas estáticas (Historia da Filosofía, Ética, Acerca de mí…).
-- Categorías y archivo mensual de posts.
-- Buscador integrado.
-- Formulario de contacto con:
-  - CSRF token.
-  - Rate limiting.
-  - Honeypot anti-spam.
-  - PRG (Post → Redirect → Get).
-- Aside con:
-  - Archivo mensual.
-  - Sitios de interés con mini-foto/favicon.
+Panel de administración
 
-### Administración (privado)
-- Autenticación con roles (autor / administrador).
-- Panel de control.
-- Gestión de posts:
-  - Crear, editar, eliminar posts con editor TinyMCE + subida de imágenes.
-- Gestión de páginas:
-  - Crear, editar, eliminar páginas estáticas.
-- Logout seguro (invalidación de sesión).
+Autenticación con roles (autor/administrador) y sesiones seguras
+CRUD completo de posts, páginas, categorías y sitios de interés
+Editor TinyMCE con subida de imágenes, YouTube/Vimeo embed y plugin de inserción de posts
+Personalización visual (imagen de cabecera, overlay, historial de fondos)
+Dashboard con estadísticas y acciones rápidas
 
-### Infraestructura y seguridad
-- **SecurityManager** con:
-  - CSRF tokens.
-  - Rate limiting por IP/acción.
-  - Validación de entradas y subidas.
-- Subida de imágenes:
-  - Validación MIME y dimensiones.
-  - Redimensionado automático.
-  - Conversión a **WebP** si es posible.
-- Estilos:
-  - Tema responsive con `style.css`.
-  - `lightbox.js` para proyección de imágenes.
-  - `accessibility.js` para alto contraste y fuentes grandes.
+Accesibilidad
 
-### Legales
-- Plantillas incluidas para:
-  - Política de Privacidad.
-  - Política de Cookies.
-  - Aviso Legal.
+Alto contraste y modo oscuro
+Ajuste de tamaño de fuente
+Navegación por teclado
+FAB de accesibilidad flotante
 
----
+Seguridad
 
-## 🚀 Tecnologías
-- PHP 8+ (PDO, sesiones)
-- MySQL/MariaDB
-- HTML5, CSS3
-- JavaScript ES6+
-- TinyMCE (editor enriquecido)
-
----
-
-## 📂 Estructura de directorios (resumen)
-
-- /index.php → portada
-- /post.php → post individual
-- /pagina.php → página estática
-- /categoria.php → listado por categoría
-- /contacto.php → formulario de contacto
-- /enviar_contacto.php → handler de contacto
-- /dashboard.php → admin posts
-- /gestionar_paginas.php → admin páginas
-- /upload_image.php → subida de imágenes (TinyMCE)
-- /public/js/lightbox.js → proyección de imágenes
-- /style.css → estilos principales
+CSRF en todos los formularios y APIs
+Rate limiting por IP/acción
+Validación MIME real en subidas (no por extensión)
+Content Security Policy centralizada
+Prepared statements (PDO) en todas las consultas
+HTMLPurifier para sanitización de contenido
 
 
-## 👩‍💻 Créditos
-- Desarrollado por Julio Díaz López (Editora, usuaria administradora del contenido: Ana López Sampedro).  
-- Proyecto con fines de aprendizaje y portfolio.
+Arquitectura
+app/
+├── Models/          # Post, Page, Tag, Category, Sites, PaginaPost
+├── Security/        # SecurityManager (auth, CSRF, CSP, rate limit)
+├── Services/        # ImageService (resize, WebP, validación)
+└── Helpers/         # functions.php, PostEmbedProcessor, TocGenerator
+
+public_html/         # Document root (Apache)
+├── css/             # Sistema de capas: base → layout → components → pages → admin
+├── js/              # tinymce-config.js, slugify.js, lightbox, accessibility
+├── api/             # Endpoints AJAX (búsqueda, relación páginas-posts)
+└── uploads/         # Imágenes organizadas por año/mes
+
+resources/views/     # Plantillas parciales (header, footer, sidebar, errores)
+ops/                 # Docker + scripts de mantenimiento
+
+Desarrollo local
+bash# Clonar
+git clone https://github.com/JDiaz-healthTech/Anthropofilia.git
+cd Anthropofilia
+
+# Levantar entorno Docker
+cd ops && docker-compose up -d
+
+# Configurar
+cp .env.example .env   # Editar credenciales DB y SMTP
+composer install
+
+# Acceder
+http://localhost:8080
+
+Créditos
+Desarrollado por Julio Díaz López como proyecto de aprendizaje y portfolio.
+Contenido editorial y dirección pedagógica: Ana López Sampedro — profesora de filosofía con más de tres décadas de experiencia docente.
