@@ -118,6 +118,7 @@ window.PostEmbedConfig = {
     contentCss: '<?= url("css/style.css") ?>',
     type: 'page'
   });
+</script>
 
 <script src="js/slugify.js"<?= $nonceAttr ?>></script>
 
