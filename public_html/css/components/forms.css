@@ -5,16 +5,14 @@
 /* =============================================
    CONTENEDOR DE FORMULARIO
    ============================================= */
-.form-container,
-form {
+.form-container {
     border: 1px solid var(--border);
     padding: 1.5rem;
     border-radius: var(--radius);
     background-color: var(--card-bg);
 }
 
-.form-container div,
-form div {
+.form-container div {
     margin-bottom: 1rem;
 }
 

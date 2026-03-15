@@ -90,14 +90,18 @@
     opacity: 0.85;
 }
 
-.btn-sm--edit {
+.admin-table__actions .btn-sm--edit,
+.btn-sm.btn-sm--edit {
     background: #ffc107;
+    border-color: #ffc107;
     color: #000;
 }
 
-.btn-sm--delete {
+.admin-table__actions .btn-sm--delete,
+.btn-sm.btn-sm--delete {
     background: #dc3545;
-    color: white;
+    border-color: #dc3545;
+    color: #fff;
 }
 
 /* Form inline para delete button */
@@ -158,4 +162,38 @@
 /* Labels más pequeños dentro del panel de edición */
 .admin-table__edit-panel label {
     font-size: 0.8rem;
+}
+
+/* URLs largas: truncar con ellipsis */
+.admin-table__url {
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Tabla ancha: usar todo el ancho disponible */
+.admin-table--wide {
+    min-width: 100%;
+}
+
+/* Contenedor admin más ancho para tablas con muchas columnas */
+.admin-container--wide {
+    max-width: 1100px;
+    margin: 2rem auto;
+}
+
+/* Scroll lateral visible cuando sea necesario */
+.table-responsive {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
 }

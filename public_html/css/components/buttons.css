@@ -5,12 +5,25 @@
 /* =============================================
    BOTÓN ESTÁNDAR (base para todos los botones)
    ============================================= */
+/* Base para TODOS los botones: solo layout, sin color */
+button,
+input[type='submit'],
+input[type='button'] {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: var(--transition);
+    min-height: 44px;
+    line-height: 1.2;
+}
+
+/* Botones con clase: layout + color brand */
 .button,
 .btn,
 .action-btn,
-button:not(.accessibility-button):not(.mobile-nav-toggle):not(.tox-button):not(.tox-tbtn):not(.a11y-fab):not(
-        .a11y-fab-option
-    ):not(.nav-mobile-section-toggle),
+button[type='submit']:not(.btn-sm),
 input[type='submit'],
 input[type='button'],
 a.button,
@@ -35,9 +48,7 @@ a.btn {
 .button:hover,
 .btn:hover,
 .action-btn:hover,
-button:not(.accessibility-button):not(.mobile-nav-toggle):not(.tox-button):not(.tox-tbtn):not(.a11y-fab):not(
-        .a11y-fab-option
-    ):not(.nav-mobile-section-toggle),
+button[type='submit']:not(.btn-sm),
 input[type='submit']:hover,
 input[type='button']:hover,
 a.button:hover,

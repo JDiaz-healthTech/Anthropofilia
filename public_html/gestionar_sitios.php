@@ -72,7 +72,7 @@ $page_title = 'Gestionar Sitios de Interés';
 require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 
-<main class="container">
+<main class="container admin-container--wide">
     <div class="section-header">
         <h1>Gestionar Sitios de Interés</h1>
         <a href="<?= url('dashboard.php') ?>" class="btn">← Volver al Panel de Control</a>
@@ -148,7 +148,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                                 <td>
                                     <strong><?= htmlspecialchars($sitio['nombre']) ?></strong>
                                 </td>
-                                <td>
+                                <td class="admin-table__url">
                                     <a href="<?= htmlspecialchars($sitio['url']) ?>" target="_blank" rel="noopener">
                                         <?= htmlspecialchars($sitio['url']) ?>
                                     </a>
