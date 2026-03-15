@@ -68,7 +68,8 @@ $safeEmail = preg_replace('/[\r\n]+/', ' ', $email);
 
 $mail = new PHPMailer(true);
 
-$mail->SMTPDebug = 2; // Mostrar debug en logs
+$mail->SMTPDebug = ($env === 'dev') ? 2 : 0; // Mostrar debug en logs / produccion vs desarrollo
+
 $mail->Debugoutput = function($str, $level) use ($security) {
     $security->logEvent('debug', 'smtp_debug', ['level' => $level, 'message' => $str]);
 };

@@ -156,11 +156,11 @@ Estos problemas están documentados. Al editar código existente, no replicarlos
 
 | Fase | Objetivo | Estado |
 |------|---------|--------|
-| **Fase 0** | Eliminar duplicados y código muerto; corregir bugs activos (C-01 a C-06) | Pendiente |
-| **Fase 1** | Completar `app/Models/` — Page CRUD, Tag CRUD | Pendiente |
-| **Fase 2** | Unificar patrón de autenticación — implementar `AuthService` | Pendiente |
-| **Fase 3** | Extraer lógica de subida de imágenes a `ImageService` | Pendiente |
-| **Fase 4** | Implementar `MailService` (encapsular PHPMailer) y `SettingsService` | Pendiente |
+| **Fase 0** | Eliminar duplicados y código muerto; corregir bugs activos (C-01 a C-06) | LISTO |
+| **Fase 1** | Completar `app/Models/` — Page CRUD, Tag CRUD | LISTO |
+| **Fase 2** | Unificar patrón de autenticación — implementar `AuthService` | LISTO |
+| **Fase 3** | Extraer lógica de subida de imágenes a `ImageService` | LISTO |
+| **Fase 4** | Implementar `MailService` (encapsular PHPMailer) y `SettingsService` | ANULADA HASTA QUE EXISTA UN SEGUNDO CASO DE USO |
 | **Fase 5** | Eliminar CSS inline — mover a `css/admin/` | Pendiente |
 | **Fase 6** | Extraer configuración TinyMCE a JS compartido; unificar función `slugify` | Pendiente |
 | **Fase 7** | Eliminar `admin.php` legacy; consolidar en `personalizar.php` | Pendiente |

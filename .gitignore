@@ -20,3 +20,6 @@ storage/logs/
 # Archivos de sistema/IDE
 .DS_Store
 .vscode/
+
+#Arboles de claude
+.claude/worktrees/

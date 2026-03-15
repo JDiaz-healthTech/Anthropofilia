@@ -97,55 +97,24 @@ try {
         $current_header = '';
     }
 
-    // ¿Subir nueva imagen?
+     // ¿Subir nueva imagen?
     if (isset($_FILES['header_image']) && $_FILES['header_image']['error'] === UPLOAD_ERR_OK) {
-        $file = $_FILES['header_image'];
+        $relativePath = \App\Services\ImageService::store($_FILES['header_image'], [
+            'prefix' => 'header_',
+            'subdir' => 'theme',
+        ]);
 
-        // Validar tipo
-        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
-
-        if (!in_array($mime, $allowed)) {
-            throw new Exception('Tipo de archivo no permitido');
-        }
-
-        // Validar tamaño (2MB)
-        if ($file['size'] > 2 * 1024 * 1024) {
-            throw new Exception('Archivo demasiado grande (máximo 2MB)');
-        }
-
-        // Directorio de destino
-        $uploadDir = __DIR__ . '/uploads/theme/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
-
-        // Nombre único
-        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = 'header_' . time() . '.' . $ext;
-        $filepath = $uploadDir . $filename;
-
-        // Mover archivo
-        if (!move_uploaded_file($file['tmp_name'], $filepath)) {
-            throw new Exception('Error al subir el archivo');
-        }
-
-// Añadir imagen anterior al historial (máximo 5)
+        // Añadir imagen anterior al historial (máximo 5)
         if (!empty($current_header)) {
             $historyJson = get_setting($pdo, 'header_bg_history', '[]');
             $history = json_decode($historyJson, true) ?: [];
 
-            // Añadir al inicio si no está ya
             if (!in_array($current_header, $history, true)) {
                 array_unshift($history, $current_header);
             }
 
-            // Mantener solo las últimas 5
             if (count($history) > 5) {
                 $removed = array_splice($history, 5);
-                // Borrar archivos que salen del historial
                 foreach ($removed as $old) {
                     $oldPath = __DIR__ . '/' . $old;
                     if (file_exists($oldPath)) {
@@ -158,11 +127,8 @@ try {
         }
 
         // Guardar nueva imagen como activa
-        $relativePath = 'uploads/theme/' . $filename;
         set_setting($pdo, 'header_bg_url', $relativePath);
     }
-
-
 
     header('Location: personalizar.php?status=success');
     exit();

@@ -47,7 +47,6 @@ $imagen_path = null;
 
 // A) archivo subido
 if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FILE) {
-    // Verificar si hubo error en la subida
     if ($_FILES['imagen']['error'] !== UPLOAD_ERR_OK) {
         $errorMessages = [
             UPLOAD_ERR_INI_SIZE   => 'El archivo supera el tamaño máximo permitido por el servidor',
@@ -67,24 +66,11 @@ if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FIL
     try {
         $security->validateUpload($_FILES['imagen']);
 
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mime  = $finfo->file($_FILES['imagen']['tmp_name']);
-        $ext   = $security->extensionFromMime((string)$mime);
-
-        $base_dir_fs = __DIR__ . '/uploads/' . date('Y/m/') ;
-        $base_dir_url = 'uploads/' . date('Y/m/') ;
-        if (!is_dir($base_dir_fs) && !mkdir($base_dir_fs, 0755, true) && !is_dir($base_dir_fs)) {
-            throw new \RuntimeException('No se pudo crear el directorio de subidas.');
-        }
-
-        $nombre = bin2hex(random_bytes(16)) . $ext;
-        $dest_fs  = $base_dir_fs . $nombre;
-        if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $dest_fs)) {
-            throw new \RuntimeException('Error al mover el archivo subido.');
-        }
-
-        $imagen_path = $base_dir_url . $nombre; // ruta relativa servible
-        } catch (\Throwable $e) {
+        $imagen_path = \App\Services\ImageService::store($_FILES['imagen'], [
+            'max_side' => 1600,
+            'webp'     => true,
+        ]);
+    } catch (\Throwable $e) {
         $_SESSION['form_post'] = $_POST;
         $_SESSION['upload_error'] = $e->getMessage();
         error_log("Error al subir imagen: " . $e->getMessage());
@@ -92,6 +78,7 @@ if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FIL
         exit();
     }
 }
+
 // B) URL manual
 elseif ($imagen_url_in !== '' && filter_var($imagen_url_in, FILTER_VALIDATE_URL)) {
     $imagen_path = $imagen_url_in;
