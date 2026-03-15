@@ -5,10 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/init.php';
 
 // Auth
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: login.php");
-    exit();
-}
+$security->requireLogin();
 
 // PRG: datos previos si hubo error al guardar
 // PRG: datos previos si hubo error al guardar

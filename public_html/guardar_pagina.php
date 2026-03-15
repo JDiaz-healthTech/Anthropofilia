@@ -13,7 +13,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 }
 
 // CSRF
-$security->csrfValidate($_POST['csrf_token'] ?? null);
+$security->requireValidCsrf();
 
 // Helpers locales
 function slugify(string $text): string {

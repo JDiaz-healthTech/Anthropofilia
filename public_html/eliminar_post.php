@@ -14,7 +14,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 }
 
 // CSRF
-$security->csrfValidate($_POST['csrf_token'] ?? null);
+$security->requireValidCsrf();
 
 // ID desde POST
 $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);

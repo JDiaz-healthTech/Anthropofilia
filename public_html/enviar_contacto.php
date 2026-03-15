@@ -16,7 +16,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 
 try {
     // CSRF
-    $security->csrfValidate($_POST['csrf_token'] ?? null);
+    $security->requireValidCsrf();
 
     // Rate limit: 5 envíos/h por IP
     $security->checkRateLimit('contact_form', 3, 3600);

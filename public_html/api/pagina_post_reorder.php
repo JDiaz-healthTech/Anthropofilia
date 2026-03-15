@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$security->csrfValidate($_POST['csrf_token'] ?? '');
+$security->requireValidCsrf();
 
 $idPagina = filter_input(INPUT_POST, 'id_pagina', FILTER_VALIDATE_INT);
 $ordenJson = $_POST['orden'] ?? '';

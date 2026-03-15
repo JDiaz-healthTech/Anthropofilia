@@ -5,10 +5,7 @@ declare(strict_types=1);
 require_once 'init.php';
 
 // 1) Autenticación
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: login.php");
-    exit();
-}
+$security->requireLogin();
 
 // 2) Solo POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -18,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // 3) CSRF
-$security->csrfValidate($_POST['csrf_token'] ?? '');
+$security->requireValidCsrf();
 
 try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

@@ -3,10 +3,7 @@
 require_once __DIR__ . '/init.php';
 
 // 1) Autenticación
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: login.php");
-    exit();
-}
+$security->requireLogin();
 
 // 2) Evita cachear el panel en el navegador
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');

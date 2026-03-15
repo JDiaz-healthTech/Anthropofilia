@@ -11,7 +11,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 }
 
 // 2) CSRF
-$security->csrfValidate($_POST['csrf_token'] ?? null);
+$security->requireValidCsrf();
 
 // 3) Rate limit dedicado a login (p.ej. 5 intentos / 15 min por IP)
 $security->checkRateLimit('login_attempt', 5, 900);

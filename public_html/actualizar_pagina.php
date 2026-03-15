@@ -2,10 +2,7 @@
 // actualizar_pagina.php (versión mejorada y consistente con init + SecurityManager + PDO)
 require_once 'init.php';
 
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: login.php");
-    exit();
-}
+$security->requireLogin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -14,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // CSRF
-$security->csrfValidate($_POST['csrf_token'] ?? '');
+$security->requireValidCsrf();
 
 /** Normaliza slug: minúsculas, sin acentos, guiones simples */
 function normalize_slug(string $s): string {

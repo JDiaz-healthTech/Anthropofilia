@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // CSRF
-$security->csrfValidate($_POST['csrf_token'] ?? '');
+$security->requireValidCsrf();
 
 // Validar datos
 $idPagina = filter_input(INPUT_POST, 'id_pagina', FILTER_VALIDATE_INT);

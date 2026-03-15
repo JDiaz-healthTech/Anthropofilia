@@ -3,10 +3,7 @@
 require_once __DIR__ . '/init.php';
 
 // Auth
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: login.php");
-    exit();
-}
+$security->requireLogin();
 
 // PRG: datos previos del formulario (si hubo error en guardar_pagina.php)
 $form = $_SESSION['form_pagina'] ?? [];

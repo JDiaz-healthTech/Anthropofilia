@@ -13,7 +13,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 }
 
 // 2) CSRF
-$security->csrfValidate($_POST['csrf_token'] ?? null);
+$security->requireValidCsrf();
 
 // 3) Recoger datos
 $titulo        = trim((string)($_POST['titulo'] ?? ''));
@@ -57,13 +57,13 @@ if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FIL
             UPLOAD_ERR_CANT_WRITE => 'Error al escribir el archivo en disco',
             UPLOAD_ERR_EXTENSION  => 'Una extensión de PHP detuvo la subida'
         ];
-        
+
         $_SESSION['form_post'] = $_POST;
         $_SESSION['upload_error'] = $errorMessages[$_FILES['imagen']['error']] ?? 'Error desconocido al subir la imagen';
         header('Location: crear_post.php?status=upload_error');
         exit();
     }
-    
+
     try {
         $security->validateUpload($_FILES['imagen']);
 
@@ -109,17 +109,17 @@ try {
 
     // 1) Generar slug automático desde el título
     $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $titulo), '-'));
-    
+
     // Si el slug queda vacío o es muy corto, generar uno único
     if (strlen($slug) < 3) {
         $slug = 'post-' . time();
     }
-    
+
     // Verificar unicidad del slug (opcional pero recomendado)
     $slugOriginal = $slug;
     $contador = 1;
     $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM posts WHERE slug = ?");
-    
+
     while (true) {
         $stmtCheck->execute([$slug]);
         if ($stmtCheck->fetchColumn() == 0) {
@@ -134,7 +134,7 @@ try {
     $sqlPost = 'INSERT INTO posts
         (titulo, slug, contenido, id_categoria, imagen_destacada_url, id_usuario)
         VALUES (?, ?, ?, ?, ?, ?)';
-    
+
     $stmt = $pdo->prepare($sqlPost);
     $stmt->execute([$titulo, $slug, $contenido, $id_categoria, $imagen_path, $id_usuario]);
     $id_post = (int)$pdo->lastInsertId();
@@ -160,17 +160,17 @@ try {
     }
 
     $pdo->commit();
-        
+
         // Limpiar datos del formulario
         unset($_SESSION['form_post']);
         unset($_SESSION['upload_error']);
-        
+
         header('Location: dashboard.php?msg=created');
         exit();
 
     } catch (\PDOException $e) {
         $pdo->rollBack();
-        
+
         // Si hay una imagen subida y falla la BD, eliminarla
         if ($imagen_path && !filter_var($imagen_path, FILTER_VALIDATE_URL)) {
             $imagen_fisica = __DIR__ . '/' . $imagen_path;
@@ -178,7 +178,7 @@ try {
                 @unlink($imagen_fisica);
             }
         }
-        
+
         $security->logEvent('error', 'post_create_failed', ['error' => $e->getMessage()]);
         $_SESSION['form_post'] = $_POST;
         $_SESSION['db_error'] = $e->getMessage();
