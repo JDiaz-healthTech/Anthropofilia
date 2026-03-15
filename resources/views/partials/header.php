@@ -95,7 +95,7 @@ $needsTinymce = in_array($current_page, [
 
 // Páginas que no deben indexarse
 $noindexPages = [
-    'login.php', 'admin.php', 'dashboard.php', 'gestionar_paginas.php',
+    'login.php', 'dashboard.php', 'gestionar_paginas.php',
     'crear_post.php', 'editar_post.php', 'eliminar_post.php',
     'crear_pagina.php', 'editar_pagina.php', 'eliminar_pagina.php'
 ];

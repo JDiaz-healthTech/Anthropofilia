@@ -139,16 +139,17 @@ Estos problemas están documentados. Al editar código existente, no replicarlos
 | C-04 | `etiqueta.php` usa `require` sin `__DIR__`, URLs con `id=` en vez de slug, e incluye el sidebar fuera del layout. | Crítico |
 | C-05 | `SecurityManager::abort()` busca páginas de error en `resources/errors/` pero están en `resources/views/errors/`. Siempre cae al fallback de texto plano. | Crítico |
 | C-06 | `guardar_personalizacion.php`: la acción de reset se dispara con `GET ?reset=1` sin verificación CSRF. | Crítico (seguridad) |
-| I-01 | Stubs vacíos: `AuthService`, `ImageService`, `MailService`, `SettingsService` — declarados pero sin implementar. | Importante |
-| I-02 | Generación de slug duplicada en 4 lugares (`guardar_post.php`, `guardar_pagina.php`, `Category.php`, JS inline). Solo `Category::generateSlug()` maneja acentos correctamente. | Importante |
-| I-03 | Configuración de TinyMCE copiada en 3 archivos (`crear_post.php`, `editar_post.php`, `crear_pagina.php`). | Importante |
-| I-04 | CSS inline masivo en `gestionar_sitios.php`, `gestionar_categorias.php`, `gestionar_posts.php`, `gestionar_paginas.php`. | Importante |
-| I-05 | Dos sistemas de personalización: `admin.php` (legacy) y `personalizar.php` (moderno). | Importante |
-| I-06 | `app/Models/Page.php` es casi un stub (solo `countAll()`). Todo el CRUD de páginas es SQL inline en scripts procedurales. | Importante |
+| I-01 | ~~Stubs vacíos: `AuthService`, `ImageService`, `MailService`, `SettingsService`.~~ `ImageService` implementado (Fase 3). Pendientes: `AuthService`, `MailService`, `SettingsService`. | Parcial |
+| I-02 | ~~Generación de slug duplicada en 4 lugares.~~ Páginas unificadas con `Page::slugify()` y JS compartido `slugify.js` (Fase 6). Pendientes: `guardar_post.php` (slug inline), `Category.php` (tiene su propio `generateSlug()`). | Parcial |
+| I-03 | ~~Configuración de TinyMCE copiada en 3 archivos.~~ Resuelto — centralizado en `js/tinymce-config.js` (Fase 6). | Resuelto |
+| I-04 | ~~CSS inline masivo en 4 archivos de gestión.~~ Resuelto — movido a `css/admin/` (Fase 5). | Resuelto |
+| I-05 | ~~Dos sistemas de personalización: `admin.php` (legacy) y `personalizar.php` (moderno).~~ Resuelto — `admin.php` eliminado (Fase 7). | Resuelto |
+| I-06 | ~~`Page.php` es casi un stub.~~ Modelo completo con CRUD, slug y validación. Pendiente: migrar `guardar_pagina.php` y `actualizar_pagina.php` para usar `Page::create()`/`Page::update()` en vez de SQL directo. | Parcial |
 | I-07 | `init.php` tiene `display_errors=1` hardcodeado antes de leer `APP_ENV`, por lo que siempre expone errores hasta que se sobreescribe. | Importante |
-| I-08 | `enviar_contacto.php` tiene `SMTPDebug = 2` activo en producción (logs SMTP visibles). | Importante |
+| I-08 | `enviar_contacto.php` tiene `SMTPDebug = 2` activo en producción (logs SMTP visibles). | Importante | Resuelto
 | m-01 | `feed.php` usa `$GLOBALS['baseUrl']` (es variable local en init.php, no global). | Menor |
-| m-02 | `editar_post.php` referencia `assets/css/styles.css` (ruta que no existe). | Menor |
+| m-02 | ~~`editar_post.php` referencia `assets/css/styles.css` (ruta que no existe).~~ Resuelto — unificado a `css/style.css` vía `tinymce-config.js` (Fase 6). | Resuelto |
+
 
 ---
 
@@ -161,9 +162,9 @@ Estos problemas están documentados. Al editar código existente, no replicarlos
 | **Fase 2** | Unificar patrón de autenticación — implementar `AuthService` | LISTO |
 | **Fase 3** | Extraer lógica de subida de imágenes a `ImageService` | LISTO |
 | **Fase 4** | Implementar `MailService` (encapsular PHPMailer) y `SettingsService` | ANULADA HASTA QUE EXISTA UN SEGUNDO CASO DE USO |
-| **Fase 5** | Eliminar CSS inline — mover a `css/admin/` | Pendiente |
-| **Fase 6** | Extraer configuración TinyMCE a JS compartido; unificar función `slugify` | Pendiente |
-| **Fase 7** | Eliminar `admin.php` legacy; consolidar en `personalizar.php` | Pendiente |
+| **Fase 5** | Eliminar CSS inline — mover a `css/admin/` | Completada |
+| **Fase 6** | Extraer configuración TinyMCE a JS compartido; unificar función `slugify` | Completada |
+| **Fase 7** | Eliminar `admin.php` legacy; consolidar en `personalizar.php` | Completada |
 
 ---
 
