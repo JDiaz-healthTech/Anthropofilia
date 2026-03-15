@@ -54,12 +54,14 @@ try {
         die("El slug ya está en uso por otra página.");
     }
 
-    // 5) Update (marca timestamp si tienes columna)
-    $sql = "UPDATE paginas
-            SET titulo = ?, slug = ?, contenido = ?, orden = ?, mostrar_indice = ?, actualizado_en = NOW()
-            WHERE id_pagina = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$titulo, $slug, $contenido, $orden, $mostrar_indice, $id_pagina]);
+    // 5) Update via modelo
+    Page::update($id_pagina, [
+        'titulo'         => $titulo,
+        'slug'           => $slug,
+        'contenido'      => $contenido,
+        'orden'          => $orden,
+        'mostrar_indice' => $mostrar_indice,
+    ]);
 
     // Si no cambió nada, rowCount puede ser 0; no es error.
     header("Location: gestionar_paginas.php?status=updated&id={$id_pagina}", true, 303); // PRG

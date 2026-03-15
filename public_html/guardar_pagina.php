@@ -40,13 +40,17 @@ try {
     $baseSlug = Page::slugify($slugInput !== '' ? $slugInput : $titulo);
     $slug = Page::uniqueSlug($baseSlug);
 
-    // 3) Sanitizar HTML del contenido (por si acaso)
+// 3) Sanitizar HTML del contenido (por si acaso)
     $contenidoLimpio = $security->sanitizeHTML($contenido);
 
-    // 4) Insert
-    $sql = 'INSERT INTO paginas (titulo, slug, contenido, orden, mostrar_indice, fecha_creacion) VALUES (?, ?, ?, ?, ?, NOW())';
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$titulo, $slug, $contenidoLimpio, $orden, $mostrar_indice]);
+    // 4) Insert via modelo
+    Page::create([
+        'titulo'          => $titulo,
+        'slug'            => $slug,
+        'contenido'       => $contenidoLimpio,
+        'orden'           => $orden,
+        'mostrar_indice'  => $mostrar_indice,
+    ]);
 
     header('Location: gestionar_paginas.php?msg=created');
     exit();
