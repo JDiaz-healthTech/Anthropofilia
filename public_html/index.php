@@ -37,13 +37,13 @@ $textoLimpio = strip_tags($post['contenido'] ?? '');
 $textoLimpio = html_entity_decode($textoLimpio, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 $textoLimpio = preg_replace('/\s+/u', ' ', $textoLimpio);
 $textoLimpio = trim($textoLimpio);
-$extracto = mb_strlen($textoLimpio) > 20 ? mb_substr($textoLimpio, 0, 150) . '…' : '';
+$extracto = mb_strlen($textoLimpio) > 20 ? mb_substr($textoLimpio, 0, 150) . '…' : 'Entra para saber más.';
 
             // URL del post
             $postUrl = url('post.php?slug=' . urlencode($post['slug'] ?? '') . '&id=' . $post['id_post']);
 
                 // Obtener URL de imagen y tipo de contenido
-                $thumb = get_thumbnail_url($post['imagen_destacada_url'] ?? null, $post['contenido'] ?? null);
+                $thumb = get_thumbnail_url($post['imagen_destacada_url'] ?? null, $post['contenido']    ?? null);
                 $imagenUrl = $thumb['url'];
                 $thumbType = $thumb['type'];
         ?>

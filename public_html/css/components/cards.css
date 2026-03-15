@@ -12,6 +12,9 @@
     background: var(--card-bg);
     margin-bottom: 1.25rem;
     overflow: hidden;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
