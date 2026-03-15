@@ -2,6 +2,8 @@
 // actualizar_pagina.php (versión mejorada y consistente con init + SecurityManager + PDO)
 require_once 'init.php';
 
+use App\Models\Page;
+
 $security->requireLogin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -12,18 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // CSRF
 $security->requireValidCsrf();
-
-/** Normaliza slug: minúsculas, sin acentos, guiones simples */
-function normalize_slug(string $s): string {
-    $s = trim($s);
-    $s = mb_strtolower($s, 'UTF-8');
-    $t = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $s);
-    if ($t === false) { $t = $s; }
-    $t = preg_replace('~[^a-z0-9]+~', '-', $t);  // todo lo no-alfa-num → -
-    $t = trim($t, '-');
-    $t = preg_replace('~-+~', '-', $t);         // colapsa guiones
-    return substr($t, 0, 191);                  // margen para índices
-}
 
 try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -41,8 +31,8 @@ try {
         die("Error: Título, slug, contenido e id_pagina son obligatorios.");
     }
 
-    // 2) Normalizar slug y validar patrón
-    $slug = normalize_slug($slug_in);
+        // 2) Normalizar slug y validar patrón
+    $slug = Page::slugify($slug_in);
     if ($slug === '') {
         http_response_code(400);
         die("Error: El slug proporcionado no es válido.");
@@ -59,13 +49,11 @@ try {
     // (Opcional) Verificación de permisos/propiedad aquí si aplica.
 
     // 4) Evitar slug duplicado (409 si otro registro lo usa)
-    // Asegúrate de tener UNIQUE KEY en paginas(slug)
-    $stmt = $pdo->prepare("SELECT 1 FROM paginas WHERE slug = ? AND id_pagina <> ? LIMIT 1");
-    $stmt->execute([$slug, $id_pagina]);
-    if ($stmt->fetchColumn()) {
+    if (Page::slugExists($slug, $id_pagina)) {
         http_response_code(409);
         die("El slug ya está en uso por otra página.");
     }
+
     // 5) Update (marca timestamp si tienes columna)
     $sql = "UPDATE paginas
             SET titulo = ?, slug = ?, contenido = ?, orden = ?, mostrar_indice = ?, actualizado_en = NOW()

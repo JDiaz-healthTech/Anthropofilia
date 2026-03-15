@@ -215,101 +215,17 @@ window.PostEmbedConfig = {
 };
 </script>
 
-<!-- Configuración de TinyMCE -->
+<script src="js/tinymce-config.js"<?= $nonceAttr ?>></script>
 <script<?= $nonceAttr ?>>
-if (typeof tinymce !== 'undefined') {
-  tinymce.init({
-    selector: '#contenido',
-    plugins: 'code link lists image media table autoresize postembed',
-toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | link image media table | postembed | code',
-    menubar: false,
-    height: 540,
-
-    block_formats: 'Párrafo=p; Título 1=h2; Título 2=h3; Título 3=h4; Cita=blockquote; Preformateado=pre',
-    link_target_list: [{ title: 'Nueva pestaña', value: '_blank' }, { title: 'Misma pestaña', value: '' }],
-    rel_list: [{ title: 'Ninguno', value: '' }, { title: 'noopener', value: 'noopener' }, { title: 'nofollow', value: 'nofollow' }],
-    default_link_target: '_blank',
-
-    images_upload_url: '<?= url("upload_image.php") ?>',
-    images_upload_credentials: true,
-    automatic_uploads: true,
-    image_caption: true,
-    image_dimensions: false,
-    image_class_list: [
-      { title: 'Por defecto', value: '' },
-      { title: 'Ancho completo', value: 'img-wide' }
-    ],
-
-    images_upload_handler: function (blobInfo, progress) {
-      return new Promise(function(resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '<?= url("upload_image.php") ?>');
-        xhr.withCredentials = true;
-        xhr.setRequestHeader('X-CSRF-Token', '<?= $security->csrfToken() ?>');
-        xhr.upload.onprogress = function (e) { if (e.lengthComputable) progress(e.loaded / e.total * 100); };
-        xhr.onload = function () {
-          if (xhr.status < 200 || xhr.status >= 300) { reject('HTTP ' + xhr.status); return; }
-          try {
-            var json = JSON.parse(xhr.responseText);
-            if (!json || typeof json.location !== 'string') { reject('Respuesta inválida'); return; }
-            resolve(json.location);
-          } catch (err) { reject('JSON inválido'); }
-        };
-        xhr.onerror = function () { reject('Error de red'); };
-        var formData = new FormData();
-        formData.append('file', blobInfo.blob(), blobInfo.filename());
-        xhr.send(formData);
-      });
-    },
-
-    paste_data_images: false,
-
-    content_css: ['<?= url("css/style.css") ?>'],
-    content_style: `
-      body { max-width: 760px; margin: 1rem auto; line-height: 1.7; }
-      figure { margin: 1.2rem 0; }
-      figcaption { font-size: .9rem; opacity: .8; text-align: center; }
-      img { border-radius: 6px; }
-      blockquote { border-left: 4px solid var(--theme-primary, #8a4); padding:.6rem 1rem; background:rgba(0,0,0,.03); }
-      table { border-collapse: collapse; width: 100%; }
-      table, th, td { border: 1px solid #ddd; }
-      th, td { padding: .5rem; }
-      ul, ol { margin-left: 1.2rem; }
-      pre, code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
-    `,
-
-    browser_spellcheck: true,
-    contextmenu: false
+  initTinyMCE({
+    csrfToken: '<?= $security->csrfToken() ?>',
+    uploadUrl: '<?= url("upload_image.php") ?>',
+    contentCss: '<?= url("css/style.css") ?>',
+    type: 'page'
   });
-}
 </script>
 
-<!-- Auto-slug -->
-<script<?= $nonceAttr ?>>
-(function () {
-  const t = document.getElementById('titulo');
-  const s = document.getElementById('slug');
-  let userEditedSlug = false;
-
-  s.addEventListener('input', () => { userEditedSlug = true; });
-
-  function slugify(str) {
-    return str
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .substring(0, 191);
-  }
-
-  // Solo autogenera si el slug está vacío (en edición normalmente no lo estará)
-  t.addEventListener('input', () => {
-    if (!userEditedSlug && !s.value) {
-      s.value = slugify(t.value);
-    }
-  });
-})();
-</script>
+<script src="js/slugify.js"<?= $nonceAttr ?>></script>
 
 <!-- Scripts para gestión de posts relacionados -->
 <script<?= $nonceAttr ?>>

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/init.php';
 
+use App\Models\Page;
+
 $security->requireLogin();
 
 // Forzar POST
@@ -14,53 +16,16 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 
 // CSRF
 $security->requireValidCsrf();
-
-// Helpers locales
-function slugify(string $text): string {
-    $text = trim($text);
-    $text = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text) ?: $text; // quita acentos
-    $text = strtolower($text);
-    $text = preg_replace('/[^a-z0-9]+/i', '-', $text) ?? $text;
-    $text = trim($text, '-');
-    // límite razonable
-    return substr($text, 0, 120);
-}
-
-/**
- * Genera un slug único consultando la BBDD.
- * Asume índice único en paginas.slug. Si no lo tienes, este método evita colisiones igualmente.
- */
-function uniqueSlug(PDO $pdo, string $base): string {
-    $slug = $base !== '' ? $base : 'pagina';
-    // ¿Existe exacto?
-    $stmt = $pdo->prepare('SELECT COUNT(*) FROM paginas WHERE slug = ?');
-    $stmt->execute([$slug]);
-    if ((int)$stmt->fetchColumn() === 0) return $slug;
-
-    // Busca sufijos -2, -3, ...
-    $stmt = $pdo->prepare('SELECT slug FROM paginas WHERE slug = ? OR slug LIKE ?');
-    $stmt->execute([$slug, $slug.'-%']);
-    $existing = $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
-    $max = 1;
-    foreach ($existing as $s) {
-        if (preg_match('#^'.preg_quote($slug, '#').'-(\d+)$#', (string)$s, $m)) {
-            $n = (int)$m[1];
-            if ($n > $max) $max = $n;
-        }
-    }
-    return $slug . '-' . ($max + 1);
-}
-
 try {
     // 1) Recoger y validar datos
     $titulo    = trim((string)($_POST['titulo'] ?? ''));
     $slugInput = trim((string)($_POST['slug'] ?? ''));
     $contenido = (string)($_POST['contenido'] ?? '');
-    $orden     = max(0, min(100, (int)($_POST['orden'] ?? 0))); // Entre 0-100
+    $orden     = max(0, min(100, (int)($_POST['orden'] ?? 0)));
     $mostrar_indice = isset($_POST['mostrar_indice']) ? 1 : 0;
     $userId    = (int)$security->userId();
 
-    // Longitudes (ajústalas si quieres)
+    // Longitudes
     if (mb_strlen($titulo) > 150)   $titulo = mb_substr($titulo, 0, 150);
     if (mb_strlen($slugInput) > 150) $slugInput = mb_substr($slugInput, 0, 150);
     if (mb_strlen($contenido) > 200000) $contenido = mb_substr($contenido, 0, 200000);
@@ -71,9 +36,9 @@ try {
         exit();
     }
 
-    // 2) Normalizar slug (si vacío, derivado del título) y asegurar unicidad
-    $baseSlug = slugify($slugInput !== '' ? $slugInput : $titulo);
-    $slug = uniqueSlug($pdo, $baseSlug);
+    // 2) Normalizar slug y asegurar unicidad via Page model
+    $baseSlug = Page::slugify($slugInput !== '' ? $slugInput : $titulo);
+    $slug = Page::uniqueSlug($baseSlug);
 
     // 3) Sanitizar HTML del contenido (por si acaso)
     $contenidoLimpio = $security->sanitizeHTML($contenido);
