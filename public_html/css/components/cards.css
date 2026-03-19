@@ -8,26 +8,45 @@
     display: flex;
     flex-direction: row;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     background: var(--home-card-bg);
-    margin-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     transition:
         box-shadow 0.3s ease,
         transform 0.3s ease;
 }
 
 .post-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
 }
-/* Título */
+
+/* Primera card destacada (hero) */
+.home-list .post-card:first-child {
+    margin-bottom: 3rem;
+}
+
+.home-list .post-card:first-child .post-card__image {
+    width: 220px;
+    min-height: 180px;
+}
+
+.home-list .post-card:first-child h2 {
+    font-size: clamp(1.3rem, 2.5vw, 1.6rem);
+}
+
+/* =============================================
+   TÍTULO — tipografía con jerarquía
+   ============================================= */
 .post-card h2 {
-    margin: 0 0 0.6rem 0;
-    font-size: clamp(1.05rem, 2vw, 1.2rem);
-    line-height: 1.4;
-    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    line-height: 1.35;
+    font-weight: 700;
+    font-family: var(--font-header);
+    letter-spacing: -0.01em;
 }
 
 .post-card h2 a {
@@ -41,38 +60,41 @@
 }
 
 /* =============================================
-   METADATOS (categoría + fecha en línea)
+   METADATOS — categoría como chip, fecha discreta
    ============================================= */
 .post-meta {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    font-size: 0.8rem;
+    gap: 0.6rem;
+    font-size: 0.78rem;
     color: var(--muted);
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.6rem;
 }
 
 .post-meta .categoria {
-    background: rgba(139, 69, 19, 0.1);
+    background: rgba(139, 69, 19, 0.08);
     color: var(--brand);
-    padding: 0.15rem 0.5rem;
-    border-radius: 3px;
-    font-size: 0.7rem;
-    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.5px;
 }
 
 .post-meta time {
     color: var(--muted);
+    opacity: 0.7;
+    font-size: 0.75rem;
 }
 
-/* Icono de tipo de contenido en metadatos */
+/* Icono de tipo de contenido */
 .post-meta__type {
     display: inline-flex;
     align-items: center;
     color: var(--muted);
+    opacity: 0.6;
 }
 
 .post-meta__type svg {
@@ -84,16 +106,15 @@
    ============================================= */
 .post-card__excerpt {
     font-size: 0.9rem;
-    line-height: 1.55;
+    line-height: 1.6;
     color: var(--muted);
-    margin: 0 0 0.75rem 0;
+    margin: 0.25rem 0 0.75rem 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* Ocultar extracto si está vacío o solo tiene "..." */
 .post-card__excerpt:empty,
 .post-card__excerpt:blank {
     display: none;
@@ -109,27 +130,14 @@
 .home-list .post-card:last-child {
     margin-bottom: 0;
 }
-/* =============================================
-   EXTRACTO DEL POST
-   ============================================= */
-.post-card__excerpt {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: var(--muted);
-    margin-top: 0.75rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
 
 /* =============================================
-   IMAGEN DESTACADA EN CARD
+   IMAGEN DESTACADA — fluida, sin corte duro
    ============================================= */
 .post-card__image {
     flex-shrink: 0;
-    width: 180px;
-    min-height: 140px;
+    width: 200px;
+    min-height: 160px;
     overflow: hidden;
 }
 
@@ -137,20 +145,23 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s ease;
 }
 
 .post-card:hover .post-card__image img {
-    transform: scale(1.04);
+    transform: scale(1.06);
 }
 
-/* Cuerpo de la card (texto) */
+/* =============================================
+   CUERPO — más padding, más respiro
+   ============================================= */
 .post-card__body {
     flex: 1;
     min-width: 0;
-    padding: 1rem 1.25rem;
+    padding: 1.25rem 1.5rem;
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 
 /* =============================================
@@ -161,6 +172,7 @@
     align-items: center;
     gap: 0.3rem;
     margin-top: auto;
+    padding-top: 0.5rem;
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--brand);
@@ -175,8 +187,9 @@
 .post-card__link::after {
     content: '→';
 }
+
 /* =============================================
-   CONTENIDO DEL POST ÚNICO (single post)
+   CONTENIDO DEL POST ÚNICO
    ============================================= */
 .single-post-content {
     max-width: var(--measure);
@@ -186,7 +199,7 @@
 }
 
 /* =============================================
-   TARJETAS EN LA HOME (fondo blanco puro)
+   TARJETAS EN LA HOME
    ============================================= */
 .home-list .post-card {
     background-color: var(--home-card-bg);
@@ -198,16 +211,27 @@
 @media (max-width: 768px) {
     .post-card {
         flex-direction: column;
+        margin-bottom: 1.5rem;
     }
 
     .post-card__image {
         width: 100%;
         min-height: auto;
-        height: 160px;
+        height: 180px;
     }
 
     .post-card__body {
-        padding: 1rem;
+        padding: 1rem 1.25rem;
+    }
+
+    .home-list .post-card:first-child .post-card__image {
+        width: 100%;
+        min-height: auto;
+        height: 200px;
+    }
+
+    .home-list .post-card:first-child h2 {
+        font-size: 1.2rem;
     }
 
     .single-post-content {
