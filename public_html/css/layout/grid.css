@@ -30,16 +30,17 @@
 
 @media (min-width: 1200px) {
     .main-content-area {
-        grid-template-columns: 1fr 320px;
+        grid-template-columns: 1fr 280px;
         gap: 3rem;
-        padding: 2.5rem 3rem;
+        padding: 2.5rem 5%;
     }
 }
 
 @media (min-width: 1600px) {
-    thumbnail .main-content-area {
-        grid-template-columns: 1fr 340px;
-        padding: 3rem 4rem;
+    .main-content-area {
+        grid-template-columns: 1fr 280px;
+        gap: 4rem;
+        padding: 2.5rem 10%;
     }
 }
 
@@ -85,9 +86,11 @@
     max-width: 100%;
 }
 
-/* Sidebar en desktop */
+/* Sidebar en desktop — pegado a la derecha */
 .main-content-area > aside {
     padding-left: 0;
+    justify-self: end;
+    width: 85%;
 }
 
 /* =============================================
