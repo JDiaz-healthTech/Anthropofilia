@@ -194,7 +194,7 @@ function nav_active(string $file, ?string $slug = null): string {
     })();
     </script>
 </head>
-php<body id="top">
+<body id="top">
     <a href="#main-content" class="skip-to-content">Saltar al contenido</a>
     <div class="container">
 
