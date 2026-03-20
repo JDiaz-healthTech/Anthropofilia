@@ -107,3 +107,86 @@
         font-size: 0.75rem;
     }
 }
+
+/* ==========================================================================
+   MEJORAS WCAG — Skip to content, focus, reduced motion, interlineado
+   ========================================================================== */
+
+/* Skip to content — invisible hasta Tab */
+.skip-to-content {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.75rem 1.5rem;
+    background: var(--brand);
+    color: #fff;
+    font-weight: 700;
+    font-size: var(--step-0);
+    border-radius: 0 0 var(--radius) var(--radius);
+    text-decoration: none;
+    z-index: 10000;
+    transition: top 0.2s ease;
+}
+
+.skip-to-content:focus {
+    top: 0;
+    outline: 3px solid var(--brand);
+    outline-offset: 2px;
+}
+
+/* Focus visible mejorado — anillo consistente estilo GOV.UK */
+*:focus-visible {
+    outline: 3px solid var(--brand);
+    outline-offset: 3px;
+    border-radius: 2px;
+}
+
+/* Quitar outline en clic (solo mostrar con teclado) */
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Reducción de movimiento — respeta preferencia del sistema */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .post-card:hover {
+        transform: none;
+    }
+
+    .post-card:hover .post-card__image img {
+        transform: none;
+    }
+}
+
+/* Interlineado amplio — activado via clase en <html> */
+html.wide-line-height {
+    --line-height-body: 2;
+    --line-height-heading: 1.6;
+}
+
+html.wide-line-height body {
+    line-height: var(--line-height-body);
+}
+
+html.wide-line-height h1,
+html.wide-line-height h2,
+html.wide-line-height h3 {
+    line-height: var(--line-height-heading);
+}
+
+html.wide-line-height .post-card__excerpt,
+html.wide-line-height .post-card__body p,
+html.wide-line-height .single-post-content,
+html.wide-line-height .legal-section p,
+html.wide-line-height .legal-section li {
+    line-height: var(--line-height-body);
+}

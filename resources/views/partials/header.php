@@ -194,7 +194,8 @@ function nav_active(string $file, ?string $slug = null): string {
     })();
     </script>
 </head>
-<body id="top">
+php<body id="top">
+    <a href="#main-content" class="skip-to-content">Saltar al contenido</a>
     <div class="container">
 
         <!-- =================================================
@@ -310,6 +311,10 @@ function nav_active(string $file, ?string $slug = null): string {
                     <span class="a11y-fab-icon">A−</span>
                     <span>Reducir texto</span>
                 </button>
+                <button id="toggle-line-height" class="a11y-fab-option" aria-pressed="false">
+                    <span class="a11y-fab-icon">↕</span>
+                    <span>Interlineado amplio</span>
+                </button>
             </div>
         </div>
         <!-- =================================================
@@ -318,5 +323,5 @@ function nav_active(string $file, ?string $slug = null): string {
         <!-- =================================================
              INICIO DEL CONTENIDO PRINCIPAL
              ================================================= -->
-        <div class="main-content-area">
+        <div class="main-content-area" id="main-content">
 <?php

@@ -217,7 +217,7 @@
     .post-card__image {
         width: 100%;
         min-height: auto;
-        height: 180px;
+        height: 150px;
     }
 
     .post-card__body {
@@ -227,7 +227,7 @@
     .home-list .post-card:first-child .post-card__image {
         width: 100%;
         min-height: auto;
-        height: 200px;
+        height: 170px;
     }
 
     .home-list .post-card:first-child h2 {
