@@ -30,6 +30,8 @@ endif;
         <a href="<?= url('privacidad.php') ?>">Privacidad</a>
         <span aria-hidden="true">·</span>
         <a href="<?= url('cookies.php') ?>">Cookies</a>
+        <span aria-hidden="true">·</span>
+        <a href="<?= url('accesibilidad.php') ?>">Accesibilidad</a>
       </nav>
     </div>
 

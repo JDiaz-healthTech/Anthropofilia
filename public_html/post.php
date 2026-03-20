@@ -122,30 +122,31 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     );
 
     if ($es_contenido_blogger) {
-        // SOLO para posts antiguos de Blogger: limpiar
         $contenido_limpio = $contenido_html;
-
-        // Remover clases específicas de Blogger
         $contenido_limpio = preg_replace('/class="[^"]*(?:post-|entry-|Apple-style-|separator)[^"]*"/', '', $contenido_limpio);
-
-        // Remover divs vacíos
         $contenido_limpio = preg_replace('/<div[^>]*>\s*&nbsp;\s*<\/div>/', '', $contenido_limpio);
         $contenido_limpio = preg_replace('/<div[^>]*>\s*<\/div>/', '', $contenido_limpio);
-
-        // Limpiar estilos inline de Blogger
         $contenido_limpio = preg_replace('/<div[^>]*style="[^"]*text-align:\s*center[^"]*"[^>]*>/', '<div style="text-align: center;">', $contenido_limpio);
-
-        // Actualizar iframes de YouTube antiguos
         $contenido_limpio = preg_replace(
             '/<iframe[^>]*src="https:\/\/www\.youtube\.com\/embed\/([^"?]+)[^"]*"[^>]*>.*?<\/iframe>/is',
             '<iframe width="560" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
             $contenido_limpio
         );
-
-        echo $contenido_limpio;
+        $contenidoFinal = $contenido_limpio;
     } else {
-        // Para posts nuevos de TinyMCE: mostrar tal cual
-        echo $contenido_html;
+        $contenidoFinal = $contenido_html;
+    }
+
+    // Generar índice automático si hay 3+ encabezados
+    $numHeadings = preg_match_all('/<h[2-4][^>]*>/i', $contenidoFinal);
+    if ($numHeadings >= 3) {
+        $tocResult = \App\Helpers\TocGenerator::generate($contenidoFinal);
+        if (!empty($tocResult['toc'])) {
+            echo $tocResult['toc'];
+        }
+        echo $tocResult['content'];
+    } else {
+        echo $contenidoFinal;
     }
     ?>
 </section>
@@ -154,5 +155,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     <a href="<?= url('index.php') ?>" >&larr; Volver a inicio</a>
   </nav>
 </main>
+<?php if (isset($numHeadings) && $numHeadings >= 3): ?>
+<script src="<?= url('js/toc.js') ?>"></script>
+<?php endif; ?>
 <?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>
-
