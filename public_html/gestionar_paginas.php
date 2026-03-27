@@ -50,11 +50,12 @@ $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Mensaje flash
 $flash = '';
 if (isset($_GET['msg'])) {
-    $flashMap = [
-        'deleted' => 'Página eliminada correctamente.',
-        'saved'   => 'Cambios guardados.',
-        'created' => 'Página creada.',
-    ];
+$flashMap = [
+    'deleted' => 'Página eliminada correctamente.',
+    'saved'   => 'Cambios guardados.',
+    'created' => 'Página creada.',
+    'updated' => 'Página actualizada correctamente.',
+];
     $key = (string)$_GET['msg'];
     $flash = $flashMap[$key] ?? '';
 }

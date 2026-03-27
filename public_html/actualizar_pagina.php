@@ -64,8 +64,7 @@ try {
     ]);
 
     // Si no cambió nada, rowCount puede ser 0; no es error.
-    header("Location: gestionar_paginas.php?status=updated&id={$id_pagina}", true, 303); // PRG
-    exit();
+header("Location: gestionar_paginas.php?msg=updated", true, 303);
 
 } catch (PDOException $e) {
     // Unique constraint (por si solo confías en el índice)
