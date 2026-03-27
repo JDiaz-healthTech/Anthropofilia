@@ -149,8 +149,6 @@ $nonceAttr = ($security->cspNonce())
     : '';
 ?>
 
-<script src="js/tinymce/tinymce.min.js"></script>
-
 <script>
 document.getElementById('formCrearPost').addEventListener('submit', function(e) {
     // 1. OBLIGATORIO: Volcar datos de TinyMCE al textarea real
@@ -177,7 +175,10 @@ document.getElementById('formCrearPost').addEventListener('submit', function(e) 
 });
 </script>
 
-<script src="js/tinymce-config.js"></script>
+<!-- CSS y plugin de contenido externo -->
+<link rel="stylesheet" href="<?= url('css/components/external-embed-modal.css') ?>">
+<script src="<?= url('js/tinymce-external-embed.js') ?>"<?= $nonceAttr ?>></script>
+
 <script>
   initTinyMCE({
     csrfToken: '<?= htmlspecialchars($csrf, ENT_QUOTES, "UTF-8") ?>',

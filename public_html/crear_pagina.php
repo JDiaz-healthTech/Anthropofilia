@@ -94,6 +94,9 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
 </main>
 <!-- CSS del modal para insertar posts -->
 <link rel="stylesheet" href="<?= url('css/components/post-embed-modal.css') ?>">
+
+<link rel="stylesheet" href="<?= url('css/components/external-embed-modal.css') ?>">
+
 <?php
 // CSP Nonce para scripts inline
 $nonceAttr = ($security->cspNonce())
@@ -103,6 +106,9 @@ $nonceAttr = ($security->cspNonce())
 
 <!-- Plugin de inserción de posts -->
 <script src="<?= url('js/tinymce-post-embed.js') ?>"<?= $nonceAttr ?>></script>
+
+<script src="<?= url('js/tinymce-external-embed.js') ?>"<?= $nonceAttr ?>></script>
+
 <script<?= $nonceAttr ?>>
 window.PostEmbedConfig = {
     searchUrl: '<?= url("api/post_search.php") ?>',

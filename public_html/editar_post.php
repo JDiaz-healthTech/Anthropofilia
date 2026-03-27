@@ -111,7 +111,12 @@ $nonceAttr = ($security->cspNonce())
     : '';
 ?>
 
+<!-- CSS y plugin de contenido externo -->
+<link rel="stylesheet" href="<?= url('css/components/external-embed-modal.css') ?>">
+<script src="<?= url('js/tinymce-external-embed.js') ?>"<?= $nonceAttr ?>></script>
+
 <script src="js/tinymce-config.js"<?= $nonceAttr ?>></script>
+
 <script<?= $nonceAttr ?>>
   initTinyMCE({
     csrfToken: '<?= $security->csrfToken() ?>',

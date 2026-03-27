@@ -419,18 +419,16 @@ public function sanitizeHTML(string $html): string
         // 4. ===== IFRAMES SEGUROS (NUEVA FUNCIONALIDAD) =====
         // Permitir iframes SOLO de YouTube y Vimeo
         $config->set('HTML.SafeIframe', true);
-        $config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube(-nocookie)?\.com/embed/|player\.vimeo\.com/video/|view\.genially\.com/|v\.calameo\.com/)%');        // 5. ETIQUETAS Y ATRIBUTOS PERMITIDOS (tu lista + iframes)
-        $config->set(
+        $config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube(-nocookie)?\.com/embed/|player\.vimeo\.com/video/|view\.genially\.com/|v\.calameo\.com/|www\.calameo\.com/|drive\.google\.com/|docs\.google\.com/)%');        $config->set(
             'HTML.Allowed',
             'p,br,strong,em,ul,ol,li,blockquote,a[href|title|target|rel],img[src|alt|title|width|height],h2[id],h3[id],h4[id],code,pre,table,thead,tbody,tr,th,td,iframe[src|width|height|frameborder|allowfullscreen|title|allow]'
         );
-
         // 6. Permitir que los enlaces se abran en nueva pestaña
         $config->set('Attr.AllowedFrameTargets', ['_blank']);
 
 // Damos un ID único a esta configuración personalizada
             $config->set('HTML.DefinitionID', 'anthropofilia-iframe-fix');
-            $config->set('HTML.DefinitionRev', 3);
+            $config->set('HTML.DefinitionRev', 4);
 
             // Intentamos obtener la definición "cruda" para editarla
             if ($def = $config->maybeGetRawHTMLDefinition()) {

@@ -1,0 +1,229 @@
+/* ==========================================================================
+   External Embed Modal — Modal para insertar contenido externo en TinyMCE
+   BEM: ext-embed-*
+   ========================================================================== */
+
+/* Overlay */
+.ext-embed-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.ext-embed-overlay.active {
+    display: flex;
+}
+
+/* Modal */
+.ext-embed-modal {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 540px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: extEmbedFadeIn 0.2s ease-out;
+}
+
+@keyframes extEmbedFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header */
+.ext-embed-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.ext-embed-modal__header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.ext-embed-modal__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0.25rem;
+    line-height: 1;
+    border-radius: 4px;
+    transition:
+        background-color 0.15s,
+        color 0.15s;
+}
+
+.ext-embed-modal__close:hover {
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+/* Body */
+.ext-embed-modal__body {
+    padding: 1.5rem;
+}
+
+.ext-embed-modal__label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.ext-embed-modal__input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.15s;
+    box-sizing: border-box;
+}
+
+.ext-embed-modal__input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Plataformas soportadas (iconos de referencia) */
+.ext-embed-modal__platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: #f9fafb;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.ext-embed-modal__platforms span {
+    font-size: 0.8rem;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+/* Feedback */
+.ext-embed-modal__feedback {
+    margin-top: 1rem;
+    padding: 0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    min-height: 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.ext-embed-modal__feedback--success {
+    padding: 0.75rem 1rem;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+}
+
+.ext-embed-modal__feedback--error {
+    padding: 0.75rem 1rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+
+/* Opciones de PDF */
+.ext-embed-modal__pdf-options {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+}
+
+.ext-embed-modal__pdf-options p {
+    margin: 0 0 0.75rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #1e40af;
+}
+
+.ext-embed-modal__radio {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #374151;
+    cursor: pointer;
+}
+
+.ext-embed-modal__radio:last-child {
+    margin-bottom: 0;
+}
+
+.ext-embed-modal__radio input[type='radio'] {
+    margin-right: 0.5rem;
+}
+
+/* Footer */
+.ext-embed-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+    border-radius: 0 0 12px 12px;
+}
+
+.ext-embed-modal__btn {
+    padding: 0.6rem 1.25rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition:
+        background-color 0.15s,
+        opacity 0.15s;
+}
+
+.ext-embed-modal__btn--cancel {
+    background: #fff;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+.ext-embed-modal__btn--cancel:hover {
+    background: #f3f4f6;
+}
+
+.ext-embed-modal__btn--insert {
+    background: #2563eb;
+    color: #fff;
+}
+
+.ext-embed-modal__btn--insert:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.ext-embed-modal__btn--insert:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

@@ -11,8 +11,9 @@ function initTinyMCE(opts) {
 
     // Plugins: base compartida + postembed solo en páginas
     var plugins =
-        'code link lists image media table autoresize advlist' +
+        'link lists image media table autoresize advlist' +
         ' searchreplace wordcount charmap hr anchor emoticons' +
+        ' externalembed' +
         (isPage ? ' postembed' : '');
 
     // Toolbar: postembed solo en páginas
@@ -22,8 +23,9 @@ function initTinyMCE(opts) {
         'bullist numlist outdent indent | ' +
         'link image media table hr | ' +
         'charmap anchor emoticons | ' +
+        'externalembed | ' +
         (isPage ? 'postembed | ' : '') +
-        'searchreplace code';
+        'searchreplace';
 
     var baseContentStyle =
         'body { max-width: 760px; margin: 1rem auto; line-height: 1.7; }' +
@@ -55,7 +57,7 @@ function initTinyMCE(opts) {
         branding: false,
 
         block_formats:
-            'Párrafo=p; Encabezado 2=h2; Encabezado 3=h3; Encabezado 4=h4; Cita=blockquote; Preformateado=pre',
+            'Párrafo=p; Título de sección=h2; Apartado=h3; Subapartado=h4; Cita=blockquote; Preformateado=pre',
 
         link_target_list: [
             { title: 'Nueva pestaña', value: '_blank' },
