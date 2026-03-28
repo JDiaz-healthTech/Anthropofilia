@@ -104,6 +104,7 @@
 .post-embebido__contenido iframe,
 .pagina-contenido iframe {
     width: 100%;
+    max-width: 520px;
     aspect-ratio: 16 / 9;
 }
 /* Genially: contenedor responsive con ratio adecuado */
