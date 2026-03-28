@@ -30,7 +30,8 @@
 
 @media (min-width: 1200px) {
     .main-content-area {
-        grid-template-columns: 1fr 280px;
+        grid-template-columns: minmax(0, 720px) 280px;
+        justify-content: center;
         gap: 3rem;
         padding: 2.5rem 5%;
     }
@@ -38,12 +39,12 @@
 
 @media (min-width: 1600px) {
     .main-content-area {
-        grid-template-columns: 1fr 280px;
+        grid-template-columns: minmax(0, 780px) 280px;
+        justify-content: center;
         gap: 4rem;
         padding: 2.5rem 10%;
     }
 }
-
 /* =============================================
    SIN SIDEBAR - Contenido centrado a ancho completo
    ============================================= */
