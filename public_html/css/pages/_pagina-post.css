@@ -86,7 +86,6 @@
     margin: 1rem 0;
 }
 
-/* Iframes y videos responsivos */
 .post-embebido__contenido iframe,
 .post-embebido__contenido video,
 .post-embebido__contenido embed,
@@ -101,21 +100,12 @@
     display: block;
 }
 
-/* Iframes sin dimensiones explícitas: aplicar ratio 16:9 */
-.post-embebido__contenido iframe:not([width]),
-.pagina-contenido iframe:not([width]) {
+/* Todos los iframes: ancho completo con ratio 16:9 por defecto */
+.post-embebido__contenido iframe,
+.pagina-contenido iframe {
     width: 100%;
     aspect-ratio: 16 / 9;
 }
-
-/* Iframes con dimensiones explícitas: respetar pero limitar al ancho */
-.post-embebido__contenido iframe[width],
-.pagina-contenido iframe[width] {
-    max-width: 100%;
-    height: auto;
-    aspect-ratio: attr(width) / attr(height);
-}
-
 /* Genially: contenedor responsive con ratio adecuado */
 .post-embebido__contenido iframe[src*='genially'],
 .post-embebido__contenido iframe[src*='genial.ly'],
