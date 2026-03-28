@@ -96,14 +96,6 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                                 </div>
                             </header>
 
-                            <?php if ($post['imagen_destacada_url']): ?>
-                                <div class="post-embebido__imagen">
-                                    <img src="<?= htmlspecialchars($post['imagen_destacada_url'], ENT_QUOTES, 'UTF-8') ?>"
-                                         alt="<?= htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8') ?>"
-                                         loading="lazy">
-                                </div>
-                            <?php endif; ?>
-
                             <div class="post-embebido__contenido">
                                 <?= $security->sanitizeHTML($post['contenido']) ?>
                             </div>

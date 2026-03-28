@@ -24,7 +24,7 @@
             transform: function (url, match) {
                 return {
                     html:
-                        '<div style="width:100%;position:relative;padding-bottom:56.25%;height:0;">' +
+                        '<div contenteditable="false" style="width:100%;position:relative;padding-bottom:56.25%;height:0;">' +
                         '<iframe src="' +
                         escapeAttr(url) +
                         '" ' +
@@ -47,7 +47,7 @@
                 var bookCode = match[1];
                 return {
                     html:
-                        '<div style="text-align:center;margin:1.5rem 0;">' +
+                        '<div contenteditable="false" style="text-align:center;margin:1.5rem 0;">' +
                         '<iframe src="//v.calameo.com/?bkcode=' +
                         escapeAttr(bookCode) +
                         '&mode=mini" ' +
@@ -170,13 +170,14 @@
      */
     function detectRawIframe(input) {
         var trimmed = input.trim();
-        // Buscar un <iframe ...> ... </iframe>
         var match = trimmed.match(/<iframe\s[^>]*src=["']([^"']+)["'][^>]*>[\s\S]*?<\/iframe>/i);
         if (match) {
+            // Extraer solo el iframe limpio, envolverlo en div no editable
+            var iframeTag = match[0];
             return {
                 name: 'Código de inserción',
                 icon: '📋',
-                html: trimmed,
+                html: '<div contenteditable="false" style="margin:1.5rem 0;">' + iframeTag + '</div>',
                 type: 'iframe',
             };
         }
@@ -394,7 +395,7 @@
             }
 
             if (html) {
-                editor.insertContent(html);
+                editor.insertContent(html + '<p>&nbsp;</p>');
             }
 
             closeModal();
