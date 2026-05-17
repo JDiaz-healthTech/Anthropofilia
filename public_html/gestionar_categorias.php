@@ -5,10 +5,8 @@ require_once __DIR__ . '/init.php';
 use App\Models\Category;
 
 // Verificar login
-if (empty($_SESSION['id_usuario'])) {
-    header('Location: ' . url('login.php'));
-    exit();
-}
+$security->requireLogin();
+$security->requireRole(['administrador', 'autor']);
 
 // Procesar acciones (crear, editar, eliminar)
 $message = '';

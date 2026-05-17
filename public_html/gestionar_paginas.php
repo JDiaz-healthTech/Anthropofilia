@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/init.php';
 
 $security->requireLogin();
+$security->requireRole(['administrador', 'autor']);
 
 // Parámetros de búsqueda/paginación
 $q       = trim((string)($_GET['q'] ?? ''));

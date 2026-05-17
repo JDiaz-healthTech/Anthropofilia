@@ -4,6 +4,7 @@ require_once __DIR__ . '/init.php';
 
 // Auth
 $security->requireLogin();
+$security->requireRole(['administrador', 'autor']);
 
 // PRG: datos previos del formulario (si hubo error en guardar_pagina.php)
 $form = $_SESSION['form_pagina'] ?? [];

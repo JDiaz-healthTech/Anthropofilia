@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/init.php';
 
 $security->requireLogin();
+$security->requireRole(['administrador', 'autor']);
 
 // 1) Forzar POST
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {

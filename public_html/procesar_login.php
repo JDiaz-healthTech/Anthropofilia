@@ -17,33 +17,32 @@ $security->requireValidCsrf();
 $security->checkRateLimit('login_attempt', 5, 900);
 
 // 4) Inputs
-$nombre_usuario = trim((string)($_POST['nombre_usuario'] ?? ''));
-$contrasena     = (string)($_POST['contrasena'] ?? '');
+$email      = trim((string)($_POST['email'] ?? ''));
+$contrasena = (string)($_POST['contrasena'] ?? '');
 
-if ($nombre_usuario === '' || $contrasena === '') {
-    $_SESSION['form_data'] = ['nombre_usuario' => $nombre_usuario];
+if ($email === '' || $contrasena === '') {
+    $_SESSION['form_data'] = ['email' => $email];
     header('Location: login.php?status=invalid');
     exit();
 }
 
 try {
-    // 5) Buscar usuario
+    // 5) Buscar usuario por email
     $stmt = $pdo->prepare(
-        'SELECT id_usuario, nombre_usuario, rol, contrasena_hash
+        'SELECT id_usuario, nombre_usuario, email, rol, contrasena_hash
          FROM usuarios
-         WHERE nombre_usuario = ?
+         WHERE email = ?
          LIMIT 1'
     );
-    $stmt->execute([$nombre_usuario]);
+    $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     $ok = $user && password_verify($contrasena, (string)$user['contrasena_hash']);
 
     if (!$ok) {
-        // Mitigar enumeración/brute force
-        usleep(250000); // 250ms
-        $security->logEvent('security', 'login_failed', ['username' => $nombre_usuario]);
-        $_SESSION['form_data'] = ['nombre_usuario' => $nombre_usuario];
+        usleep(250000);
+        $security->logEvent('security', 'login_failed', ['email' => $email]);
+        $_SESSION['form_data'] = ['email' => $email];
         header('Location: login.php?status=bad_credentials');
         exit();
     }
@@ -70,7 +69,7 @@ try {
 
 } catch (\PDOException $e) {
     $security->logEvent('error', 'login_db_error', ['error' => $e->getMessage()]);
-    $_SESSION['form_data'] = ['nombre_usuario' => $nombre_usuario];
+    $_SESSION['form_data'] = ['email' => $email];
     header('Location: login.php?status=error');
     exit();
 }

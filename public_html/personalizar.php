@@ -6,6 +6,7 @@ require_once __DIR__ . '/init.php';
 
 // Auth
 $security->requireLogin();
+$security->requireRole(['administrador', 'autor']);
 
 // Obtener configuración actual
 $config = [

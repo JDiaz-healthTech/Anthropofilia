@@ -44,6 +44,13 @@ if (!$isLoggedIn) {
 // SI ESTÁ LOGUEADO: Cargar estadísticas y mostrar dashboard
 // ============================================================
 
+// Usuarios estándar no acceden al panel de administración
+$userRole = $_SESSION['rol'] ?? 'usuario';
+if ($userRole === 'usuario') {
+    header('Location: dashboard_usuario.php');
+    exit();
+}
+
 // Mensaje flash
 $flash = '';
 if (isset($_GET['msg'])) {

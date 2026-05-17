@@ -96,7 +96,7 @@ URL → Apache (.htaccess mod_rewrite)
 | `etiquetas` | Etiquetas/tags (nombre_etiqueta) |
 | `post_etiquetas` | Relación N:M posts ↔ etiquetas |
 | `pagina_posts` | Relación N:M páginas ↔ posts (con orden y tipo_visualizacion: 'card' / 'embebido') |
-| `usuarios` | Usuarios del sistema (username, password_hash, rol: administrador / autor / usuario) |
+| `usuarios` | Usuarios del sistema (nombre_usuario, email [UNIQUE, usado para login], contrasena_hash, rol: administrador / autor / usuario, fecha_registro). `nombre_usuario` almacena el nombre completo (sin UNIQUE). |
 | `rate_limits` | Control de rate limiting por IP + acción |
 | `settings` | Configuración clave-valor del tema (columnas `k` / `v`) |
 | `sites` | Sitios de interés para el sidebar (nombre, url, activo) |
@@ -110,8 +110,15 @@ URL → Apache (.htaccess mod_rewrite)
 ### Dos archivos de configuración de BD (situación heredada)
 
 - **`config/database.php`** — Activo. Leído por `app/Models/Database.php`. Usa variables `$_ENV`.
-- **`public_html/config.php`** — Muerto. Define constantes `DB_DSN`, `DB_USER`, etc. que **nadie usa**.
-  Pendiente de eliminar (Fase 0 del refactor).
+- ~~**`public_html/config.php`** — Muerto. Define constantes `DB_DSN`, `DB_USER`, etc. que **nadie usa**.~~
+  Eliminado (Fase 0).
+
+### Autenticación y registro (Fase 8)
+
+- **Login por email** — `procesar_login.php` busca por `WHERE email = ?`. El campo `nombre_usuario` ya no es identificador de login.
+- **Registro público** — `registro.php` + `procesar_registro.php`. Campos: nombre, apellido1, apellido2 (opcional), email, contraseña (x2), checkbox RGPD. Se concatena nombre completo en `nombre_usuario`. Rol siempre `usuario`.
+- **Protección de rol** — Todas las páginas de admin usan `$security->requireRole(['administrador', 'autor'])` después de `requireLogin()`. Usuarios con rol `usuario` reciben 403.
+- **Dashboard por rol** — `dashboard.php` redirige a `dashboard_usuario.php` si el rol es `usuario`. La navegación del header muestra "Panel de Control" para admin/autor y "Mi Cuenta" para usuario estándar.
 
 ---
 
@@ -124,6 +131,7 @@ URL → Apache (.htaccess mod_rewrite)
 5. **Nunca hacer commit de `.env` ni credenciales.** El `.env` está en `.gitignore`.
 6. **Sanitizar HTML con `$security->sanitizeHTML()`** (HTMLPurifier) antes de persistir o renderizar contenido de usuario.
 7. **`url()` para todas las URLs internas**, nunca hardcodear rutas.
+8. **`$security->requireRole(['administrador', 'autor'])`** en toda página de administración, siempre después de `requireLogin()`. Desde que existe registro público, `requireLogin()` solo ya no es suficiente.
 
 ---
 
@@ -133,20 +141,25 @@ Estos problemas están documentados. Al editar código existente, no replicarlos
 
 | ID | Problema | Severidad |
 |----|---------|-----------|
-| C-01 | `public_html/app/Models/PaginaPost.php` — duplicado exacto de `app/Models/PaginaPost.php`. Nunca cargado por Composer (ruta incorrecta). Pendiente eliminar. | Crítico |
-| C-02 | `public_html/config.php` — constantes DB que nadie usa. Código muerto. Pendiente eliminar. | Crítico |
-| C-03 | `actualizar_post.php` no actualiza etiquetas al editar un post (se pierden silenciosamente). | Crítico |
-| C-04 | `etiqueta.php` usa `require` sin `__DIR__`, URLs con `id=` en vez de slug, e incluye el sidebar fuera del layout. | Crítico |
-| C-05 | `SecurityManager::abort()` busca páginas de error en `resources/errors/` pero están en `resources/views/errors/`. Siempre cae al fallback de texto plano. | Crítico |
-| C-06 | `guardar_personalizacion.php`: la acción de reset se dispara con `GET ?reset=1` sin verificación CSRF. | Crítico (seguridad) |
+| C-01 | ~~`public_html/app/Models/PaginaPost.php` — duplicado exacto de `app/Models/PaginaPost.php`. Nunca cargado por Composer (ruta incorrecta). Pendiente eliminar.~~ Eliminado (Fase 0). | Resuelto |
+| C-02 | ~~`public_html/config.php` — constantes DB que nadie usa. Código muerto. Pendiente eliminar.~~ Eliminado (Fase 0). | Resuelto |
+| C-03 | ~~`actualizar_post.php` no actualiza etiquetas al editar un post (se pierden silenciosamente).~~ Corregido — gestiona etiquetas con transacción (Fase 0). | Resuelto |
+| C-04 | ~~`etiqueta.php` usa `require` sin `__DIR__`, URLs con `id=` en vez de slug, e incluye el sidebar fuera del layout.~~ Corregido (Fase 0). | Resuelto |
+| C-05 | ~~`SecurityManager::abort()` busca páginas de error en `resources/errors/` pero están en `resources/views/errors/`.~~ Ruta corregida a `resources/views/errors/` (Fase 0). | Resuelto |
+| C-06 | ~~`guardar_personalizacion.php`: la acción de reset se dispara con `GET ?reset=1` sin verificación CSRF.~~ Reset migrado a POST con CSRF (Fase 0). | Resuelto |
 | I-01 | ~~Stubs vacíos: `AuthService`, `ImageService`, `MailService`, `SettingsService`.~~ `ImageService` implementado (Fase 3). Pendientes: `AuthService`, `MailService`, `SettingsService`. | Parcial |
 | I-02 | ~~Generación de slug duplicada en 4 lugares.~~ Páginas unificadas con `Page::slugify()` y JS compartido `slugify.js` (Fase 6). Pendientes: `guardar_post.php` (slug inline), `Category.php` (tiene su propio `generateSlug()`). | Parcial |
 | I-03 | ~~Configuración de TinyMCE copiada en 3 archivos.~~ Resuelto — centralizado en `js/tinymce-config.js` (Fase 6). | Resuelto |
 | I-04 | ~~CSS inline masivo en 4 archivos de gestión.~~ Resuelto — movido a `css/admin/` (Fase 5). | Resuelto |
 | I-05 | ~~Dos sistemas de personalización: `admin.php` (legacy) y `personalizar.php` (moderno).~~ Resuelto — `admin.php` eliminado (Fase 7). | Resuelto |
-| I-06 | ~~`Page.php` es casi un stub.~~ Modelo completo con CRUD, slug y validación. Pendiente: migrar `guardar_pagina.php` y `actualizar_pagina.php` para usar `Page::create()`/`Page::update()` en vez de SQL directo. | Parcial | Resuelto
+| I-06 | ~~`Page.php` es casi un stub.~~ Modelo completo con CRUD, slug y validación. Pendiente: migrar `guardar_pagina.php` y `actualizar_pagina.php` para usar `Page::create()`/`Page::update()` en vez de SQL directo. | Parcial |
 | I-07 | `init.php` tiene `display_errors=1` hardcodeado antes de leer `APP_ENV`, por lo que siempre expone errores hasta que se sobreescribe. | Importante |
-| I-08 | `enviar_contacto.php` tiene `SMTPDebug = 2` activo en producción (logs SMTP visibles). | Importante | Resuelto
+| I-08 | ~~`enviar_contacto.php` tiene `SMTPDebug = 2` activo en producción (logs SMTP visibles).~~ Resuelto. | Resuelto |
+| I-09 | ~~`crear_post.php` no incluye `tinymce-config.js` — llama a `initTinyMCE()` sin haberla cargado. El editor nunca se inicializa.~~ Resuelto — añadido script + nonce. | Resuelto |
+| I-10 | `User.php` no tiene `declare(strict_types=1)`. Viola convención del proyecto. | Menor |
+| I-11 | `login.php` tiene checkbox "Mantener sesión" que no hace nada (nunca se lee en `procesar_login.php`). | Menor |
+| I-12 | `procesar_login.php` redirige a `login.php?status=error` en catch de BD, pero `$messages` en `login.php` no tiene clave `'error'`. No muestra mensaje al usuario. | Menor |
+| I-13 | Enumeración de email en registro: `status=email_exists` confirma si un email está registrado. Considerar mensaje genérico. | Media |
 | m-01 | `feed.php` usa `$GLOBALS['baseUrl']` (es variable local en init.php, no global). | Menor |
 | m-02 | ~~`editar_post.php` referencia `assets/css/styles.css` (ruta que no existe).~~ Resuelto — unificado a `css/style.css` vía `tinymce-config.js` (Fase 6). | Resuelto |
 
@@ -165,6 +178,7 @@ Estos problemas están documentados. Al editar código existente, no replicarlos
 | **Fase 5** | Eliminar CSS inline — mover a `css/admin/` | Completada |
 | **Fase 6** | Extraer configuración TinyMCE a JS compartido; unificar función `slugify` | Completada |
 | **Fase 7** | Eliminar `admin.php` legacy; consolidar en `personalizar.php` | Completada |
+| **Fase 8** | Sistema de registro público + login por email + protección de rol en páginas admin | Completada |
 
 ---
 

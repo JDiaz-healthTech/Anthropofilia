@@ -95,7 +95,7 @@ $needsTinymce = in_array($current_page, [
 
 // Páginas que no deben indexarse
 $noindexPages = [
-    'login.php', 'dashboard.php', 'gestionar_paginas.php',
+    'login.php', 'registro.php', 'dashboard.php', 'gestionar_paginas.php',
     'crear_post.php', 'editar_post.php', 'eliminar_post.php',
     'crear_pagina.php', 'editar_pagina.php', 'eliminar_pagina.php'
 ];
@@ -231,10 +231,11 @@ function nav_active(string $file, ?string $slug = null): string {
                     <?php if ($isAdmin): ?>
                         <a href="<?= url('dashboard.php') ?>"<?= nav_active('dashboard.php') ?>>Panel de Control</a>
                     <?php else: ?>
-                        <a href="<?= url('mi_cuenta.php') ?>"<?= nav_active('mi_cuenta.php') ?>>Mi Cuenta</a>
+                        <a href="<?= url('dashboard_usuario.php') ?>"<?= nav_active('dashboard_usuario.php') ?>>Mi Cuenta</a>
                     <?php endif; ?>
-                <?php else: ?>
-                    <a href="<?= url('login.php') ?>"<?= nav_active('login.php') ?> rel="nofollow">Acceder</a>
+                    <?php else: ?>
+                      <a href="<?= url('login.php') ?>"<?= nav_active('login.php') ?> rel="nofollow">Acceder</a>
+                      <a href="<?= url('registro.php') ?>"<?= nav_active('registro.php') ?> rel="nofollow">Registrarse</a>
                 <?php endif; ?>
             </div>
         </nav>
@@ -261,8 +262,9 @@ function nav_active(string $file, ?string $slug = null): string {
                 <?php else: ?>
                     <a href="<?= url('mi_cuenta.php') ?>"<?= nav_active('mi_cuenta.php') ?>>Mi Cuenta</a>
                 <?php endif; ?>
-            <?php else: ?>
-                <a href="<?= url('login.php') ?>"<?= nav_active('login.php') ?> rel="nofollow">Acceder</a>
+                <?php else: ?>
+                  <a href="<?= url('login.php') ?>"<?= nav_active('login.php') ?> rel="nofollow">Acceder</a>
+                  <a href="<?= url('registro.php') ?>"<?= nav_active('registro.php') ?> rel="nofollow">Registrarse</a>
             <?php endif; ?>
 
             <?php if (!empty($menuPages)): ?>

@@ -6,6 +6,7 @@ require_once __DIR__ . '/init.php';
 
 // Auth
 $security->requireLogin();
+$security->requireRole(['administrador', 'autor']);
 
 // PRG: datos previos si hubo error al guardar
 // PRG: datos previos si hubo error al guardar
@@ -179,7 +180,9 @@ document.getElementById('formCrearPost').addEventListener('submit', function(e) 
 <link rel="stylesheet" href="<?= url('css/components/external-embed-modal.css') ?>">
 <script src="<?= url('js/tinymce-external-embed.js') ?>"<?= $nonceAttr ?>></script>
 
-<script>
+<script src="js/tinymce-config.js"<?= $nonceAttr ?>></script>
+
+<script<?= $nonceAttr ?>>
   initTinyMCE({
     csrfToken: '<?= htmlspecialchars($csrf, ENT_QUOTES, "UTF-8") ?>',
     uploadUrl: 'upload_image.php',

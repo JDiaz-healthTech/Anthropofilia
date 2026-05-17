@@ -18,17 +18,16 @@ $messages = [
     'bad_credentials' => 'Usuario o contraseña incorrectos.',
     'logged_out'      => 'Has cerrado sesión correctamente.',
     'blocked'         => 'Demasiados intentos. Inténtalo más tarde.',
+    'registered'      => '¡Cuenta creada correctamente! Ya puedes iniciar sesión.',
 ];
   $categoria = null; // para migas condicionales
 require_once BASE_PATH . '/resources/views/partials/header.php';
 ?>
 <main class="container" id="content">
-  <h2>Acceso al Panel</h2>
-  <!-- Mensaje adicional mientras el registro no es global -->
-    <p class="help-text">Acceso restringido. Si necesitas una cuenta, contacta con la editora.</p>
+  <h2>Iniciar sesión</h2>
 
   <?php if (isset($messages[$status])): ?>
-    <p class="status-<?php echo $status === 'logged_out' ? 'success' : 'error'; ?>">
+    <p class="status-<?php echo in_array($status, ['logged_out', 'registered']) ? 'success' : 'error'; ?>">
       <?php echo htmlspecialchars($messages[$status], ENT_QUOTES, 'UTF-8'); ?>
     </p>
   <?php endif; ?>
@@ -37,15 +36,15 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     <?php echo $security->csrfField(); ?>
 
     <div>
-      <label for="nombre_usuario">Usuario</label>
+      <label for="email">Email</label>
       <input
-        type="text"
-        id="nombre_usuario"
-        name="nombre_usuario"
+        type="email"
+        id="email"
+        name="email"
         required
-        autocomplete="username"
+        autocomplete="email"
         autofocus
-        value="<?php echo htmlspecialchars($form['nombre_usuario'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+        value="<?php echo htmlspecialchars($form['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
     </div>
 
     <div>
@@ -68,7 +67,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     <button type="submit">Entrar</button>
   </form>
 
-  <p class="help-text">¿Problemas para acceder? Contacta con el administrador.</p>
+  <p class="help-text">¿No tienes cuenta? <a href="<?= url('registro.php') ?>">Regístrate aquí</a></p>
 </main>
 
 <?php require_once BASE_PATH . '/resources/views/partials/footer.php'; ?>
