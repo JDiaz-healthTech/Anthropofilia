@@ -154,7 +154,7 @@ Estos problemas están documentados. Al editar código existente, no replicarlos
 | I-04 | ~~CSS inline masivo en 4 archivos de gestión.~~ Resuelto — movido a `css/admin/` (Fase 5). | Resuelto |
 | I-05 | ~~Dos sistemas de personalización: `admin.php` (legacy) y `personalizar.php` (moderno).~~ Resuelto — `admin.php` eliminado (Fase 7). | Resuelto |
 | I-06 | ~~`Page.php` es casi un stub.~~ Modelo completo con CRUD, slug y validación. ~~Pendiente: migrar `guardar_pagina.php` y `actualizar_pagina.php` para usar `Page::create()`/`Page::update()` en vez de SQL directo.~~ Ambos migrados — auditoría confirmada. | Resuelto |
-| I-07 | `init.php` tiene `display_errors=1` hardcodeado antes de leer `APP_ENV`, por lo que siempre expone errores hasta que se sobreescribe. | Importante |
+| I-07 | ~~`init.php` tiene `display_errors=1` hardcodeado antes de leer `APP_ENV`, por lo que siempre expone errores hasta que se sobreescribe.~~ Resuelto — detección temprana de entorno con default seguro (prod = display off). Además, los handlers de excepción y shutdown ahora respetan el entorno: detalle solo en dev, mensaje genérico + log en prod (cerraba una fuga mayor: volcaban el stack trace completo en producción ignorando APP_ENV). | Resuelto |
 | I-08 | ~~`enviar_contacto.php` tiene `SMTPDebug = 2` activo en producción (logs SMTP visibles).~~ Resuelto. | Resuelto |
 | I-09 | ~~`crear_post.php` no incluye `tinymce-config.js` — llama a `initTinyMCE()` sin haberla cargado. El editor nunca se inicializa.~~ Resuelto — añadido script + nonce. | Resuelto |
 | I-10 | `User.php` no tiene `declare(strict_types=1)`. Viola convención del proyecto. | Menor |

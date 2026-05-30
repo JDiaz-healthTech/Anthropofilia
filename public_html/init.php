@@ -16,26 +16,50 @@ define('PUBLIC_PATH', __DIR__);
 define('BASE_PATH', dirname(__DIR__));
 
 // ============================================================
-// MANEJO DE ERRORES (Desarrollo)
+// DETECCIÓN TEMPRANA DE ENTORNO
 // ============================================================
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
+// Lectura best-effort antes de cargar .env. En Docker, APP_ENV se expone
+// como variable real del contenedor; en Hostinger se reafirma más abajo
+// desde .env. Por defecto 'prod' = lo más seguro si no se detecta nada.
+$env = getenv('APP_ENV') ?: ($_SERVER['APP_ENV'] ?? 'prod');
 
-register_shutdown_function(function () {
-    $error = error_get_last();
+// ============================================================
+// MANEJO DE ERRORES — seguro por defecto
+// ============================================================
+if ($env === 'dev') {
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
+} else {
+    ini_set('display_errors', '0');
+    ini_set('display_startup_errors', '0');
+    error_reporting(E_ALL);     // registrar todo...
+    ini_set('log_errors', '1'); // ...al log, nunca a pantalla
+}
+register_shutdown_function(function () use (&$env) {
+        $error = error_get_last();
     if ($error !== null && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
         http_response_code(500);
-        echo "<h1 style='color:red'>Error fatal en PHP</h1>";
-        echo "<pre>" . print_r($error, true) . "</pre>";
+        if ($env === 'dev') {
+            echo "<h1 style='color:red'>Error fatal en PHP</h1>";
+            echo "<pre>" . print_r($error, true) . "</pre>";
+        } else {
+            error_log('[FATAL] ' . print_r($error, true));
+            echo "Error interno del servidor.";
+        }
     }
 });
 
-set_exception_handler(function (Throwable $e) {
-    http_response_code(500);
-    echo "<h1 style='color:red'>Excepción no capturada</h1>";
-    echo "<p><strong>" . get_class($e) . ":</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
-    echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+set_exception_handler(function (Throwable $e) use (&$env) {
+        http_response_code(500);
+    if ($env === 'dev') {
+        echo "<h1 style='color:red'>Excepción no capturada</h1>";
+        echo "<p><strong>" . get_class($e) . ":</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
+        echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+    } else {
+        error_log('[EXCEPTION] ' . $e);
+        echo "Error interno del servidor.";
+    }
 });
 
 set_error_handler(function ($severity, $message, $file, $line) {
@@ -64,9 +88,9 @@ $dotenv = Dotenv::createImmutable(BASE_PATH);
 $dotenv->load();
 
 // ============================================================
-// CONFIGURACIÓN SEGÚN ENTORNO
+// CONFIGURACIÓN SEGÚN ENTORNO (.env es la fuente autoritativa)
 // ============================================================
-$env = $_ENV['APP_ENV'] ?? 'prod';
+$env = $_ENV['APP_ENV'] ?? $env;  // .env manda; si no está, conserva la detección temprana
 if ($env === 'dev') {
     error_reporting(E_ALL);
     ini_set('display_errors', '1');
