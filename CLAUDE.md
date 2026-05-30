@@ -157,12 +157,12 @@ Estos problemas están documentados. Al editar código existente, no replicarlos
 | I-07 | ~~`init.php` tiene `display_errors=1` hardcodeado antes de leer `APP_ENV`, por lo que siempre expone errores hasta que se sobreescribe.~~ Resuelto — detección temprana de entorno con default seguro (prod = display off). Además, los handlers de excepción y shutdown ahora respetan el entorno: detalle solo en dev, mensaje genérico + log en prod (cerraba una fuga mayor: volcaban el stack trace completo en producción ignorando APP_ENV). | Resuelto |
 | I-08 | ~~`enviar_contacto.php` tiene `SMTPDebug = 2` activo en producción (logs SMTP visibles).~~ Resuelto. | Resuelto |
 | I-09 | ~~`crear_post.php` no incluye `tinymce-config.js` — llama a `initTinyMCE()` sin haberla cargado. El editor nunca se inicializa.~~ Resuelto — añadido script + nonce. | Resuelto |
-| I-10 | `User.php` no tiene `declare(strict_types=1)`. Viola convención del proyecto. | Menor |
-| I-11 | `login.php` tiene checkbox "Mantener sesión" que no hace nada (nunca se lee en `procesar_login.php`). | Menor |
-| I-12 | `procesar_login.php` redirige a `login.php?status=error` en catch de BD, pero `$messages` en `login.php` no tiene clave `'error'`. No muestra mensaje al usuario. | Menor |
+| I-10 | ~~`User.php` no tiene `declare(strict_types=1)`. Viola convención del proyecto.~~ Resuelto — añadido antes del namespace. | Resuelto |
+| I-11 | ~~`login.php` tiene checkbox "Mantener sesión" que no hace nada (nunca se lee en `procesar_login.php`).~~ Resuelto — checkbox eliminado. "Remember me" real (tokens persistentes) movido a Future Work. | Resuelto |
+| I-12 | ~~`procesar_login.php` redirige a `login.php?status=error` en catch de BD, pero `$messages` en `login.php` no tiene clave `'error'`. No muestra mensaje al usuario.~~ Resuelto — añadida clave `'error'` con mensaje genérico. | Resuelto |
 | I-13 | Enumeración de email en registro: `status=email_exists` confirma si un email está registrado. Decisión consciente: se mantiene el mensaje claro para no degradar la experiencia de usuarios legítimos que se registran dos veces por olvido. Modelo de amenaza: blog público de filosofía sin datos sensibles, sin transacciones, sin mensajería privada. Mitigado con rate limiting en el endpoint de registro y logging de intentos contra emails existentes. Reconsiderar si el proyecto evoluciona hacia funcionalidades con datos sensibles. | Decisión consciente |
 | B-01 | ~~`guardar_post.php` genera slugs incorrectos para títulos con acentos o ñ. Las letras acentuadas se eliminan en vez de transliterarse. Ejemplo: "Filosofía española" → `filosofa-espaola` (incorrecto), debería ser `filosofia-espanola`. Relacionado con I-02.~~ Resuelto — usa `slugify()` centralizado. | Resuelto |
-| m-01 | `feed.php` usa `$GLOBALS['baseUrl']` (es variable local en init.php, no global). | Menor |
+| m-01 | ~~`feed.php` usa `$GLOBALS['baseUrl']` (es variable local en init.php, no global).~~ Resuelto — usa `$baseUrl` directo con fallback a `url('')`. | Resuelto |
 | m-02 | ~~`editar_post.php` referencia `assets/css/styles.css` (ruta que no existe).~~ Resuelto — unificado a `css/style.css` vía `tinymce-config.js` (Fase 6). | Resuelto |
 
 
@@ -201,6 +201,7 @@ Estos problemas están documentados. Al editar código existente, no replicarlos
 - **Sistema de analíticas propio** — Tabla `visitas`, tracking de pageviews sin cookies de terceros, mini dashboard en admin. Reemplazo de dependencias en servicios externos.
 - **Suite de tests PHPUnit** — La carpeta `tests/` con subdirectorios `Feature/` y `Unit/` ya existe como placeholder. Falta `phpunit.xml` y los primeros tests. Empezar por los modelos críticos (Post, Page, User).
 - **Sistema de comentarios** — Siguiente funcionalidad planificada tras el registro. Da sentido al rol `usuario` y alimenta estadísticas para `dashboard_usuario.php`.
+- **"Remember me" (login persistente)** — Checkbox del login pendiente de implementar con patrón seguro: tabla de tokens persistentes (selector + validador hasheado), cookie de larga duración, validación y rotación en cada sesión nueva, expiración y limpieza. Valor real para Ana, que entra de forma esporádica.
 
 ---
 
