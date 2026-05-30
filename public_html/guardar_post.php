@@ -96,7 +96,7 @@ try {
     $pdo->beginTransaction();
 
     // 1) Generar slug automático desde el título
-    $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $titulo), '-'));
+    $slug = slugify($titulo);
 
     // Si el slug queda vacío o es muy corto, generar uno único
     if (strlen($slug) < 3) {

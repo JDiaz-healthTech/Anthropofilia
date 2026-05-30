@@ -99,17 +99,7 @@ class Page
      */
     public static function slugify(string $text): string
     {
-        $text = trim($text);
-        if ($text === '') {
-            return '';
-        }
-        // Transliterar: á → a, ñ → n, ü → u...
-        $text = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text) ?: $text;
-        $text = strtolower($text);
-        $text = preg_replace('/[^a-z0-9]+/', '-', $text) ?? $text;
-        $text = trim($text, '-');
-        $text = preg_replace('/-+/', '-', $text) ?? $text; // colapsar guiones consecutivos
-        return substr($text, 0, 150);
+    return \slugify($text);
     }
 
     /**

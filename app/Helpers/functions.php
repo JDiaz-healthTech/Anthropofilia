@@ -155,3 +155,39 @@ if (!function_exists('get_thumbnail_url')) {
         return ['url' => null, 'type' => 'none'];
     }
 }
+
+if (!function_exists('slugify')) {
+    /**
+     * Genera un slug limpio a partir de texto libre.
+     * Centraliza la lógica antes duplicada en Page, Category y guardar_post.php.
+     *
+     * - Transliterar acentos y ñ (á → a, ñ → n) con mapa explícito (determinista)
+     * - iconv como red para cualquier otro carácter no-ASCII
+     * - Minúsculas, solo a-z 0-9 y guiones, sin guiones repetidos ni en los extremos
+     * - Máximo 150 caracteres
+     */
+    function slugify(string $text): string {
+        $text = trim($text);
+        if ($text === '') {
+            return '';
+        }
+
+        // 1) Mapa explícito para caracteres del español (no depende del locale)
+        $map = [
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'ñ' => 'n',
+            'Á' => 'a', 'É' => 'e', 'Í' => 'i', 'Ó' => 'o', 'Ú' => 'u', 'Ü' => 'u', 'Ñ' => 'n',
+        ];
+        $text = strtr($text, $map);
+
+        // 2) iconv como red para el resto (à, ç, etc.)
+        $text = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text) ?: $text;
+
+        // 3) Normalizar
+        $text = strtolower($text);
+        $text = preg_replace('/[^a-z0-9]+/', '-', $text) ?? $text;
+        $text = trim($text, '-');
+        $text = preg_replace('/-+/', '-', $text) ?? $text;
+
+        return substr($text, 0, 150);
+    }
+}

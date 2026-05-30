@@ -81,6 +81,7 @@ URL → Apache (.htaccess mod_rewrite)
 | `post_url($post)` | `post.php?slug=...` desde array de post |
 | `get_thumbnail_url($url, $html)` | Miniatura de YouTube / imagen destacada |
 | `pluralize($n, $sg, $pl)` | Pluralización básica |
+| `slugify($text)` | Slug limpio desde texto libre (transliterá acentos/ñ, minúsculas, guiones, máx. 150) |
 
 ---
 
@@ -147,19 +148,20 @@ Estos problemas están documentados. Al editar código existente, no replicarlos
 | C-04 | ~~`etiqueta.php` usa `require` sin `__DIR__`, URLs con `id=` en vez de slug, e incluye el sidebar fuera del layout.~~ Corregido (Fase 0). | Resuelto |
 | C-05 | ~~`SecurityManager::abort()` busca páginas de error en `resources/errors/` pero están en `resources/views/errors/`.~~ Ruta corregida a `resources/views/errors/` (Fase 0). | Resuelto |
 | C-06 | ~~`guardar_personalizacion.php`: la acción de reset se dispara con `GET ?reset=1` sin verificación CSRF.~~ Reset migrado a POST con CSRF (Fase 0). | Resuelto |
-| I-01 | ~~Stubs vacíos: `AuthService`, `ImageService`, `MailService`, `SettingsService`.~~ `ImageService` implementado (Fase 3). Pendientes: `AuthService`, `MailService`, `SettingsService`. | Parcial |
-| I-02 | ~~Generación de slug duplicada en 4 lugares.~~ Páginas unificadas con `Page::slugify()` y JS compartido `slugify.js` (Fase 6). Pendientes: `guardar_post.php` (slug inline), `Category.php` (tiene su propio `generateSlug()`). | Parcial |
+| I-01 | ~~Stubs vacíos: `AuthService`, `ImageService`, `MailService`, `SettingsService`.~~ `ImageService` implementado (Fase 3). `AuthService.php` y `SettingsService.php` son stubs vacíos (0 bytes), anulados — la lógica de auth vive en `SecurityManager` (Fase 2) y no hay segundo caso de uso para settings. `MailService.php` no existe (nunca se creó). | Resuelto (decisión consciente) |
+| I-02 | ~~Generación de slug duplicada en 4 lugares.~~ Centralizado en helper `slugify()` de `app/Helpers/functions.php` (mapa explícito del español + iconv). `Page::slugify()`, `Category::generateSlug()` y `guardar_post.php` delegan en él. Solo queda fuera `TocGenerator::generateSlug()` porque genera anchors de encabezados (propósito distinto, no se unifica a propósito). | Resuelto (decisión consciente) |
 | I-03 | ~~Configuración de TinyMCE copiada en 3 archivos.~~ Resuelto — centralizado en `js/tinymce-config.js` (Fase 6). | Resuelto |
 | I-04 | ~~CSS inline masivo en 4 archivos de gestión.~~ Resuelto — movido a `css/admin/` (Fase 5). | Resuelto |
 | I-05 | ~~Dos sistemas de personalización: `admin.php` (legacy) y `personalizar.php` (moderno).~~ Resuelto — `admin.php` eliminado (Fase 7). | Resuelto |
-| I-06 | ~~`Page.php` es casi un stub.~~ Modelo completo con CRUD, slug y validación. Pendiente: migrar `guardar_pagina.php` y `actualizar_pagina.php` para usar `Page::create()`/`Page::update()` en vez de SQL directo. | Parcial |
+| I-06 | ~~`Page.php` es casi un stub.~~ Modelo completo con CRUD, slug y validación. ~~Pendiente: migrar `guardar_pagina.php` y `actualizar_pagina.php` para usar `Page::create()`/`Page::update()` en vez de SQL directo.~~ Ambos migrados — auditoría confirmada. | Resuelto |
 | I-07 | `init.php` tiene `display_errors=1` hardcodeado antes de leer `APP_ENV`, por lo que siempre expone errores hasta que se sobreescribe. | Importante |
 | I-08 | ~~`enviar_contacto.php` tiene `SMTPDebug = 2` activo en producción (logs SMTP visibles).~~ Resuelto. | Resuelto |
 | I-09 | ~~`crear_post.php` no incluye `tinymce-config.js` — llama a `initTinyMCE()` sin haberla cargado. El editor nunca se inicializa.~~ Resuelto — añadido script + nonce. | Resuelto |
 | I-10 | `User.php` no tiene `declare(strict_types=1)`. Viola convención del proyecto. | Menor |
 | I-11 | `login.php` tiene checkbox "Mantener sesión" que no hace nada (nunca se lee en `procesar_login.php`). | Menor |
 | I-12 | `procesar_login.php` redirige a `login.php?status=error` en catch de BD, pero `$messages` en `login.php` no tiene clave `'error'`. No muestra mensaje al usuario. | Menor |
-| I-13 | Enumeración de email en registro: `status=email_exists` confirma si un email está registrado. Considerar mensaje genérico. | Media |
+| I-13 | Enumeración de email en registro: `status=email_exists` confirma si un email está registrado. Decisión consciente: se mantiene el mensaje claro para no degradar la experiencia de usuarios legítimos que se registran dos veces por olvido. Modelo de amenaza: blog público de filosofía sin datos sensibles, sin transacciones, sin mensajería privada. Mitigado con rate limiting en el endpoint de registro y logging de intentos contra emails existentes. Reconsiderar si el proyecto evoluciona hacia funcionalidades con datos sensibles. | Decisión consciente |
+| B-01 | ~~`guardar_post.php` genera slugs incorrectos para títulos con acentos o ñ. Las letras acentuadas se eliminan en vez de transliterarse. Ejemplo: "Filosofía española" → `filosofa-espaola` (incorrecto), debería ser `filosofia-espanola`. Relacionado con I-02.~~ Resuelto — usa `slugify()` centralizado. | Resuelto |
 | m-01 | `feed.php` usa `$GLOBALS['baseUrl']` (es variable local en init.php, no global). | Menor |
 | m-02 | ~~`editar_post.php` referencia `assets/css/styles.css` (ruta que no existe).~~ Resuelto — unificado a `css/style.css` vía `tinymce-config.js` (Fase 6). | Resuelto |
 
@@ -182,6 +184,40 @@ Estos problemas están documentados. Al editar código existente, no replicarlos
 
 ---
 
+## Recent Features
+
+- **Plugins TinyMCE** — `postembed` (insertar posts del blog) y `externalembed` (YouTube, Vimeo, Genially, Calameo, Google Drive, PDF, iframe genérico) con auto-detección de plataformas.
+- **Modernización visual** — Cards con sombras y hover, hero post, tipografía Playfair Display con `clamp()`, grid responsive, sidebar transparente.
+- **Páginas legales** — `aviso-legal.php`, `privacidad.php`, `cookies.php` y página dedicada `accesibilidad.php`.
+- **Accesibilidad** — Skip-to-content, focus-visible mejorado, `prefers-reduced-motion`, toggle de interlineado con persistencia en `localStorage` (FAB en esquina).
+- **Tabla de contenidos automática** — `TocGenerator.php` + `toc.js` para posts con 3+ encabezados.
+- **Sistema de búsqueda** — Página pública `search.php` y endpoint admin `api/post_search.php` con autocompletado, implementados sobre `Post::search()` con prepared statements.
+- **Registro público + login por email** — Formulario de registro con validación, protección CSRF, rate limiting y control de acceso por rol en páginas admin (Fase 8).
+
+---
+
+## Future Work
+
+- **Sistema de analíticas propio** — Tabla `visitas`, tracking de pageviews sin cookies de terceros, mini dashboard en admin. Reemplazo de dependencias en servicios externos.
+- **Suite de tests PHPUnit** — La carpeta `tests/` con subdirectorios `Feature/` y `Unit/` ya existe como placeholder. Falta `phpunit.xml` y los primeros tests. Empezar por los modelos críticos (Post, Page, User).
+- **Sistema de comentarios** — Siguiente funcionalidad planificada tras el registro. Da sentido al rol `usuario` y alimenta estadísticas para `dashboard_usuario.php`.
+
+---
+
+## Claude Code Subagents
+
+Subagentes especializados disponibles en `.claude/agents/`:
+
+| Agente | Propósito |
+|--------|-----------|
+| `architect.md` | Decisiones de arquitectura: organización de código, modelos, planificación de features y refactors. |
+| `css-reviewer.md` | CSS: extracción de estilos inline, revisión de arquitectura, responsive design y debugging visual. Conoce el sistema de capas y BEM del proyecto. |
+| `db-guardian.md` | Base de datos: queries, schema, migraciones y consistencia entre desarrollo y producción. |
+| `php-developer.md` | Desarrollo PHP: modelos, helpers, scripts, bugs y features siguiendo las convenciones del proyecto. |
+| `security-auditor.md` | Seguridad: CSRF, validación de inputs, CSP, autenticación, rate limiting y formularios públicos. |
+
+---
+
 ## Code Conventions
 
 - **Idioma:** Español para nombres de variables, comentarios, strings de UI y mensajes de error al usuario. Inglés para mensajes de commit.
@@ -198,15 +234,14 @@ Estos problemas están documentados. Al editar código existente, no replicarlos
 |------|-----------|
 | `main` | Estable, refleja producción |
 | `develop` | Desarrollo activo — rama base para nuevas features |
-| `rama-cambios-pagina-post` | Versión actualmente desplegada en Hostinger |
-| `hostinger_v1`, `hostinger_v2` | Snapshots históricos de versiones anteriores |
+| `hostinger_v1`, `hostinger_v2` | Snapshots históricos de versiones anteriores, pendientes de eliminar |
 
 **Flujo estándar:**
 1. Crear rama feature desde `develop`: `git checkout -b fix/nombre-del-fix develop`
 2. Desarrollar y testear en Docker local
 3. Commit con mensaje descriptivo en inglés
 4. Merge a `develop`
-5. Cuando `develop` es estable, merge a `main` y desplegar en Hostinger
+5. Cuando `develop` es estable, merge a `main` y desplegar en Hostinger (`git pull origin main` en producción)
 
 ---
 
@@ -248,3 +283,7 @@ ALWAYS work in "snippet mode" unless explicitly told otherwise:
 - Wait for confirmation before moving to the next change
 - NEVER modify multiple files in a single step without asking
 - If a task requires more than 3 file changes, present a numbered plan first and execute one step at a time
+
+### Read-only sessions
+
+En muchas sesiones, el trabajo de Claude Code se limita a leer, analizar y proponer snippets. El usuario aplica los cambios manualmente a archivos `.php`, `.js`, `.css`, `.sql`, etc. La única excepción es `CLAUDE.md`, que Claude Code sí puede actualizar directamente cuando se le indique. Esto debe asumirse por defecto: si una tarea requiere modificar código funcional, Claude Code propone el snippet y espera; no toca el archivo.

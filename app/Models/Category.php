@@ -4,7 +4,7 @@ namespace App\Models;
 use PDO;
 
 class Category {
-    
+
     /**
      * Contar total de categorías
      */
@@ -12,7 +12,7 @@ class Category {
         $db = Database::getConnection();
         return (int) $db->query("SELECT COUNT(*) FROM categorias")->fetchColumn();
     }
-    
+
     /**
      * Obtener todas las categorías
      */
@@ -30,10 +30,10 @@ class Category {
     {
         $db = Database::getConnection();  // ← CORRECCIÓN
         $slug = self::generateSlug($nombre);
-        
+
         $stmt = $db->prepare("INSERT INTO categorias (nombre_categoria, slug) VALUES (?, ?)");
         $stmt->execute([$nombre, $slug]);
-        
+
         return (int)$db->lastInsertId();
     }
 
@@ -44,7 +44,7 @@ class Category {
     {
         $db = Database::getConnection();  // ← CORRECCIÓN
         $slug = self::generateSlug($nombre);
-        
+
         $stmt = $db->prepare("UPDATE categorias SET nombre_categoria = ?, slug = ? WHERE id_categoria = ?");
         return $stmt->execute([$nombre, $slug, $id]);
     }
@@ -55,11 +55,11 @@ class Category {
     public static function delete(int $id): bool
     {
         $db = Database::getConnection();  // ← CORRECCIÓN
-        
+
         // Desvincular posts de esta categoría (quedan sin categoría)
         $stmt = $db->prepare("UPDATE posts SET id_categoria = NULL WHERE id_categoria = ?");
         $stmt->execute([$id]);
-        
+
         // Eliminar la categoría
         $stmt = $db->prepare("DELETE FROM categorias WHERE id_categoria = ?");
         return $stmt->execute([$id]);
@@ -70,25 +70,6 @@ class Category {
      */
     private static function generateSlug(string $text): string
     {
-        // Convertir a minúsculas
-        $text = mb_strtolower($text, 'UTF-8');
-        
-        // Reemplazar caracteres especiales
-        $replacements = [
-            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
-            'ñ' => 'n', 'ü' => 'u',
-            'Á' => 'a', 'É' => 'e', 'Í' => 'i', 'Ó' => 'o', 'Ú' => 'u',
-            'Ñ' => 'n', 'Ü' => 'u',
-        ];
-        $text = strtr($text, $replacements);
-        
-        // Eliminar caracteres no permitidos
-        $text = preg_replace('/[^a-z0-9\s-]/', '', $text);
-        
-        // Reemplazar espacios múltiples por un guion
-        $text = preg_replace('/[\s-]+/', '-', $text);
-        
-        // Eliminar guiones al inicio/final
-        return trim($text, '-');
+        return \slugify($text);
     }
 }
