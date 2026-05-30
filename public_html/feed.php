@@ -3,7 +3,7 @@ declare(strict_types=1); require_once __DIR__ . '/init.php';
 header('Content-Type: application/rss+xml; charset=UTF-8');
 
 $siteTitle = 'Anthropofilia';
-$siteLink  = rtrim(($GLOBALS['baseUrl'] ?? ''), '/');
+$siteLink  = rtrim($baseUrl ?? url(''), '/');
 
 $stmt = $pdo->query("SELECT slug, titulo, fecha_publicacion, SUBSTRING(contenido,1,400) AS excerpt FROM posts ORDER BY fecha_publicacion DESC LIMIT 20");
 $items = $stmt->fetchAll();

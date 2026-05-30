@@ -19,6 +19,7 @@ $messages = [
     'logged_out'      => 'Has cerrado sesión correctamente.',
     'blocked'         => 'Demasiados intentos. Inténtalo más tarde.',
     'registered'      => '¡Cuenta creada correctamente! Ya puedes iniciar sesión.',
+    'error'           => 'Ha ocurrido un error inesperado. Inténtalo de nuevo más tarde.',
 ];
   $categoria = null; // para migas condicionales
 require_once BASE_PATH . '/resources/views/partials/header.php';
@@ -56,13 +57,13 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         required
         autocomplete="current-password">
     </div>
-
+    <!--
     <div class="form-row">
       <label>
         <input type="checkbox" name="remember" value="1">
         Mantener sesión iniciada
       </label>
-    </div>
+    </div> -->
 
     <button type="submit">Entrar</button>
   </form>
