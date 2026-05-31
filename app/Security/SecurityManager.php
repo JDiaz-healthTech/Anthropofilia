@@ -79,6 +79,10 @@ final class SecurityManager
             header('Location: login.php');
             exit();
         }
+        // Páginas autenticadas: nunca cachear (token CSRF y datos siempre frescos)
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: 0');
     }
 
     public function userId(): ?int
@@ -114,9 +118,30 @@ final class SecurityManager
             if ($this->hasRole($role)) return;
         }
 
-        http_response_code(403);
-        echo json_encode(['success' => false, 'error' => 'Acceso denegado']);
-        exit();
+        // Denegado: JSON para /api/, página 403 HTML para el resto
+        if ($this->wantsJson()) {
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Acceso denegado']);
+            exit();
+        }
+        $this->abort(403, 'Acceso denegado.');
+    }
+
+    /**
+     * ¿La petición espera JSON? Los endpoints viven en /api/.
+     * También respeta Accept y peticiones AJAX (X-Requested-With).
+     */
+    private function wantsJson(): bool
+    {
+        $script = $_SERVER['SCRIPT_NAME'] ?? '';
+        if (str_contains($script, '/api/')) {
+            return true;
+        }
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+        $xrw    = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+        return str_contains($accept, 'application/json')
+            || strtolower($xrw) === 'xmlhttprequest';
     }
 
 

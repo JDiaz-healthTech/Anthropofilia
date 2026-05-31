@@ -64,6 +64,22 @@ class User {
     }
 
     /**
+     * Buscar usuario por ID (datos propios para el dashboard).
+     */
+    public static function findById(int $id): ?array
+    {
+        $db = Database::getConnection();
+        $stmt = $db->prepare(
+            "SELECT id_usuario, nombre_usuario, email, rol, fecha_registro
+             FROM usuarios
+             WHERE id_usuario = ?
+             LIMIT 1"
+        );
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    /**
      * Crear usuario con rol 'usuario'
      */
     public static function create(string $nombreCompleto, string $email, string $passwordHash): int

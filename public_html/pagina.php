@@ -50,7 +50,21 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
     </nav>
 
     <article class="pagina">
-        <h1><?= htmlspecialchars($pagina['titulo'] ?? '(sin título)', ENT_QUOTES, 'UTF-8') ?></h1>
+        <header class="pagina__header">
+            <h1><?= htmlspecialchars($pagina['titulo'] ?? '(sin título)', ENT_QUOTES, 'UTF-8') ?></h1>
+
+            <?php if ($security->userId() !== null && $security->hasRole('usuario')):
+                $siguiendo = \App\Models\UserPage::isFollowing((int)$security->userId(), (int)$pagina['id_pagina']);
+            ?>
+            <form method="POST" action="<?= url('seguir_pagina.php') ?>" class="seguir-pagina">
+                <?= $security->csrfField() ?>
+                <input type="hidden" name="id_pagina" value="<?= (int)$pagina['id_pagina'] ?>">
+                <button type="submit" class="btn <?= $siguiendo ? 'btn--following' : 'btn--follow' ?>">
+                    <?= $siguiendo ? '✓ Siguiendo' : '➕ Seguir esta página' ?>
+                </button>
+            </form>
+            <?php endif; ?>
+        </header>
         <hr>
 
     <!-- Índice de contenidos (si está activo) -->

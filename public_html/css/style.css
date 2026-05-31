@@ -39,6 +39,7 @@
    ========================================================================== */
 @import 'pages/post.css'; /* Página individual de post */
 @import 'pages/acerca_de_mi.css'; /* Página individual de acerca de mí */
+@import 'pages/pagina.css'; /* Página estática individual (CMS) */
 @import 'pages/_pagina-post.css'; /* Página individual gestora de paginas con post */
 @import 'pages/_legal.css'; /* Páginas legales (aviso, privacidad, cookies) */
 

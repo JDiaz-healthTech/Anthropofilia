@@ -44,7 +44,7 @@ try {
     // 4) Si hay confirmación, proceder con el borrado
     $confirmado = ($_POST['confirmado'] ?? '') === 'si';
 
-    if (!$confirmado && !empty($paginasAfectadas)) {
+    if (!$confirmado) {
         // Mostrar página de confirmación
         $page_title = 'Confirmar Eliminación';
         $categoria = null;
@@ -62,19 +62,21 @@ try {
                     "<?= htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8') ?>"
                 </p>
 
-                <div style="background: white; padding: 1.5rem; border-radius: 6px; margin-bottom: 1.5rem;">
-                    <h2 style="color: #dc3545; margin-bottom: 1rem;">⚠️ Este post aparece en <?= count($paginasAfectadas) ?> página(s):</h2>
-                    <ul style="margin-left: 1.5rem; line-height: 1.8;">
-                        <?php foreach ($paginasAfectadas as $pag): ?>
-                            <li>
-                                📄 <strong><?= htmlspecialchars($pag['titulo'], ENT_QUOTES, 'UTF-8') ?></strong>
-                                <a href="<?= url('pagina.php?slug=' . urlencode($pag['slug'])) ?>" target="_blank" style="margin-left: 0.5rem; font-size: 0.9rem;">
-                                    Ver página →
-                                </a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
+                <?php if (!empty($paginasAfectadas)): ?>
+                    <div style="background: white; padding: 1.5rem; border-radius: 6px; margin-bottom: 1.5rem;">
+                        <h2 style="color: #dc3545; margin-bottom: 1rem;">⚠️ Este post aparece en <?= count($paginasAfectadas) ?> página(s):</h2>
+                        <ul style="margin-left: 1.5rem; line-height: 1.8;">
+                            <?php foreach ($paginasAfectadas as $pag): ?>
+                                <li>
+                                    📄 <strong><?= htmlspecialchars($pag['titulo'], ENT_QUOTES, 'UTF-8') ?></strong>
+                                    <a href="<?= url('pagina.php?slug=' . urlencode($pag['slug'])) ?>" target="_blank" style="margin-left: 0.5rem; font-size: 0.9rem;">
+                                        Ver página →
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
 
                 <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
                     <p style="margin-bottom: 0.5rem;"><strong>Si continúas:</strong></p>
@@ -89,7 +91,7 @@ try {
                     <?= $security->csrfField() ?>
                     <input type="hidden" name="id" value="<?= $post_id ?>">
                     <input type="hidden" name="confirmado" value="si">
-
+                    <input type="hidden" name="origen" value="<?= htmlspecialchars($_POST['origen'] ?? 'gestionar_posts', ENT_QUOTES, 'UTF-8') ?>">
                     <a href="<?= url('gestionar_posts.php') ?>" class="btn" style="background: #6c757d;">
                         Cancelar
                     </a>

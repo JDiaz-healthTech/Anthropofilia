@@ -1,5 +1,5 @@
 <?php
-// public/gestionar_post.php
+// public/gestionar_posts.php
 declare(strict_types=1);
 
 require_once __DIR__ . '/init.php';
@@ -97,7 +97,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         >
         <button type="submit" class="btn admin-search__btn">🔍 Buscar</button>
         <?php if ($q !== ''): ?>
-            <a href="<?= url('gestionar_post.php') ?>" class="btn admin-search__btn">✖ Limpiar</a>
+            <a href="<?= url('gestionar_posts.php') ?>" class="btn admin-search__btn">✖ Limpiar</a>
         <?php endif; ?>
     </form>
 
@@ -139,8 +139,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
                                 </a>
 
                                 <form method="POST"
-                                      action="<?= url('eliminar_post.php') ?>"
-                                      onsubmit="return confirm('¿Seguro que deseas eliminar este post?');">
+                                      action="<?= url('eliminar_post.php') ?>">
                                     <?= $security->csrfField() ?>
                                     <input type="hidden" name="id" value="<?= (int)$r['id_post'] ?>">
                                     <input type="hidden" name="origen" value="gestionar_posts">
@@ -160,7 +159,7 @@ require_once BASE_PATH . '/resources/views/partials/header.php';
         <?php if ($pages > 1): ?>
             <nav class="pagination">
                 <?php
-                $base = url('gestionar_post.php') . '?';
+                $base = url('gestionar_posts.php') . '?';
                 if ($q !== '') $base .= 'q=' . urlencode($q) . '&';
                 ?>
 

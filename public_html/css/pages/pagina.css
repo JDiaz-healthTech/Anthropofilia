@@ -1,0 +1,7 @@
+.pagina__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;   /* en móvil, el botón cae debajo del título */
+}
